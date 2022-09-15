@@ -5,6 +5,7 @@ from matplotlib.ticker import LinearLocator, FormatStrFormatter
 import numpy as np
 from random import random, seed
 from frankiefunction import FrankeFunction
+import pandas as pd
 
 # Perform a standard OLS regression analysis 
 
@@ -13,7 +14,7 @@ from frankiefunction import FrankeFunction
 x = np.arange(0, 1, 0.05)
 y = np.arange(0, 1, 0.05)
 x, y = np.meshgrid(x,y)
-z = FrankeFunction(x, y)
+A = FrankeFunction(x, y)
 
 
 def X(x, y, n=5): 
@@ -43,7 +44,21 @@ def X(x, y, n=5):
     return X 
 
 
-print(X(x, y, n=1))
+# Now we set up the design matrix X
+X = np.zeros((len(A),5))
+X[:,0] = 1
+X[:,1] = A
+X[:,2] = A**(2.0/3.0)
+X[:,3] = A**(-1.0/3.0)
+X[:,4] = A**(-1.0)
+# Then nice printout using pandas
+DesignMatrix = pd.DataFrame(X)
+DesignMatrix.index = A
+DesignMatrix.columns = ['1', 'A', 'A^(2/3)', 'A^(-1/3)', '1/A']
+
+
+# print(X(x, y, n=1))
+
 
 
 
@@ -61,3 +76,7 @@ print(X(x, y, n=1))
 
 
 # y = X beta + epsilon 
+
+
+
+# Tin Bider, Algerie 
