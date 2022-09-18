@@ -9,63 +9,84 @@ import pandas as pd
 
 # Perform a standard OLS regression analysis 
 
-
-# Make data.
-x = np.arange(0, 1, 0.05)
-y = np.arange(0, 1, 0.05)
+# Make grid / generate datapoints 
+nx, ny = 100, 100 
+x = np.arange(0, 1, nx)
+y = np.arange(0, 1, nx)
 x, y = np.meshgrid(x,y)
-A = FrankeFunction(x, y)
 
+z = FrankeFunction(x, y, noise=False)
 
-def X(x, y, n=5): 
-    """ Defines the matrix X up to order n = 5 
+def DesignMatrix(x, y, p): 
+    """ Defines the matrix X 
+        If SOMETHING it should scale 
+
+        Args:
+            x 
+            y
+            p: Order of polynomial 
+
+        Returns:
+            X: Design matrix 
 
     """
 
-    # Create a column of ones 
-    Ones = np.ones((len(x),))
+    # TO DO : Add scale 
 
-    ol = np.ones_like(z)
-    # print(ol)
+    # Flatten array using ravel ? 
+    if len(x.shape) > 1: 
+        x = np.ravel(x)
+        y = np.ravel(y)
 
-    # X = np.zeros(len(x))
-    # ol = np.ones(len(x))
+    N = len(x)
+    a = int((p+1)*(p+2)/2) # Number of elements in beta 
+    X = np.ones((N,a))
 
-    if n == 1: 
-        X = np.c_[ol,x,y]
-    if n == 2: 
-        X = np.c_[ol, x, y, x**2, y**2]
-    if n == 3: 
-        X = np.c_[ol, x, y, x**2, y**2, x**3, y**3]
-    if n == 4: 
-        X = np.c_[ol, x, y, x**2, y**2, x**3, y**3, x**4, y**4]
-    if n == 5: 
-        X = np.c_[ol, x, y, x**2, y**2, x**3, y**3, x**4, y**4, x**5, y**5]
+    cols = [r'$x^0 y^0$']
+    for i in range(1, p+1): 
+        q = int(i + (i+1)/2)
+        for k in range(i+1): 
+            X[:,q+k] = x**(i-k) * y**k 
+            cols.append(r'$x^{%i} y^{%i}$'%((i-k), k))
+
+    # Nicer print 
+    DesignMatrix = pd.DataFrame(X)
+    print(cols) # Check that it looks good 
+    # DesignMatrix.index = z
+    # DesignMatrix.columns = ['1', 'z', 'z^(2/3)', 'z^(-1/3)', '1/z']
+
     return X 
 
 
-# Now we set up the design matrix X
-X = np.zeros((len(A),5))
-X[:,0] = 1
-X[:,1] = A
-X[:,2] = A**(2.0/3.0)
-X[:,3] = A**(-1.0/3.0)
-X[:,4] = A**(-1.0)
-# Then nice printout using pandas
-DesignMatrix = pd.DataFrame(X)
-DesignMatrix.index = A
-DesignMatrix.columns = ['1', 'A', 'A^(2/3)', 'A^(-1/3)', '1/A']
+X = DesignMatrix(x, y, p=5)
+
+print(X)
+
+def beta(X, y): 
+    """ Uses matrix inversion to find beta (y = X*beta + epsilon)
+    """
+    # Train model 
+
+    b = np.linalg.inv(X.T.dot(X)).dot(X.T).dot(y) # Evt dette? 
+    # beta = np.linalg.inv(X.T.dot(X)).dot(X.T).dot(Energies)
+
+    b = np.linalg.pinv(X.T @ X) @ X.T @ y
+
+    return b
 
 
-# print(X(x, y, n=1))
+from sklearn.model_selection import train_test_split
+X_train, X_test, z_train, z_test = train_test_split(X, z.ravel(), test_size=0.2)
 
 
 
 
 
 
-# matrix inversion to find beta
-# beta = np.linalg.inv(X.T.dot(X)).dot(X.T).dot(Energies)
+
+
+
+
 # and then make the prediction
 # ytilde = X @ beta # @ Matrix multiplixation XXX __matmul__ eller np.dot(X, beta) ? 
 
@@ -74,8 +95,6 @@ DesignMatrix.columns = ['1', 'A', 'A^(2/3)', 'A^(-1/3)', '1/A']
 # ytildenp = np.dot(fit,X.T)
 
 
-
-# y = X beta + epsilon 
 
 
 

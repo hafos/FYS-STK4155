@@ -13,8 +13,12 @@ def FrankeFunction(x,y, noise=False):
     term4 = -0.2*np.exp(-(9*x-4)**2 - (9*y-7)**2)
 
     if noise == True: 
-        N = np.random.random_sample((x, y))
-        return (term1 + term2 + term3 + term4) + N/5
+        # N = np.random.random_sample((x, y))
+        N = np.random.normal(0, 1, np.shape(x))
+        return (term1 + term2 + term3 + term4) + N
+        # N = lambda eta: eta*np.random.randn(Ny, Nx)
+        # Nx = 0.5, Ny = 0.5
+        # return (term1 + term2 + term3 + term4) + N(0.5)
     else: 
         return (term1 + term2 + term3 + term4)
 
