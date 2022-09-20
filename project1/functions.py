@@ -39,7 +39,7 @@ def DesignMatrix(x, y, p):
 
     return X 
 
-def beta(X, y): 
+def get_beta(X, y): 
     """ Uses matrix inversion to find beta (y = X*beta + epsilon)
 
     """
