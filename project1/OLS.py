@@ -55,16 +55,11 @@ def OLS(x, y, z, p=5):
 
     return X_train, X_test, z_train, z_test, train_MSE, test_MSE, train_R2, test_R2, beta
 
-OLS(x,y,z,p=5)
-
-# Plot the resulting scores (MSE and R²) as functions of the polynomial degree 
-
 def plot_OLS(x,y,z, p): 
-    """ Plots the MSE and R² scores as functions of the polynomial degree 
+    """ Plots the MSE and R² scores as functions of the polynomial degree, and 
+        the parameter beta for increasing order of the polynomial 
     
-    """
-    # X = DesignMatrix(x, y, p)
-    
+    """ 
 
     # Create arrays 
     train_MSE_arr = np.zeros(p)
@@ -77,23 +72,24 @@ def plot_OLS(x,y,z, p):
 
     for n in range(1, p+1):
         X_train, X_test, z_train, z_test, train_MSE, test_MSE, train_R2, test_R2, beta = OLS(x, y, z, p=n)
+        X = DesignMatrix(x, y, p)
         print(f"Order {n}")
-        # z_all = X @ get_beta(X, z.ravel())
-        # z_all = np.reshape(z_all, (np.shape(x)[0], np.shape(x)[0]))
+        z_all = X @ get_beta(X, z.ravel())
+        z_all = np.reshape(z_all, (np.shape(x)[0], np.shape(x)[0]))
         
-        # fig, ax = plt.subplots(subplot_kw={'projection':'3d'})
+        fig, ax = plt.subplots(subplot_kw={'projection':'3d'})
         # Plot the surface.
-        # surf = ax.plot_surface(x, y, z_all, cmap=cm.coolwarm, linewidth=0, antialiased=False)
+        surf = ax.plot_surface(x, y, z_all, cmap=cm.coolwarm, linewidth=0, antialiased=False)
 
         # Customize the z axis.
-        # ax.set_zlim(-0.10, 1.40)
-        # ax.zaxis.set_major_locator(LinearLocator(10))
-        # ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
-        # fig.suptitle(f"Order {n}", fontsize=20)
+        ax.set_zlim(-0.10, 1.40)
+        ax.zaxis.set_major_locator(LinearLocator(10))
+        ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
+        fig.suptitle(f"Order {n}", fontsize=20)
 
         # Add a color bar which maps values to colors.
-        # fig.colorbar(surf, shrink=0.5, aspect=5)
-        # train_MSE[i] = MSE(z_train.ravel(), z_tilde_train.ravel())
+        fig.colorbar(surf, shrink=0.5, aspect=5)
+        
         beta_list.append(beta)
         train_MSE_arr[i] = train_MSE
         test_MSE_arr[i]  = test_MSE
@@ -101,18 +97,22 @@ def plot_OLS(x,y,z, p):
         test_R2_arr[i]  = test_R2
         # p_array[i] = n
         i += 1
-
+    
+    # Plot the resulting scores (MSE and R²) as functions of the polynomial degree 
+    # XXX Needs improvement, see Fig 2.11 
     fig, ax = plt.subplots(nrows=2, sharex=True)
     ax[0].plot(p_array, train_MSE_arr, label="Train MSE")
     ax[0].plot(p_array, test_MSE_arr, label="Test MSE")
 
     ax[1].plot(p_array, train_R2_arr, label="Train R2")
     ax[1].plot(p_array, test_R2_arr, label="Test R2")
-    # ax.plot(p_array, beta, label="beta")
     ax[0].set_yscale('log')
     ax[0].legend()
     ax[1].legend()
     fig.tight_layout()
+
+    # Plot the parameters beta for increasing order of the polynomial 
+    # plt.plot(p_array, beta, label="beta")
     plt.show()
 
 
@@ -121,7 +121,11 @@ plot_OLS(x,y,z, p)
 
 
 
-# Plot the parameters beta for increasing order of the polynomial 
+# Include resampling techniques 
+
+
+
+
 
 
 
