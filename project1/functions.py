@@ -1,30 +1,30 @@
 import numpy as np 
 
-def DesignMatrix(x, y, p): 
+def DesignMatrix(x, y, n): 
     """ Defines the matrix X 
 
         Args:
             x 
             y
-            p: Order of polynomial 
+            n: Order of polynomial 
 
         Returns:
             X: Design matrix 
 
     """
 
-    # Flatten array using ravel ? XXX
-    # if len(x.shape) > 1: 
-    x = np.ravel(x)
-    y = np.ravel(y)
+    # Flatten array using ravel 
+    if len(x.shape) > 1: 
+        x = np.ravel(x)
+        y = np.ravel(y)
 
     N = len(x)
-    a = int((p + 1)*(p + 2)/2) # Number of elements in beta 
-    X = np.ones((N,a))
+    l = int((n + 1)*(n + 2)/2) # Number of elements in beta 
+    X = np.ones((N, l))
 
     j = 1 
     # columns = [r'$x^0 y^0$']
-    for i in range(1, p+1): 
+    for i in range(1, n+1): 
         q = int(i + (i+1)/2)
         for k in range(i+1): 
             X[:,j] = x**(i-k) * y**k 
@@ -52,19 +52,28 @@ def get_beta(X, y):
 
 
 def MSE(y, y_tilde): 
-    """ Evaluates the mean square error given y and the predicted y 
+    """ Evaluates the mean square error given y_data and the predicted y_model 
+        Args: 
+            y:       the data 
+            y_tilde: the model / fit for the data 
 
     """
 
     mse = 1/np.size(y) * np.sum((y - y_tilde)**2)
+    n = np.size(y)
+    return np.sum((y-y_tilde)**2)/n
 
-    return mse 
 
 def R2(y, y_tilde): 
-    """ Evaluates R² 
+    """ Evaluates the R² score given y_data and the predicted y_model 
+        Args: 
+            y:       the data 
+            y_tilde: the model / fit for the data 
     
     """
 
     y_mean = 1/len(y) * np.sum(y)
-    r = 1 - np.sum((y - y_tilde)**2) / np.sum((y - np.mean(y_tilde))**2)
-    return r 
+    return 1 - np.sum((y - y_tilde)**2) / np.sum((y - np.mean(y_tilde))**2)
+
+def RelErr(y, y_tilde): 
+    return abs((y-y_tilde)/y)

@@ -60,12 +60,48 @@ def OLS(X, z, p=5, scale=False):
 
         X_train = X_train_scaled
         X_test = X_test_scaled
+    
+    # Matrix inversion to find beta 
+    beta = np.linalg.pinv(X_train.T @ X_train) @ X_train.T @ z_train
 
-    beta = get_beta(X_train, z_train)
+    # beta = get_beta(X_train, z_train)
     z_tilde_train = X_train @ beta # fitted z 
     z_tilde_test  = X_test  @ beta # predicted z 
 
     return X_train, X_test, z_train, z_test, z_tilde_train, z_tilde_test, beta
+
+def Ridge(X, z, p, scale=False):
+     # Split into training and testing 
+    ratio = 0.2
+    X_train, X_test, z_train, z_test = train_test_split(X, np.ravel(z), test_size=ratio)
+
+    # I = np.eye(p, p)
+    I = np.eye(len(X[0]), len(X[0]))
+
+    # Decide which values of lambda to use 
+    nlambdas = len(X[0])
+    lambdas = np.logspace(-4, 1, nlambdas)
+    # Matrix inversion to find beta 
+    # beta = np.linalg.inv(X_train.T @ X_train+(lambdas*I)) @ X_train.T @ z_train
+
+    MSEPredict = np.zeros(nlambdas)
+    MSETrain = np.zeros(nlambdas)
+    for i in range(nlambdas): 
+        lmb = lambdas[i]
+        Ridgebeta = np.linalg.pinv(X_train.T @ X_train+lmb*I) @ X_train.T @ z_train
+        # Make the prediction 
+        ytildeRidge = X_train @ Ridgebeta
+        ypredictRidge = X_test @ Ridgebeta 
+        MSEPredict[i] = MSE(z_test, ypredictRidge)
+        MSETrain[i] = MSE(z_train, ytildeRidge)
+    plt.figure()
+    plt.plot(np.log10(lambdas), MSETrain, label="MSE Ridge Train")
+    plt.plot(np.log10(lambdas), MSEPredict, label="MSE Ridge Test")
+    plt.xlabel("log10(lambda")
+    plt.ylabel("MSE")
+    plt.legend()
+    plt.show()
+
 
 
 def plot_OLS(x,y,z, p, scale=False): 
@@ -138,8 +174,9 @@ def plot_OLS(x,y,z, p, scale=False):
 
 
 p = 5
-plot_OLS(x,y,z, p, scale=True)
-
+# plot_OLS(x,y,z, p, scale=True)
+X = DesignMatrix(x, y, p)
+Ridge(X, z, p)
 
 
 # Include resampling techniques 
@@ -147,7 +184,7 @@ plot_OLS(x,y,z, p, scale=True)
 
 
 def test_reg_anal(method, n): 
-    """ Tests the regression analysis by asserting """
+    """ Tests the regression analysis by asserting that the MSE = 0 """
     # I = np.identity(n)
     I = DesignMatrix(x, y, n)
     I = np.identity(400)
