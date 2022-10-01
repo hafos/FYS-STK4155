@@ -18,6 +18,9 @@ from sklearn.model_selection import KFold
 from FrankeFunction import FrankeFunction
 from functions import *
 
+
+np.random.seed(2018)
+
 noise = True
 n_bootstrap = 100
 ##kfold
@@ -27,12 +30,7 @@ k=10
 x = np.arange(0, 1, 0.025)
 y = np.arange(0, 1, 0.025)
 sigma = 0.25
-
-
-np.random.seed(2018)
-
 x, y = np.meshgrid(x,y)
-
 z = np.concatenate(FrankeFunction(x, y),axis=None)
 if noise == True: z += sigma*np.random.randn(len(z))
 

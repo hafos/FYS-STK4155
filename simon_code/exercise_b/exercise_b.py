@@ -45,10 +45,11 @@ A_train, A_test, z_train, z_test = train_test_split(A, z, test_size=0.2)
 
 for i in range(1,max_order+1):
     currentnot = sp.special.comb(len(variables) + i,i,exact=True)
-    print(currentnot)
-    beta[i-1][:currentnot] = np.linalg.inv(A_train[:,0:currentnot].T @ A_train[:,0:currentnot]) @ A_train[:,0:currentnot].T @ z_train
+    ATrCur = A_train[:,0:currentnot]
+    ATeCur = A_test[:,0:currentnot]
+    beta[i-1][:currentnot] = np.linalg.inv(ATrCur.T @ ATrCur) @ ATrCur.T @ z_train
     #ytilde
-    f_approx = A_test[:,0:currentnot] @ beta[i-1][beta[i-1] != 0] #with calc beta
+    f_approx =  ATeCur @ beta[i-1][beta[i-1] != 0] #with calc beta
     #calcuate the two errors
     MSE[i-1] = 1/len(z_test)*np.sum(np.power(z_test-f_approx,2))
     R_two[i-1] = R2(z_test,f_approx)
