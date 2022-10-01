@@ -1,0 +1,127 @@
+\documentclass[12pt]{scrartcl}
+
+\usepackage{array}
+\usepackage{amsfonts}
+\RequirePackage{natbib}
+\RequirePackage{url}
+\RequirePackage{textcase}
+\RequirePackage{bm}
+\RequirePackage{amsmath}
+\RequirePackage{amssymb}
+\usepackage[latin1]{inputenc}
+\usepackage{textcomp}
+\usepackage{physics}
+\usepackage{graphicx}
+\usepackage{here}
+\usepackage{textcomp}
+\usepackage{dcolumn}
+\RequirePackage{dsfont}			%ZahlenrÃ¤ume
+\usepackage{mathtools}
+\usepackage{tensor}
+
+\newcommand{\myfunc}[5]{
+ \begingroup
+ \setlength\arraycolsep{0pt}
+ #1\colon \, \begin{array}[t]{c>{{}}c<{{}}c}
+ 	#2 & \to & #3 \\ #4 & \mapsto & #5
+ \end{array}
+ \endgroup}
+
+\begin{document}
+ \section{Exercise 1}
+  We consider a finite set of data points $\{(y_0(x_0),x_0), \, \ldots \,, (y_{n-1}(x_{n-1}),x_{n-1})$
+  and the following two vectors:
+  \begin{align*}
+  	x^\top &= (x_0 \, \ldots \, x_{n-1})	\\
+  	y^\top &= (y_0, \, \ldots \, y_{n-1})
+  \end{align*}
+  Furtheremore we assume that there exist a continious function $f$ and a normal distributed error $\epsilon_i \propto N(0,\sigma^2)$ sutch that $\forall i$
+  \begin{equation}
+  	y(x_i) = f(x_i) + \epsilon_i
+  \end{equation}
+  We now approximate $f(x_i)$ with a polynomial
+  \begin{equation}
+  	f(x_i) \approx \sum_{j=0}^{p} (x_i)^j \beta_j \coloneqq \tilde{y}
+  \end{equation}
+  s.t
+  \begin{equation}
+  	y(x_i) = \tilde{y}(x_i) + \epsilon_i + \zeta_i
+  \end{equation}
+  were $\zeta_i$ is the error of the approximation.
+  This also can be written in a vectorial form 
+  \begin{equation}
+  	y(x)=A(x)\beta+\epsilon+\zeta \quad \quad \text{with} \quad a_{ij}=(y_i)^j
+  \end{equation}
+  were $\epsilon \in \mathbb{R}^n$, $\beta \in \mathbb{R}^p$ with $p \in \mathbb{N}$ and $A(x) \in \mathbb{R}^{n\cross p}$ is called the feature Matrix.
+  In the following we assume that we have only one error $\epsilon_i \propto N(0,\sigma^2)$\\
+  \begin{equation}
+  	y = \tilde{y} + \epsilon
+  \end{equation}
+  We now define
+  \begin{equation}
+  	C(\beta)=\frac{1}{n}\sum_{i=0}^{n-1}(y_i-\tilde{y}_i)^2 
+  	= \frac{1}{n}\sum_{i=0}^{n-1}(y_i-\sum_{j=0}^{p-1}\tensor{A}{_i^j}\beta_j)
+  \end{equation}
+  to dertermine the quality of our approximation as a function of $\beta_i$.
+  The optimal fit is given by the minima of that function:
+  \begin{equation}
+  	\partial_{\beta_{j}} (C(\beta)) \, e_j = \frac{2}{n}(y^i-\tensor{A}{_i^k} \beta_k)\tensor{A}{_i^j} e_j
+  \end{equation}
+  were $e_j$ correspond to the eukledian basis vectors and the Einstein summetion rule is used.
+  Again one can express this in Matrix form:
+  \begin{equation}
+  	\begin{pmatrix} \partial_{\beta_{0}} C(\beta) \\ \vdots \\ \partial_{\beta_{p-1}} C(\beta) \end{pmatrix}
+  	=
+  	\begin{pmatrix}
+  		(y_0 - \tensor{A}{_0^k} \beta_k) \tensor{A}{_0^0} + \cdots + (y_{n-1} - \tensor{A}{_{n-1}^k}\beta_k)\tensor{A}{_{n-1}^0} \\
+  		\vdots \\
+  		(y_0 - \tensor{A}{_0^k} \beta_k) \tensor{A}{_0^{p-1}} + \cdots + (y_{n-1} - \tensor{A}{_{n-1}^k}\beta_k)\tensor{A}{_{n-1}^{p-1}}
+  	\end{pmatrix}
+    =
+    \begin{pmatrix} 0 \\ \vdots \\ 0 \end{pmatrix}
+  \end{equation}
+  By definining the following vector 
+  \begin{equation}
+  	a_i = \tensor{A}{_k^i}e^k
+  \end{equation}
+  this simplyfies to
+  \begin{equation}
+  	 \begin{pmatrix} 0 \\ \vdots \\ 0 \end{pmatrix} =
+  	\begin{pmatrix}
+  		(a_0,y) - (a_0,A\beta) \\
+  		\vdots \\
+  		(a_{p-1},y) - (a_{p-1},A\beta)
+  	\end{pmatrix}
+  	= A^\top(y-A\beta)
+  \end{equation}
+  were $(\cdot,\cdot)$ corresponds to the standard scalarproduct.
+  The parameters of the approximation with the smallest error $\epsilon$ are thus given by
+  \begin{equation}
+  	 \tilde{\beta} = (A^\top A)^{-1} A^\top y
+  \end{equation}
+  We now look at some statistical quantities.
+  For that note that the following two relations with $X_1$ and $X_2$ beeing two random variables and $\lambda\in\mathbb{R}^{n\cross m}$ a constant hold:
+  \begin{align}
+  	\label{eq: l_ex}
+  	\mathbb{E}[\lambda\cdot (X_1+X_2)] &= \lambda \cdot (\mathbb{E}[X_1] + \mathbb{E}[X_2]) \\
+  	\label{eq: l_var}
+  	\text{var}[\lambda\cdot X_1] &= \lambda \lambda^\top \cdot \text{var}[X_1]
+  \end{align}
+  With this we get the following expectation values and variances for $y_i$
+  \begin{align}
+  	\mathbb{E}(y_i) &= \mathbb{E}[\tensor{A}{_i^j}\beta_j  + \epsilon_i] = \mathbb{E}[\tensor{A}{_i^j}\beta_j] + \mathbb{E} [\epsilon_i] = \tensor{A}{_i^j}\beta_j \\
+  	\text{var}(y_i) &= \mathbb{E}[(y_i - \mathbb{E}(y_i))^2]
+  	=  	\mathbb{E}[(\tensor{A}{_i^j}\beta_j  + \epsilon_i - \tensor{A}{_i^j}\beta_j)^2]
+  	= \mathbb{E}[\epsilon_i^2] = \text{var}(\epsilon_i) = \sigma^2
+  \end{align}
+  Therefore $y \propto N(\tensor{A}{_i^j}\beta_j, \sigma^2)$ and thus $y$ follows a normal distribution $N(A\beta,\sigma^2)$.
+  \newline
+  The expectation value and variance of the ideal parameters $\tilde{\beta}$ are then given by
+  \begin{align}
+    \mathbb{R}[\tilde{\beta}] &= \mathbb{E}[(A^\top A)^{-1} A^\top y] = (A^\top A)^{-1} A^\top \mathbb{E}[y] = (A^\top A)^{-1} (A^\top A) \, \beta = \beta  \\
+  	\text{var}[\tilde{\beta}] &= \text{var}[(A^\top A)^{-1} A^\top y] = (A^\top A)^{-1} A^\top  \big((A^\top A)^{-1}A^\top\big)^\top \, \text{var}[y^2]\\
+  	&= (A^\top A)^{-1} A^\top A \big((A^\top A)^{\top}\big)^{-1} \, \text{var}[y^2] \\
+  	& = (A^\top A)^{-1} \, \text{var}[y^2] = \sigma^2 (A^\top A)^{-1} 
+  \end{align}
+\end{document}
+

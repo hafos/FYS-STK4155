@@ -1,0 +1,51 @@
+\documentclass[12pt]{scrartcl}
+
+\usepackage{array}
+\usepackage{amsfonts}
+\RequirePackage{natbib}
+\RequirePackage{url}
+\RequirePackage{textcase}
+\RequirePackage{bm}
+\RequirePackage{amsmath}
+\RequirePackage{amssymb}
+\usepackage[latin1]{inputenc}
+\usepackage{textcomp}
+\usepackage{physics}
+\usepackage{graphicx}
+\usepackage{here}
+\usepackage{textcomp}
+\usepackage{dcolumn}
+\RequirePackage{dsfont}			%ZahlenrÃÂ¤ume
+\usepackage{mathtools}
+\usepackage{tensor}
+
+\newcommand{\myfunc}[5]{
+	\begingroup
+	\setlength\arraycolsep{0pt}
+	#1\colon \, \begin{array}[t]{c>{{}}c<{{}}c}
+		#2 & \to & #3 \\ #4 & \mapsto & #5
+	\end{array}
+	\endgroup}
+
+\begin{document}
+We at this point have the following expressions:
+\begin{align}
+	y & = f(x) + \epsilon \\
+	\tilde{y} &= A\beta \\
+	C(A,\beta) &= \frac{1}{n} \sum_{i=0}^{n-1}(y_i-\tilde{y_i})^2 = \mathbb{E}[(y-\tilde{y})^2]
+\end{align}
+With this one can rewrite $\mathbb{E}[(y-\tilde{y})^2]$ as follows:
+\begin{align}
+	\mathbb{E}[(y-\tilde{y})^2] &= \mathbb{E}[(f+\epsilon-\tilde{y})^2] \\
+								&= \mathbb{E}[(f+\epsilon-\tilde{y} + \mathbb{E}[\tilde{y}]- \mathbb{E}[\tilde{y}])^2] \\
+								&= \mathbb{E}\Big[(\mathbb{E}[\tilde{y}]-\tilde{y})^2 + (f+\epsilon-\mathbb{E}[\tilde{y}])^2] \\ &\quad +2\mathbb{E}[-\mathbb{E}[\tilde{y}]^2+\mathbb{E}[\tilde{y}](f+\epsilon) - (f+\epsilon)\tilde{y} + \mathbb{E}[\tilde{y}]\tilde{y}\Big] \\
+								&= \mathbb{E}\Big[(\mathbb{E}[\tilde{y}]-\tilde{y})^2 + f^2 + \epsilon^2 + 2f\epsilon +\mathbb{E}[\tilde{y}]^2 -2(f+\epsilon)\mathbb{E}[\tilde{y}]\Big] \\
+								&= \mathbb{E}[(\tilde{y}^2-\mathbb{E}[\tilde{y}])^2 + (f^2 - 2f\mathbb{E}[\tilde{y}]+\mathbb{E}[\tilde{y}]^2) + \mathbb{E}[\epsilon^2] \\
+								&= \text{var}(\tilde{y}) + (f - \mathbb{E}[\tilde{y}])^2 + \sigma^2 \\
+								&\eqqcolon \text{var}(\tilde{y}) + \text{BIAS}[\tilde{y}] + \sigma^2
+\end{align}
+
+
+
+\end{document}
+
