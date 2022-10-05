@@ -37,7 +37,7 @@ z = np.concatenate(FrankeFunction(x, y),axis=None)
 if noise == True: z += sigma*np.random.randn(len(z))
 
 ##Approximation
-max_order = 20
+max_order = 15
 #bring variables in the right form
 variables=[x,y]
 #the dimension of the array needed is given Complete homogeneous symmetric 

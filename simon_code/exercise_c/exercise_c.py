@@ -20,15 +20,15 @@ noise = True
 n_bootstrap = 100
 
 # Make data.
-x = np.arange(0, 1, 0.025)
-y = np.arange(0, 1, 0.025)
+x = np.arange(0, 1, 0.05)
+y = np.arange(0, 1, 0.05)
 sigma = 0.05
 x, y = np.meshgrid(x,y)
 z = np.concatenate(FrankeFunction(x, y),axis=None)
 if noise == True: z += sigma*np.random.randn(len(z))
 
 ##Approximation
-max_order = 12
+max_order = 14
 #bring variables in the right form
 variables=[x,y]
 #the dimension of the array needed is given Complete homogeneous symmetric polynmial
@@ -59,7 +59,7 @@ for i in range(1,max_order+1):
     MSE_train[i-1] = 1/len(z_train)*np.sum(np.power(z_train-f_approx_train,2))
     for j in range(n_bootstrap+1):
         A_res, z_res = resample(ATrCur, z_train)
-        beta[i-1][:currentnot] = np.linalg.inv(A_res.T @ A_res) @ A_res.T @ z_res
+        beta[i-1][:currentnot] = np.linalg.pinv(A_res.T @ A_res) @ A_res.T @ z_res
         f_approx_test[:,j] = ATeCur @ beta[i-1][beta[i-1] != 0]
     MSE_test[i-1] = np.mean( np.mean((z_test.reshape(-1, 1) - f_approx_test)**2, axis=1, keepdims=True) )
     #Calc BIAS & variance

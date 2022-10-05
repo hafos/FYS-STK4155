@@ -22,7 +22,7 @@ from functions import *
 np.random.seed(2018)
 
 noise = True
-n_bootstrap = 100
+n_bootstrap = 10
 ##kfold
 k=10
 
@@ -35,7 +35,7 @@ z = np.concatenate(FrankeFunction(x, y),axis=None)
 if noise == True: z += sigma*np.random.randn(len(z))
 
 ##Approximation
-max_order = 15
+max_order = 10
 #bring variables in the right form
 variables=[x,y]
 #the dimension of the array needed is given Complete homogeneous symmetric 
