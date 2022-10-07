@@ -1,5 +1,7 @@
 import numpy as np
 
+np.random.seed(2018)
+
 def FrankeFunction(x,y,sigma):
     term1 = 0.75*np.exp(-(0.25*(9*x-2)**2) - 0.25*((9*y-2)**2))
     term2 = 0.75*np.exp(-((9*x+1)**2)/49.0 - 0.1*(9*y+1))
