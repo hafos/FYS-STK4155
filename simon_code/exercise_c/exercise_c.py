@@ -28,7 +28,7 @@ z = np.concatenate(FrankeFunction(x, y),axis=None)
 if noise == True: z += sigma*np.random.randn(len(z))
 
 ##Approximation
-max_order = 14
+max_order = 15
 #bring variables in the right form
 variables=[x,y]
 #the dimension of the array needed is given Complete homogeneous symmetric polynmial
@@ -65,7 +65,10 @@ for i in range(1,max_order+1):
     #Calc BIAS & variance
     BIAS[i-1] = np.mean( (z_test.reshape(-1, 1) - np.mean(f_approx_test, axis=1, keepdims=True))**2 )
     var[i-1] = np.mean( np.var(f_approx_test, axis=1, keepdims=True) )
-    print(MSE_test[i-1]-(BIAS[i-1]+var[i-1]))
+    print("subtrac",MSE_test[i-1]-(BIAS[i-1]+var[i-1]))
+    print("MSE",MSE_test[i-1])
+    print("Bias",BIAS[i-1])
+    print("var",var[i-1])
 
 ##reproduce fig 2.11 of Hastie, Tibshirani, and Friedman
 plt.scatter(np.arange(1, max_order+1, 1.0), MSE_train, label='train', color='orange', s=15)

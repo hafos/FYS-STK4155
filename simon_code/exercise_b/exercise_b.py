@@ -17,7 +17,7 @@ from functions import *
 
 datapoints = 100
 sigma = 0.1
-# Make data.
+# Make data.)
 x = np.random.normal(0,1,datapoints)
 y = np.random.normal(0,1,datapoints)
 
