@@ -41,10 +41,7 @@ z = FrankeFunction(x, y, sigma)
 ##Full designe Matrix
 max_order = 10
 
-rescale = False
-#Need this for the case we do not rescale -> add zero to fapproox
-z_scale = 0
-A_scale = 0
+rescale = True
 
 variables=[x,y]
 numbofterms = sp.special.comb(len(variables) + max_order,max_order,exact=True)
