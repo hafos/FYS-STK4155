@@ -41,7 +41,7 @@ z = FrankeFunction(x, y, sigma)
 ##Full designe Matrix
 max_order = 10
 
-rescale = True
+rescale = False
 #Need this for the case we do not rescale -> add zero to fapproox
 z_scale = 0
 A_scale = 0
@@ -78,13 +78,6 @@ for i in range(1,max_order+1):
             z_train = z[train_index]
             A_test = A_curr[test_index]
             z_test = z[test_index]
-            ##rescaling
-            if rescale == True:
-                A_test  -= np.mean(A_train,axis=0)
-                A_train -= np.mean(A_train,axis=0)
-                z_scale = np.mean(z_train)
-                z_train -= z_scale
-            ##
             RegLasso.fit(A_train,z_train)
             f_approx_test = RegLasso.predict(A_test)
             scores_KFold[j] = np.sum((f_approx_test - z_test)**2)/np.size(f_approx_test)
@@ -112,29 +105,13 @@ for i in range(1,max_order+1):
     ATrCur = A_train[:,0:currentnot]
     ATeCur = A_test[:,0:currentnot]
     for lasso_par in lambdas: 
-        ##rescaling
-        if rescale == True:
-            A_scale = np.mean(ATrCur,axis=0)
-            z_scale = np.mean(z_train)
-        A_res = ATrCur - A_scale
-        ATe_res = ATeCur - A_scale
-        z_res = z_train - z_scale
-        ##
         RegLasso = linear_model.Lasso(lasso_par, fit_intercept = not rescale)
-        RegLasso.fit(A_res,z_res)
+        RegLasso.fit(ATrCur,z_train)
         f_approx_test = np.empty((len(z_test), n_bootstrap+1))
-        f_approx_test[:,0] = RegLasso.predict(ATe_res)
+        f_approx_test[:,0] = RegLasso.predict(ATeCur)
         for j in range(1,n_bootstrap+1):
             A_res, z_res = resample(ATrCur, z_train, random_state = 1)
-            ##rescaling
-            if rescale == True:
-                A_scale = np.mean(A_res,axis=0)
-                z_scale = np.mean(z_res)
-            A_res -= A_scale
-            ATe_res = ATeCur - A_scale
-            z_res -= z_scale
-            ##
-            f_approx_test[:,j] = RegLasso.predict(ATe_res)
+            f_approx_test[:,j] = RegLasso.predict(ATeCur)
         MSE_bs[k,i-1] = np.mean( np.mean((z_test.reshape(-1, 1) - f_approx_test)**2, axis=1, keepdims=True))
         k += 1
 
