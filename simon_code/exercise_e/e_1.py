@@ -46,6 +46,7 @@ max_order = 10
 rescale = True
 #Need this for the case we do not rescale -> add zero to fapproox
 z_scale = 0
+A_scale = 0
 
 variables=[x,y]
 numbofterms = sp.special.comb(len(variables) + max_order,max_order,exact=True)
@@ -77,11 +78,13 @@ for i in range(1,max_order+1):
             z_train = z[train_index]
             A_test = A_curr[test_index]
             z_test = z[test_index]
+            ##rescale
             if rescale == True:
                 A_test  -= np.mean(A_train,axis=0)
                 A_train -= np.mean(A_train,axis=0)
                 z_scale = np.mean(z_train)
                 z_train -= z_scale
+            ##
             beta = np.linalg.pinv(A_train.T @ A_train + ridge_par*np.identity(A_train.T.shape[0])) 
             beta = beta @ A_train.T @ z_train
             f_approx_test= A_test @ beta + z_scale
@@ -103,11 +106,6 @@ ax.add_patch(plt.Rectangle((min_Kfold_ind[0], min_Kfold_ind[1]), 1, 1, fc='none'
 
 ##Bootstrap
 A_train, A_test, z_train, z_test = train_test_split(A, z, test_size=0.2)
-if rescale == True:
-    A_test -= np.mean(A_train,axis=0)
-    A_train -= np.mean(A_train,axis=0)
-    z_scale = np.mean(z_train)
-    z_train -= z_scale
 
 for i in range(1,max_order+1):
     k = 0
@@ -115,15 +113,31 @@ for i in range(1,max_order+1):
     ATrCur = A_train[:,0:currentnot]
     ATeCur = A_test[:,0:currentnot]
     for ridge_par in lambdas: 
-        beta = np.linalg.pinv(ATrCur.T @ ATrCur + ridge_par*np.identity(ATrCur.T.shape[0])) 
-        beta = beta @ ATrCur.T @ z_train
+        ##rescaling
+        if rescale == True:
+            A_scale = np.mean(ATrCur,axis=0)
+            z_scale = np.mean(z_train)
+        A_res = ATrCur - A_scale
+        ATe_res = ATeCur - A_scale
+        z_res = z_train - z_scale
+        ##
+        beta = np.linalg.pinv(A_res.T @ A_res + ridge_par*np.identity(A_res.T.shape[0])) 
+        beta = beta @ A_res.T @ z_res
         f_approx_test = np.empty((len(z_test), n_bootstrap+1))
-        f_approx_test[:,0] = ATeCur @ beta + z_scale
+        f_approx_test[:,0] = ATe_res @ beta + z_scale
         for j in range(1,n_bootstrap+1):
             A_res, z_res = resample(ATrCur, z_train, random_state = 1)
+            ##rescaling
+            if rescale == True:
+                A_scale = np.mean(A_res,axis=0)
+                z_scale = np.mean(z_res)
+            A_res -= A_scale
+            ATe_res = ATeCur - A_scale
+            z_res -= z_scale
+            ##
             beta = np.linalg.pinv(A_res.T @ A_res + ridge_par*np.identity(A_res.T.shape[0]))
             beta = beta @ A_res.T @ z_res
-            f_approx_test[:,j] = ATeCur @ beta + z_scale
+            f_approx_test[:,j] = ATe_res @ beta + z_scale
         MSE_bs[k,i-1] = np.mean( np.mean((z_test.reshape(-1, 1) - f_approx_test)**2, axis=1, keepdims=True))
         k += 1
 
