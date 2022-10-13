@@ -6,14 +6,6 @@ Created on Wed Oct 12 14:53:36 2022
 @author: simon
 """
 
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Oct  5 14:40:08 2022
-
-@author: simon
-"""
-
 import numpy as np
 import scipy as sp
 import matplotlib.pyplot as plt
@@ -56,7 +48,7 @@ for i in range(1,max_order+1):
     k = 0
     for ridge_par in lambdas: 
         fnc.param = ridge_par
-        MSE_Kfold[k][i-1] = fnc.crossval(kfold,A_curr,fval,fnc.Lasso)
+        MSE_Kfold[k,i-1] = fnc.crossval(kfold,A_curr,fval,fnc.Lasso)
         k += 1
  
 min_Kfold_ind = divmod(MSE_Kfold.argmin(), MSE_Kfold.shape[1])
