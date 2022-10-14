@@ -43,8 +43,10 @@ MSE_Kfold = np.zeros((len(lambdas),max_order))
 
 
 for i in range(1,max_order+1):
+    #current number of tearms via complete homogeneous symmetric polynomials
     currentnot = sp.special.comb(len(variables) + i,i,exact=True)
-    A_curr = A[:,0:currentnot]
+    #select only the terms of the full desinge matrix needed for the current order
+    A_curr = A[:,0:currentnot] + 0
     k = 0
     for ridge_par in lambdas: 
         fnc.param = ridge_par

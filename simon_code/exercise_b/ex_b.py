@@ -42,8 +42,8 @@ for i in range(1,max_order+1):
     #current number of tearms also via complete homogeneous symmetric polynomials
     currentnot = sp.special.comb(len(variables) + i,i,exact=True)
     #select only the terms of the full desinge matrix needed for the current order
-    ATrCur = A_train[:,0:currentnot]
-    ATeCur = A_test[:,0:currentnot]
+    ATrCur = A_train[:,0:currentnot] + 0 
+    ATeCur = A_test[:,0:currentnot] + 0
     #calc both errors and store the betas in the process
     beta[i-1][:currentnot] = fnc.OLS(ATrCur,f_train)
     fte_aval = ATeCur @ beta[i-1][~np.isnan(beta[i-1])]

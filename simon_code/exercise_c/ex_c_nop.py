@@ -49,8 +49,8 @@ for points in datapoints:
         #current number of tearms also via complete homogeneous symmetric polynomials
         currentnot = sp.special.comb(len(variables) + i,i,exact=True)
         #select only the terms of the full desinge matrix needed for the current order
-        ATrCur = A_train[:,0:currentnot]
-        ATeCur = A_test[:,0:currentnot]
+        ATrCur = A_train[:,0:currentnot] + 0
+        ATeCur = A_test[:,0:currentnot] + 0
         MSE_nop[k,i] = fnc.bootstrap(n_bootstrap,ATrCur,ATeCur,f_train,f_test,fnc.OLS)[0]
         i += 1
     k += 1

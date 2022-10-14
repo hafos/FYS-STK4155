@@ -39,7 +39,7 @@ MSE_Kfold = np.zeros((len(kfold),max_order))
 
 for i in range(1,max_order+1):
     currentnot = sp.special.comb(len(variables) + i,i,exact=True)
-    A_curr = A[:,0:currentnot]
+    A_curr = A[:,0:currentnot] + 0
     k = 0
     for folds in kfold: 
         MSE_Kfold[k,i-1] = fnc.crossval(folds,A_curr,fval,fnc.OLS)

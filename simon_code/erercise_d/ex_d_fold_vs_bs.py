@@ -43,7 +43,7 @@ MSE_bs = np.zeros(max_order)
 
 for i in range(1,max_order+1):
     currentnot = sp.special.comb(len(variables) + i,i,exact=True)
-    A_curr = A[:,0:currentnot] 
+    A_curr = A[:,0:currentnot] + 0
     MSE_Kfold[i-1] = fnc.crossval(kfold,A_curr,fval,fnc.OLS)
     
 ##Bootstrap
@@ -56,8 +56,8 @@ for i in range(1,max_order+1):
     #current number of tearms also via complete homogeneous symmetric polynomials
     currentnot = sp.special.comb(len(variables) + i,i,exact=True)
     #select only the terms of the full desinge matrix needed for the current order
-    ATrCur = A_train[:,0:currentnot]
-    ATeCur = A_test[:,0:currentnot]
+    ATrCur = A_train[:,0:currentnot] + 0
+    ATeCur = A_test[:,0:currentnot] + 0
     MSE_bs[i-1] = fnc.bootstrap(n_bootstrap,ATrCur,ATeCur,f_train,f_test,fnc.OLS)[0]
     
 #Bootstrap

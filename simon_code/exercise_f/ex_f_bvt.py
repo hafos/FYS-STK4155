@@ -22,7 +22,7 @@ sigma = 0.1
 #Number of x & y points, total amount of datapoints is this squared
 points = 30
 #Programm will fit a polnyomial up to this order
-max_order = 13
+max_order = 14
 #number of Folds
 n_bootstrap = 10
 
@@ -45,11 +45,11 @@ BIAS = np.zeros((len(lambdas),max_order))
 var = np.zeros((len(lambdas),max_order))
 
 for i in range(1,max_order+1):
-    #current number of tearms also via complete homogeneous symmetric polynomials
+    #current number of tearms via complete homogeneous symmetric polynomials
     currentnot = sp.special.comb(len(variables) + i,i,exact=True)
     #select only the terms of the full desinge matrix needed for the current order
-    ATrCur = A_train[:,0:currentnot]
-    ATeCur = A_test[:,0:currentnot]
+    ATrCur = A_train[:,0:currentnot] + 0
+    ATeCur = A_test[:,0:currentnot] + 0
     k = 0
     for lasso_par in lambdas: 
         fnc.param = lasso_par
