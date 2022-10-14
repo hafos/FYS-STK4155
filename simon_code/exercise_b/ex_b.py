@@ -32,8 +32,10 @@ A = fnc.DM(variables,max_order)
 #the dimension of the array needed is given complete homogeneous symmetric polynomial
 numbofterms = sp.special.comb(len(variables) + max_order,max_order,exact=True)
 beta = np.full((max_order, numbofterms), np.nan)
-MSE = np.zeros(max_order)
-R2 = np.zeros(max_order)
+MSE_test = np.zeros(max_order)
+MSE_train = np.zeros(max_order)
+R2_test = np.zeros(max_order)
+R2_train = np.zeros(max_order)
 
 #split data into test & train
 A_train, A_test, f_train, f_test = train_test_split(A, fval, test_size=0.2, random_state = 1)
@@ -47,13 +49,18 @@ for i in range(1,max_order+1):
     #calc both errors and store the betas in the process
     beta[i-1][:currentnot] = fnc.OLS(ATrCur,f_train)
     fte_aval = ATeCur @ beta[i-1][~np.isnan(beta[i-1])]
-    MSE[i-1] = np.mean(np.power(f_test-fte_aval,2))
-    R2[i-1] = fnc.R2(f_test,fte_aval)
+    ftr_aval = ATrCur @ beta[i-1][~np.isnan(beta[i-1])]
+    MSE_test[i-1] = np.mean(np.power(f_test-fte_aval,2))
+    MSE_train[i-1] = np.mean(np.power(f_train-ftr_aval,2))
+    R2_test[i-1] = fnc.R2(f_test,fte_aval)
+    R2_train[i-1] = fnc.R2(f_train,ftr_aval)
 
-plt.scatter(np.arange(1, max_order+1, 1.0), MSE, label='Data', color='orange', s=15)
+plt.scatter(np.arange(1, max_order+1, 1.0), MSE_test, label='test', color='orange', s=15)
+plt.scatter(np.arange(1, max_order+1, 1.0), MSE_train, label='train', color='red', s=15)
 plt.legend()
 plt.show()
 
-plt.scatter(np.arange(1, max_order+1, 1.0), R2, label='Data', color='blue', s=15)
+plt.scatter(np.arange(1, max_order+1, 1.0), R2_test, label='test', color='blue', s=15)
+plt.scatter(np.arange(1, max_order+1, 1.0), R2_train, label='train', color='green', s=15)
 plt.legend()
 plt.show()
