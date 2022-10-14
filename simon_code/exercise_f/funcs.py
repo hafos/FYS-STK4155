@@ -25,17 +25,19 @@ class functions:
         x = np.random.rand(points)
         y = np.random.rand(points)
         x, y = np.meshgrid(x,y)
-        fval = np.concatenate(func(x,y),axis=None) + sigma*np.random.randn(len(x)*len(y))
+        fval = np.concatenate(func(x,y,sigma),axis=None)
         return x,y,fval
     
     #Defines the FrankeFunction
-    def FrankeFunction(x,y):
+    def FrankeFunction(x,y,sigma):
+        np.random.seed(1999)
         #ensures that we get the same data in loops
         term1 = 0.75*np.exp(-(0.25*(9*x-2)**2) - 0.25*((9*y-2)**2))
         term2 = 0.75*np.exp(-((9*x+1)**2)/49.0 - 0.1*(9*y+1))
         term3 = 0.5*np.exp(-(9*x-7)**2/4.0 - 0.25*((9*y-3)**2))
         term4 = -0.2*np.exp(-(9*x-4)**2 - (9*y-7)**2)
         values = term1 + term2 + term3 + term4 
+        values += sigma*np.random.randn(len(x),len(y))
         return values
    
     #Designe Matrix
