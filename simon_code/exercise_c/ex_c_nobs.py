@@ -10,12 +10,10 @@ from funcs import functions as fnc
 
 ##global Parameters
 
-np.random.seed(2018)
-
 #IF sigma is zero there is no noise in the Model
 sigma = 0.1
 #Number of x & y points, total amount of datapoints is this squared
-points = 15
+points = 20
 #Programm will fit a polnyomial between min and max order
 min_order = 1
 max_order = 10
