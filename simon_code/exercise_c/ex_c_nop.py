@@ -20,8 +20,6 @@ from funcs import functions as fnc
 
 #IF sigma is zero there is no noise in the Model
 sigma = 0.1
-#Number of x & y points, total amount of datapoints is this squared
-points = 8
 #Programm will fit a polnyomial between min and max order
 min_order = 5
 max_order = 15
