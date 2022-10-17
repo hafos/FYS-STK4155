@@ -296,60 +296,60 @@ class LinearRegression:
 
 if __name__ == '__main__':
 	import matplotlib.pylab as pylab
-	params = {'legend.fontsize': 'x-large',
-			'figure.figsize': (15, 5),
-			'axes.labelsize': 'x-large',
-			'axes.titlesize':'x-large',
-			'xtick.labelsize':'x-large',
-			'ytick.labelsize':'x-large'}
+	params = {'legend.fontsize': 25,
+			'figure.figsize': (12, 9),
+			'axes.labelsize': 25,
+			'axes.titlesize': 25,
+			'xtick.labelsize': 'x-large',
+			'ytick.labelsize': 'x-large'}
 	pylab.rcParams.update(params)
 
 	""" Task b) """
-	# LR_b = LinearRegression(order=5, scale=True, points=40)
-	# # LR_b.plot_franke_function()
-	# LR_b.execute_regression(method=LR_b.ols)
-	# poly_degrees = np.arange(1, 6)
-	# # # # print(var[0][0])
-	# # # # print(np.shape(LR_b.var[-1][1][0]))
-	# # # # print(len(betas[-1]))
-	# fig, ax = plt.subplots(nrows=2, sharex=True, figsize=(12,9))
-	# ax[0].plot(poly_degrees, LR_b.MSE_test,  label='MSE test',  color='orange', linestyle='--')
-	# ax[0].plot(poly_degrees, LR_b.MSE_train, label='MSE train', color='orange')
-	# ax[0].legend()
-	# ax[0].set(ylabel="MSE score")
-	# ax[1].plot(poly_degrees, LR_b.R2_test,   label=r'R$^2$ test', color='b', linestyle='--')
-	# ax[1].plot(poly_degrees, LR_b.R2_train,  label=r'R$^2$ train', color='b')
-	# ax[1].set(ylabel=r"R$^2$ score")
-	# ax[1].legend()
-	# plt.xlabel('Polynomial degree')
-	# fig.tight_layout()
-	# # plt.show()
-	# plt.savefig("figures/OLS_scores.pdf")
+	LR_b = LinearRegression(order=5, scale=True, points=40)
+	# LR_b.plot_franke_function()
+	LR_b.execute_regression(method=LR_b.ols)
+	poly_degrees = np.arange(1, 6)
+	# # # print(var[0][0])
+	# # # print(np.shape(LR_b.var[-1][1][0]))
+	# # # print(len(betas[-1]))
+	fig, ax = plt.subplots(nrows=2, sharex=True, figsize=(12,9))
+	ax[0].plot(poly_degrees, LR_b.MSE_test,  label='MSE test',  color='orange', linestyle='--')
+	ax[0].plot(poly_degrees, LR_b.MSE_train, label='MSE train', color='orange')
+	ax[0].legend()
+	ax[0].set(ylabel="MSE score")
+	ax[1].plot(poly_degrees, LR_b.R2_test,   label=r'R$^2$ test', color='b', linestyle='--')
+	ax[1].plot(poly_degrees, LR_b.R2_train,  label=r'R$^2$ train', color='b')
+	ax[1].set(ylabel=r"R$^2$ score")
+	ax[1].legend()
+	plt.xlabel('Polynomial degree')
+	fig.tight_layout()
+	# plt.show()
+	plt.savefig("figures/OLS_scores.pdf")
 
-	# ## Beta coefficients
-	# betas = LR_b.beta
-	# var = LR_b.var[::-1]
-	# plt.figure(figsize=(12, 9))
-	# # # print(np.shape(LR_b.var))
-	# # # print(LR_b.var[-1])
-	# ax = plt.axes()
-	# color = plt.cm.viridis(np.linspace(0.9, 0,11))
-	# ax.set_prop_cycle(plt.cycler('color', color))#["axes.prop_cycle"] = plt.cycler('color', color)
-	# ax.set_xticks([i for i in range(1, len(betas[-1])+1)])
-	# for i, beta in enumerate(betas[::-1]):
-	# 	coefficients = beta[~(np.isnan(beta))]
-	# 	beta_indexes = np.arange(1, len(coefficients)+1)
-	# 	plt.errorbar(beta_indexes, coefficients, yerr=np.sqrt(var[i]), marker='o', linestyle='--', capsize=2, label='d = %d' % (5-i))
-	# """ We need to figure out what to do with the scaling.
-	# 	Decide wether np.sqrt of variance as error bars or just the variance. 
-	# 	  Also decide wether we have split's random_state be the same as random seed or set it 
-	# 	  as something else as we have so far """
-	# plt.xlabel(r'$\beta$ coefficient values')
-	# #plt.ylabel(r'score')
-	# plt.tight_layout()
-	# plt.legend()
-	# # plt.show()
-	# plt.savefig("figures/OLS_beta.pdf")
+	## Beta coefficients
+	betas = LR_b.beta
+	var = LR_b.var[::-1]
+	plt.figure(figsize=(12, 9))
+	# # print(np.shape(LR_b.var))
+	# # print(LR_b.var[-1])
+	ax = plt.axes()
+	color = plt.cm.viridis(np.linspace(0.9, 0,11))
+	ax.set_prop_cycle(plt.cycler('color', color))#["axes.prop_cycle"] = plt.cycler('color', color)
+	ax.set_xticks([i for i in range(1, len(betas[-1])+1)])
+	for i, beta in enumerate(betas[::-1]):
+		coefficients = beta[~(np.isnan(beta))]
+		beta_indexes = np.arange(1, len(coefficients)+1)
+		plt.errorbar(beta_indexes, coefficients, yerr=np.sqrt(var[i]), marker='o', linestyle='--', capsize=2, label='d = %d' % (5-i))
+	""" We need to figure out what to do with the scaling.
+		Decide wether np.sqrt of variance as error bars or just the variance. 
+		  Also decide wether we have split's random_state be the same as random seed or set it 
+		  as something else as we have so far """
+	plt.xlabel(r'$\beta$ coefficient values')
+	#plt.ylabel(r'score')
+	plt.tight_layout()
+	plt.legend()
+	# plt.show()
+	plt.savefig("figures/OLS_beta.pdf")
 
 	""" Task c) """
 	order = 12
@@ -385,27 +385,27 @@ if __name__ == '__main__':
 	""" Task d) """
 	""" Fails when scale == True, need to fix scaling, remove from crossval func?
 		Add cross_val_score from sklearn to compare against?"""
-	# order = 12
-	# LR_d = LinearRegression(order=order, points=20, scale=True)
-	# kfolds = [i for i in range(5, 11)]
-	# # print(kfolds, np.type(kfolds)) 
-	# LR_d.execute_regression(method=LR_d.ols, bootstrap=True, n=400)
-	# LR_d.execute_regression(method=LR_d.ols, crossval=True, kfolds=kfolds)
-	# poly_degrees = np.arange(1, order+1)
-	# # print(poly_degrees, type(poly_degrees))
-	# fig, ax = plt.subplots(figsize=(12, 9))
-	# #plt.figure(figsize=(12, 9))
-	# plt.plot(poly_degrees, LR_d.MSE_train, label='bootstrap train', color='green', linestyle='--')
-	# plt.plot(poly_degrees, LR_d.MSE_test,  label='bootstrap test', color='green')
-	# color = plt.cm.cool(np.linspace(0.9, 0,11))
-	# ax.set_prop_cycle(plt.cycler('color', color))#["axes.prop_cycle"] = plt.cycler('color', color)
-	# for k in range(len(kfolds)):
-	# 	plt.plot(poly_degrees, LR_d.MSE_CV[k], label=f'k = {kfolds[k]}')
-	# plt.legend(loc='upper center')
-	# plt.xlabel("Polynomial degree")
-	# plt.ylabel("MSE score")
-	# plt.savefig("figures/OLS_crossval.pdf")
-	# # plt.show()
+	order = 12
+	LR_d = LinearRegression(order=order, points=20, scale=True)
+	kfolds = [i for i in range(5, 11)]
+	# print(kfolds, np.type(kfolds)) 
+	LR_d.execute_regression(method=LR_d.ols, bootstrap=True, n=400)
+	LR_d.execute_regression(method=LR_d.ols, crossval=True, kfolds=kfolds)
+	poly_degrees = np.arange(1, order+1)
+	# print(poly_degrees, type(poly_degrees))
+	fig, ax = plt.subplots(figsize=(12, 9))
+	#plt.figure(figsize=(12, 9))
+	plt.plot(poly_degrees, LR_d.MSE_train, label='bootstrap train', color='green', linestyle='--')
+	plt.plot(poly_degrees, LR_d.MSE_test,  label='bootstrap test', color='green')
+	color = plt.cm.cool(np.linspace(0.9, 0,11))
+	ax.set_prop_cycle(plt.cycler('color', color))#["axes.prop_cycle"] = plt.cycler('color', color)
+	for k in range(len(kfolds)):
+		plt.plot(poly_degrees, LR_d.MSE_CV[k], label=f'k = {kfolds[k]}')
+	plt.legend(loc='upper center')
+	plt.xlabel("Polynomial degree")
+	plt.ylabel("MSE score")
+	plt.savefig("figures/OLS_crossval.pdf")
+	# plt.show()
 	
 	
 
