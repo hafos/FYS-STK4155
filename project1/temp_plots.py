@@ -305,82 +305,82 @@ if __name__ == '__main__':
 	pylab.rcParams.update(params)
 
 	""" Task b) """
-	LR_b = LinearRegression(order=5, scale=True, points=40)
-	# LR_b.plot_franke_function()
-	LR_b.execute_regression(method=LR_b.ols)
-	poly_degrees = np.arange(1, 6)
+	# LR_b = LinearRegression(order=5, scale=True, points=40)
+	# # LR_b.plot_franke_function()
+	# LR_b.execute_regression(method=LR_b.ols)
+	# poly_degrees = np.arange(1, 6)
 	# # # print(var[0][0])
 	# # # print(np.shape(LR_b.var[-1][1][0]))
 	# # # print(len(betas[-1]))
-	fig, ax = plt.subplots(nrows=2, sharex=True, figsize=(12,9))
-	ax[0].plot(poly_degrees, LR_b.MSE_test,  label='MSE test',  color='orange', linestyle='--')
-	ax[0].plot(poly_degrees, LR_b.MSE_train, label='MSE train', color='orange')
-	ax[0].legend()
-	ax[0].set(ylabel="MSE score")
-	ax[1].plot(poly_degrees, LR_b.R2_test,   label=r'R$^2$ test', color='b', linestyle='--')
-	ax[1].plot(poly_degrees, LR_b.R2_train,  label=r'R$^2$ train', color='b')
-	ax[1].set(ylabel=r"R$^2$ score")
-	ax[1].legend()
-	plt.xlabel('Polynomial degree')
-	fig.tight_layout()
-	# plt.show()
-	plt.savefig("figures/OLS_scores.pdf")
+	# fig, ax = plt.subplots(nrows=2, sharex=True, figsize=(12,9))
+	# ax[0].plot(poly_degrees, LR_b.MSE_test,  label='MSE test',  color='orange', linestyle='--')
+	# ax[0].plot(poly_degrees, LR_b.MSE_train, label='MSE train', color='orange')
+	# ax[0].legend()
+	# ax[0].set(ylabel="MSE score")
+	# ax[1].plot(poly_degrees, LR_b.R2_test,   label=r'R$^2$ test', color='b', linestyle='--')
+	# ax[1].plot(poly_degrees, LR_b.R2_train,  label=r'R$^2$ train', color='b')
+	# ax[1].set(ylabel=r"R$^2$ score")
+	# ax[1].legend()
+	# plt.xlabel('Polynomial degree')
+	# fig.tight_layout()
+	# # plt.show()
+	# plt.savefig("figures/OLS_scores.pdf")
 
-	## Beta coefficients
-	betas = LR_b.beta
-	var = LR_b.var[::-1]
-	plt.figure(figsize=(12, 9))
-	# # print(np.shape(LR_b.var))
-	# # print(LR_b.var[-1])
-	ax = plt.axes()
-	color = plt.cm.viridis(np.linspace(0.9, 0,11))
-	ax.set_prop_cycle(plt.cycler('color', color))#["axes.prop_cycle"] = plt.cycler('color', color)
-	ax.set_xticks([i for i in range(1, len(betas[-1])+1)])
-	for i, beta in enumerate(betas[::-1]):
-		coefficients = beta[~(np.isnan(beta))]
-		beta_indexes = np.arange(1, len(coefficients)+1)
-		plt.errorbar(beta_indexes, coefficients, yerr=np.sqrt(var[i]), marker='o', linestyle='--', capsize=2, label='d = %d' % (5-i))
-	""" We need to figure out what to do with the scaling.
-		Decide wether np.sqrt of variance as error bars or just the variance. 
-		  Also decide wether we have split's random_state be the same as random seed or set it 
-		  as something else as we have so far """
-	plt.xlabel(r'$\beta$ coefficient values')
-	#plt.ylabel(r'score')
-	plt.tight_layout()
-	plt.legend()
-	# plt.show()
-	plt.savefig("figures/OLS_beta.pdf")
+	# ## Beta coefficients
+	# betas = LR_b.beta
+	# var = LR_b.var[::-1]
+	# plt.figure(figsize=(12, 9))
+	# # # print(np.shape(LR_b.var))
+	# # # print(LR_b.var[-1])
+	# ax = plt.axes()
+	# color = plt.cm.viridis(np.linspace(0.9, 0,11))
+	# ax.set_prop_cycle(plt.cycler('color', color))#["axes.prop_cycle"] = plt.cycler('color', color)
+	# ax.set_xticks([i for i in range(1, len(betas[-1])+1)])
+	# for i, beta in enumerate(betas[::-1]):
+	# 	coefficients = beta[~(np.isnan(beta))]
+	# 	beta_indexes = np.arange(1, len(coefficients)+1)
+	# 	plt.errorbar(beta_indexes, coefficients, yerr=np.sqrt(var[i]), marker='o', linestyle='--', capsize=2, label='d = %d' % (5-i))
+	# """ We need to figure out what to do with the scaling.
+	# 	Decide wether np.sqrt of variance as error bars or just the variance. 
+	# 	  Also decide wether we have split's random_state be the same as random seed or set it 
+	# 	  as something else as we have so far """
+	# plt.xlabel(r'$\beta$ coefficient values')
+	# #plt.ylabel(r'score')
+	# plt.tight_layout()
+	# plt.legend()
+	# # plt.show()
+	# plt.savefig("figures/OLS_beta.pdf")
 
 	""" Task c) """
-	order = 12
-	LR_c = LinearRegression(order=order, points=20, sigma=0.1, scale=True)
-	# LR_c.plot_franke_function()
-	# # print(LR_c.scale)
-	LR_c.execute_regression(method=LR_c.ols, bootstrap=True, n=400)
-	poly_degrees = np.arange(1, order+1)
-	# print(LR_c.MSE_test)
-	# print(LR_c.var)
+	# order = 12
+	# LR_c = LinearRegression(order=order, points=20, sigma=0.1, scale=True)
+	# # LR_c.plot_franke_function()
+	# # # print(LR_c.scale)
+	# LR_c.execute_regression(method=LR_c.ols, bootstrap=True, n=400)
+	# poly_degrees = np.arange(1, order+1)
+	# # print(LR_c.MSE_test)
+	# # print(LR_c.var)
 
-	plt.figure(figsize=(12, 9))
-	plt.plot(poly_degrees, LR_c.MSE_train, label='train', color='orange', linestyle='--')
-	plt.plot(poly_degrees, LR_c.MSE_test,  label='test',  color='orange')
-	plt.legend()
-	plt.tight_layout()
-	plt.xlabel("Polynomial degree")
-	plt.ylabel("MSE score")
-	# plt.show()
-	plt.savefig("figures/OLS_bootstrap.pdf")
+	# plt.figure(figsize=(12, 9))
+	# plt.plot(poly_degrees, LR_c.MSE_train, label='train', color='orange', linestyle='--')
+	# plt.plot(poly_degrees, LR_c.MSE_test,  label='test',  color='orange')
+	# plt.legend()
+	# plt.tight_layout()
+	# plt.xlabel("Polynomial degree")
+	# plt.ylabel("MSE score")
+	# # plt.show()
+	# plt.savefig("figures/OLS_bootstrap.pdf")
 
-	plt.figure(figsize=(12, 9))
-	plt.plot(poly_degrees, LR_c.BIAS,     label='BIAS',     color='red')#, s=15)
-	plt.plot(poly_degrees, LR_c.MSE_test, label='MSE_test', color='orange')#, s=15)
-	plt.plot(poly_degrees, LR_c.var,      label='var',      color='green')#, s=15)     
-	plt.legend()
-	plt.tight_layout()
-	plt.xlabel("Polynomial degree")
-	plt.ylabel("MSE score")
-	# plt.show()
-	plt.savefig("figures/OLS_biasvar.pdf")
+	# plt.figure(figsize=(12, 9))
+	# plt.plot(poly_degrees, LR_c.BIAS,     label='BIAS',     color='red')#, s=15)
+	# plt.plot(poly_degrees, LR_c.MSE_test, label='MSE_test', color='orange')#, s=15)
+	# plt.plot(poly_degrees, LR_c.var,      label='var',      color='green')#, s=15)     
+	# plt.legend()
+	# plt.tight_layout()
+	# plt.xlabel("Polynomial degree")
+	# plt.ylabel("MSE score")
+	# # plt.show()
+	# plt.savefig("figures/OLS_biasvar.pdf")
 
 	""" Task d) """
 	""" Fails when scale == True, need to fix scaling, remove from crossval func?
@@ -404,6 +404,7 @@ if __name__ == '__main__':
 	plt.legend(loc='upper center')
 	plt.xlabel("Polynomial degree")
 	plt.ylabel("MSE score")
+	plt.tight_layout()
 	plt.savefig("figures/OLS_crossval.pdf")
 	# plt.show()
 	
