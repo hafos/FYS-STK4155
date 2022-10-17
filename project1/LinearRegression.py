@@ -1,3 +1,4 @@
+from audioop import cross
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
@@ -142,7 +143,10 @@ class LinearRegression:
 		return beta
 
 	def lasso(self, X_train, z_train, hyperparam=0):
-		lasso_regression = linear_model.Lasso(alpha=hyperparam, fit_intercept=False)
+		if hasattr(self, 'hyperparam'):
+			hyperparam = self.hyperparam
+		# print(hyperparam)
+		lasso_regression = linear_model.Lasso(alpha=hyperparam, max_iter=int(1e6), tol=3e-2, fit_intercept=False)
 		lasso_regression.fit(X_train, z_train)
 		beta = lasso_regression.coef_
 		return beta
@@ -212,13 +216,18 @@ class LinearRegression:
 			z_test /= np.std(z_test)
 			# self.scaling(z_train)
 			# z_test = self.scaling(z_test)
-		if crossval == True:
+		if crossval == True and hyperparams == 0:
 			self.MSE_CV = np.zeros((len(kfolds), order))
+		elif crossval == True and hyperparams != 0:
+			self.MSE_crossval = np.zeros((len(hyperparams), order))
 		if bootstrap == True and hyperparams != 0:
-			self.MSE_ridge = np.zeros((len(hyperparams), order))
-			self.hyperparam = 0
+			self.MSE_bootstrap = np.zeros((len(hyperparams), order))
+			self.BIAS_bootstrap = np.zeros((len(hyperparams), order)) # For BVT analysis
+			self.var_bootstrap = np.zeros((len(hyperparams), order))  # For BVT analysis
+			self.hyperparam = hyperparams[0]
 
 		for i in range(1, self.order+1):
+			print(f'Computing for order: {i}' )
 			# current number of terms in polynomial of order given as complete homogeneous symmetric
 			current_n_terms = comb(len(self.dataset) + i, i, exact=True)
 			#select only the terms of the full design matrix needed for the current order polynomial
@@ -232,34 +241,44 @@ class LinearRegression:
 				# if self.scale == True:
 				# 	X_train_current = self.scaling(X_train_current)
 				# 	z_scale = np.mean(z_train)
-				beta = method(X_train_current, z_train - z_scale)
-				z_train_tilde = X_train_current @ beta + z_scale
+				# beta = method(X_train_current, z_train - z_scale)
+				# z_train_tilde = X_train_current @ beta + z_scale
 
 				X_train_current = X_train[:, 0:current_n_terms] + 0
 				X_test_current =  X_test[:, 0:current_n_terms] + 0
 				#Calcuate the errors
 				if bootstrap == True and hyperparams == 0:
+					beta = method(X_train_current, z_train - z_scale)
+					z_train_tilde = X_train_current @ beta + z_scale
 					self.MSE_test[i-1], z_test_tilde = self.bootstrap(X_train_current, X_test_current, z_train, z_test, method, n=n)
+					self.MSE_train[i-1] = np.mean(np.power(z_train - z_train_tilde, 2))
+					self.BIAS[i-1] = np.mean((z_test.reshape(-1, 1) - np.mean(z_test_tilde, axis=1, keepdims=True))**2 )
+					self.var[i-1] = np.mean(np.var(z_test_tilde, axis=1, keepdims=True) )
 				elif bootstrap == True and hyperparams != 0:
-					print('hihi')
 					k = 0
 					for hyperparam in hyperparams:
 						self.hyperparam = hyperparam
-						self.MSE_ridge[k, i-1], z_test_tilde = self.bootstrap(X_train_current, X_test_current, z_train, z_test, method, n=n)
+						self.MSE_bootstrap[k, i-1], z_test_tilde = self.bootstrap(X_train_current, X_test_current, z_train, z_test, method, n=n)
+						self.BIAS_bootstrap[k, i-1] = np.mean((z_test.reshape(-1, 1) - np.mean(z_test_tilde, axis=1, keepdims=True))**2 )
+						self.var_bootstrap[k, i-1] = np.mean(np.var(z_test_tilde, axis=1, keepdims=True) )
 						k += 1
-
-				self.MSE_train[i-1] = np.mean(np.power(z_train - z_train_tilde, 2))
-				self.BIAS[i-1] = np.mean((z_test.reshape(-1, 1) - np.mean(z_test_tilde, axis=1, keepdims=True))**2 )
-				self.var[i-1] = np.mean(np.var(z_test_tilde, axis=1, keepdims=True) )
-				# print(self.MSE_test, i)
-				# print(f"MSE - BIAS + var {(self.MSE_test[i-1] - (self.BIAS[i-1] + self.var[i-1]))}")
+					# print(self.MSE_test, i)
+					# print(f"MSE - BIAS + var {(self.MSE_test[i-1] - (self.BIAS[i-1] + self.var[i-1]))}")
 			elif crossval == True:
-				X_curr = self.X[:,0:current_n_terms] + 0
-				k = 0
-				for folds in kfolds:
-					# print(folds, type(folds)) 
-					self.MSE_CV[k,i-1] = self.crossval(X_curr, self.z, method, folds)
-					k += 1
+				X_curr = self.X[:, 0:current_n_terms] + 0
+				if crossval == True and hyperparams == 0:
+					k = 0
+					for folds in kfolds:
+						# print(folds, type(folds)) 
+						self.MSE_CV[k, i-1] = self.crossval(X_curr, self.z, method, folds)
+						k += 1
+				elif crossval == True and hyperparams != 0:
+					k = 0
+					for hyperparam in hyperparams:
+						self.hyperparam = hyperparam
+						self.MSE_crossval[k, i-1] = self.crossval(X_curr, self.z, method, folds=kfolds)
+						k += 1
+					
 			else:
 				#calc both errors and store the betas in the process
 				# print(np.shape(np.linalg.pinv(X_train_current.T @ X_train) @ X_train_current.T @ z_train), np.shape(X_train_current.T), np.shape(z_train))
@@ -361,7 +380,7 @@ if __name__ == '__main__':
 	""" Fails when scale == True, need to fix scaling, remove from crossval func?
 		Add cross_val_score from sklearn to compare against?"""
 	# order = 12
-	# LR_d = LinearRegression(order=order, points=20, scale=True)
+	# LR_d = LinearRegression(order=order, points=20, scale=False)
 	# kfolds = [i for i in range(5, 11)]
 	# # print(kfolds, np.type(kfolds)) 
 	# LR_d.execute_regression(method=LR_d.ols, bootstrap=True, n=400)
@@ -380,31 +399,79 @@ if __name__ == '__main__':
 	
 
 	""" Task e) """
-	""" Bootstrap """
-	order = 12
-	hyperparams = [10**i for i in range(-10, 0)]
-	# print(hyperparams)
-	LR_e = LinearRegression(order=order, points=20, scale=True)
-	LR_e.execute_regression(method=LR_e.ridge, bootstrap=True, n=400, hyperparams=hyperparams)
-	MSE_ridge = LR_e.MSE_ridge
-	print(MSE_ridge)
-	min_MSE_idx = divmod(MSE_ridge.argmin(), MSE_ridge.shape[1])
-	fig, ax = plt.subplots(figsize=(10, 5))
-	sns.heatmap(MSE_ridge.T, annot=True, ax=ax, cmap="viridis", cbar_kws={'label': 'Accuracy'},fmt='.1e')
-	# # ax.set_title("Test Accuracy BSE 2")
-	# # ax.set_ylabel("order")
-	# # ax.set_xlabel("log$_{10}(\lambda)$")
-	# # ax.set_xticklabels(np.log10(hyperparams,out=np.zeros_like(hyperparams), where=(hyperparams!=0)))
-	# # ax.set_yticklabels(range(1, order+1))
-	ax.add_patch(plt.Rectangle((min_MSE_idx[0], min_MSE_idx[1]), 1, 1, fc='none', ec='red', lw=2, clip_on=False))
-	plt.show()
+	""" GO back and fix what is not done yet """
+	""" Ridge Bootstrap """
+	# order = 12
 	# poly_degrees = np.arange(1, order+1)
-	# plt.plot(poly_degrees, LR_e.MSE_train, label='train')
-	# plt.plot(poly_degrees, LR_e.MSE_test, label='test')
+	# hyperparams = [10**i for i in range(-10, 0)]
+	# extent = [poly_degrees[0], poly_degrees[-1], hyperparams[0], hyperparams[-1]]
+	# # # print(hyperparams)
+	# LR_e = LinearRegression(order=order, points=20, scale=True)
+	# LR_e.execute_regression(method=LR_e.ridge, bootstrap=True, n=100, hyperparams=hyperparams)
+	# MSE_ridge_bootstrap = LR_e.MSE_bootstrap
+	# # print(np.shape(MSE_ridge_bootstrap))
+	# # min_MSE_idx = divmod(MSE_ridge_bootstrap.argmin(), MSE_ridge_bootstrap.shape[1])
+	# fig, ax = plt.subplots(figsize=(10, 5))
+	# plt.contourf(MSE_ridge_bootstrap, extent=extent, levels=30)#(order*len(hyperparams)))
+	# # # plt.contourf(poly_degrees, hyperparams, MSE_ridge_bootstrap, cmap=plt.cm.magma, levels=30)
+	# # # plt.plot(min_MSE_idx[0], min_MSE_idx[1], 'o', color='red')
+	# plt.colorbar()
+	# plt.show()
+	# # sns.heatmap(MSE_ridge_bootstrap, annot=True, ax=ax, cmap="viridis", cbar_kws={'label': 'Accuracy'},fmt='.1e')
+
+	# # # ax.set_title("Test Accuracy BSE 2")
+	# # # ax.set_ylabel("order")
+	# # # ax.set_xlabel("log$_{10}(\lambda)$")
+	# # # ax.set_xticklabels(np.log10(hyperparams,out=np.zeros_like(hyperparams), where=(hyperparams!=0)))
+	# # # ax.set_yticklabels(range(1, order+1))
+	# # ax.add_patch(plt.Rectangle((min_MSE_idx[0], min_MSE_idx[1]), 1, 1, fc='none', ec='red', lw=2, clip_on=False))
+	# # plt.show()
+	# # plt.plot(poly_degrees, LR_e.MSE_train, label='train')
+	# # plt.plot(poly_degrees, LR_e.MSE_test, label='test')
+	# # plt.legend()
+	# # plt.show()
+	""" same bootstrap analysis as in c) analysis now with Ridge """
+	# BIAS_ridge_bootstrap = LR_e.BIAS_bootstrap
+	# var_ridge_bootstrap = LR_e.var_bootstrap
+	# for k in range(len(hyperparams)):
+	# 	plt.plot(poly_degrees, MSE_ridge_bootstrap[k], label='MSE_test_ridge', color='blue', alpha=k*0.1)#, s=15)
+	# 	plt.plot(poly_degrees, BIAS_ridge_bootstrap[k], label='BIAS_ridge', color='orange', alpha=k*0.1)#, s=15)
+	# 	plt.plot(poly_degrees, var_ridge_bootstrap[k], label='var_ridge', color='red', alpha=k*0.1)#, s=15)
 	# plt.legend()
+	# plt.show()
+	""" Ridge Cross validation heatmap is produced but is that enough to do similar analysis as in d)?"""
+	# kfolds = [i for i in range(5, 11)]
+	# LR_e.execute_regression(method=LR_e.ridge, crossval=True, kfolds=10, hyperparams=hyperparams)
+	# MSE_ridge_crossval = LR_e.MSE_crossval
+	# # min_MSE_idx = divmod(MSE_ridge_crossval.argmin(), MSE_ridge_crossval.shape[1])
+	# fig, ax = plt.subplots(figsize=(10, 5))
+	# plt.contourf(MSE_ridge_crossval, extent=extent, levels=30)
+	# # sns.heatmap(MSE_ridge_crossval.T, annot=True, ax=ax, cmap="viridis", cbar_kws={'label': 'Accuracy'},fmt='.1e')
+	# # ax.add_patch(plt.Rectangle((min_MSE_idx[0], min_MSE_idx[1]), 1, 1, fc='none', ec='red', lw=2, clip_on=False))
+	# plt.colorbar()
 	# plt.show()
 
 	""" Task f) """
+	""" Lasso Bootstrap """
+	""" Lasso does not converge when scale=True, hints that scaling is not implemented correctly """
+	order = 20
+	poly_degrees = np.arange(1, order+1)
+	hyperparams = [10**i for i in range(-10, 0)]
+	extent = [poly_degrees[0], poly_degrees[-1], hyperparams[0], hyperparams[-1]]
+	LR_f = LinearRegression(order=order, points=20, scale=False)
+	LR_f.execute_regression(method=LR_f.lasso, bootstrap=True, n=10, hyperparams=hyperparams)
+	MSE_lasso_bootstrap = LR_f.MSE_bootstrap
+	# print(np.shape(MSE_ridge_bootstrap))
+	# min_MSE_idx = divmod(MSE_ridge_bootstrap.argmin(), MSE_ridge_bootstrap.shape[1])
+	fig, ax = plt.subplots(figsize=(10, 5))
+	plt.contourf(MSE_lasso_bootstrap, extent=extent, levels=30)#(order*len(hyperparams)))
+	# plt.contourf(poly_degrees, hyperparams, MSE_ridge_bootstrap, cmap=plt.cm.magma, levels=30)
+	# plt.plot(min_MSE_idx[0], min_MSE_idx[1], 'o', color='red')
+	plt.colorbar()
+	plt.show()
+	""" Lasso Cross Validation"""
+
+
 
 	""" Task g) """
 
