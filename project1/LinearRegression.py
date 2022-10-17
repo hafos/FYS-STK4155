@@ -1,5 +1,6 @@
 from audioop import cross
 import matplotlib.pyplot as plt
+import matplotlib.pylab as pylab
 import seaborn as sns
 import pandas as pd
 import numpy as np 
@@ -12,17 +13,25 @@ from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
 from sklearn.utils import resample
 from scipy.special import comb
+from imageio import imread
 
 plt.style.use('ggplot')
 plt.rcParams.update({'font.size': 14})
 plt.rcParams.update({'axes.grid': True})
 plt.rc('legend', frameon=False)
+params = {'legend.fontsize': 25,
+			'figure.figsize': (12, 9),
+			'axes.labelsize': 25,
+			'axes.titlesize': 25,
+			'xtick.labelsize': 'x-large',
+			'ytick.labelsize': 'x-large'}
+pylab.rcParams.update(params)
 
 class LinearRegression:
 	""" Class for performing linear regression methods to fit 2D datasets with higher order polynomials"""
 
 
-	def __init__(self, order, sigma=0.1, points=20, X=None, noise=True, scale=False, data=None):
+	def __init__(self, order, sigma=0.1, points=20, X=None, noise=True, scale=False, data=None, reduce_factor=0, x_pos=0, y_pos=0):
 		""" Constructor for generating an instance of the class.
 
 		Arguments
@@ -61,7 +70,14 @@ class LinearRegression:
 			self.z = np.concatenate(self.franke_function(x, y, sigma, noise), axis=None)
 			self.dataset = [x, y]
 		elif data != None and isinstance(data, str):
-			self.dataset = data # loads path to .tif dataset
+			self.data = imread(data) # loads path to .tif dataset
+			self.z = self.data[y_pos:y_pos+300, x_pos:x_pos+300] # symetric slice of data with varried topography
+			if reduce_factor != 0:
+				self.z = self.z[::reduce_factor, ::reduce_factor]
+			self.z = self.z - np.mean(self.z) # centering dataset to more closely reflect reality
+			x, y = np.meshgrid(np.arange(0, 1, 1/len(self.z[0])), np.arange(0, 1, 1/len(self.z[1])))
+			self.dataset = [x, y]
+			self.z = np.concatenate(self.z, axis=None)
 		else:
 			raise TypeError('Class keyword argument <data> needs to be path to .tif file in string format "PATH".')
 
@@ -145,7 +161,7 @@ class LinearRegression:
 	def lasso(self, X_train, z_train, hyperparam=0):
 		if hasattr(self, 'hyperparam'):
 			hyperparam = self.hyperparam
-		# print(hyperparam)
+		# change tol when scaling fixed so that converges
 		lasso_regression = linear_model.Lasso(alpha=hyperparam, max_iter=int(1e6), tol=3e-2, fit_intercept=False)
 		lasso_regression.fit(X_train, z_train)
 		beta = lasso_regression.coef_
@@ -159,7 +175,6 @@ class LinearRegression:
 		for i in range(n):
 			X_train_resample, z_train_resample = resample(X_train, z_train, random_state = i)
 			X_test_resample = X_test + 0
-			# print(X_test)
 			##rescaling
 			# if self.scale == True:
 			# 	# X_train_resample -= np.mean(X_train_resample, axis=0)
@@ -171,7 +186,6 @@ class LinearRegression:
 			# 	z_train_resample /= np.std(z_train_resample)
 			beta = method(X_train_resample, z_train_resample)
 			z_test_tilde[:, i] = X_test_resample @ beta  + z_scale
-			# print(z_test_tilde[:, j])
 			score[i] = np.mean((z_test - z_test_tilde[:, i])**2)
 		return np.mean(score), z_test_tilde
 
@@ -217,13 +231,13 @@ class LinearRegression:
 			# self.scaling(z_train)
 			# z_test = self.scaling(z_test)
 		if crossval == True and hyperparams == 0:
-			self.MSE_CV = np.zeros((len(kfolds), order))
+			self.MSE_CV = np.zeros((len(kfolds), self.order))
 		elif crossval == True and hyperparams != 0:
-			self.MSE_crossval = np.zeros((len(hyperparams), order))
+			self.MSE_crossval = np.zeros((len(hyperparams), self.order))
 		if bootstrap == True and hyperparams != 0:
-			self.MSE_bootstrap = np.zeros((len(hyperparams), order))
-			self.BIAS_bootstrap = np.zeros((len(hyperparams), order)) # For BVT analysis
-			self.var_bootstrap = np.zeros((len(hyperparams), order))  # For BVT analysis
+			self.MSE_bootstrap = np.zeros((len(hyperparams), self.order))
+			self.BIAS_bootstrap = np.zeros((len(hyperparams), self.order)) # For BVT analysis
+			self.var_bootstrap = np.zeros((len(hyperparams), self.order))  # For BVT analysis
 			self.hyperparam = hyperparams[0]
 
 		for i in range(1, self.order+1):
@@ -262,14 +276,12 @@ class LinearRegression:
 						self.BIAS_bootstrap[k, i-1] = np.mean((z_test.reshape(-1, 1) - np.mean(z_test_tilde, axis=1, keepdims=True))**2 )
 						self.var_bootstrap[k, i-1] = np.mean(np.var(z_test_tilde, axis=1, keepdims=True) )
 						k += 1
-					# print(self.MSE_test, i)
-					# print(f"MSE - BIAS + var {(self.MSE_test[i-1] - (self.BIAS[i-1] + self.var[i-1]))}")
+						# print(f"MSE - BIAS + var {(self.MSE_test[i-1] - (self.BIAS[i-1] + self.var[i-1]))}")
 			elif crossval == True:
 				X_curr = self.X[:, 0:current_n_terms] + 0
 				if crossval == True and hyperparams == 0:
 					k = 0
-					for folds in kfolds:
-						# print(folds, type(folds)) 
+					for folds in kfolds: 
 						self.MSE_CV[k, i-1] = self.crossval(X_curr, self.z, method, folds)
 						k += 1
 				elif crossval == True and hyperparams != 0:
@@ -281,11 +293,9 @@ class LinearRegression:
 					
 			else:
 				#calc both errors and store the betas in the process
-				# print(np.shape(np.linalg.pinv(X_train_current.T @ X_train) @ X_train_current.T @ z_train), np.shape(X_train_current.T), np.shape(z_train))
 				self.beta[i-1][:current_n_terms] = method(X_train_current, z_train)
 				z_train_tilde = X_train_current @ self.beta[i-1][~np.isnan(self.beta[i-1])] #+ z_scale
 				z_test_tilde = X_test_current @ self.beta[i-1][~np.isnan(self.beta[i-1])]
-				# self.get_MSE(i-1, )
 				self.MSE_train[i-1] = np.mean(np.power(z_train - z_train_tilde, 2))
 				self.MSE_test[i-1] = np.mean(np.power(z_test - z_test_tilde, 2)) #can delete these two if only need to call method
 				self.R2_train[i-1] = self.r2(z_train, z_train_tilde)
@@ -313,68 +323,91 @@ class LinearRegression:
 		fig.colorbar(surf, shrink=0.5, aspect=5)
 		plt.show()
 
+	def plot_terrain(self):
+		""" Plot entire terrain dataset """
+		fig, ax = plt.subplots()
+		# fig = plt.figure()
+		# ax = plt.axes(projection = '3d')
+		plt.title('Terrain')
+		print(self.data)
+		ax.imshow(self.data, cmap='viridis')
+		plt.xlabel('X')
+		plt.ylabel('Y')
+		plt.show()
+	
+	def plot_terrain_3D(self):
+		""" Plot 3D terrain of zoomed in area """
+		fig = plt.figure()
+		ax = plt.axes(projection = '3d')
+		plt.title('Terrain 3D')
+		z_plot = np.array_split(self.z, len(self.dataset[0]))
+		z_plot = np.array(z_plot) 
+		surf = ax.plot_surface(self.dataset[0], self.dataset[1], z_plot, cmap=plt.cm.coolwarm, linewidth=0, antialiased=False)
+		fig.colorbar(surf, shrink=0.5, aspect=5)
+		plt.show()
+
+
 if __name__ == '__main__':
 	""" Task b) """
 	# LR_b = LinearRegression(order=5, scale=True, points=40)
 	# # LR_b.plot_franke_function()
 	# LR_b.execute_regression(method=LR_b.ols)
 	# poly_degrees = np.arange(1, 6)
-	# # # # print(var[0][0])
-	# # # # print(np.shape(LR_b.var[-1][1][0]))
-	# # # # print(len(betas[-1]))
-	# plt.figure(figsize=(12,9))
-	# plt.plot(poly_degrees, LR_b.MSE_test, label='MSE test')
-	# plt.plot(poly_degrees, LR_b.MSE_train, label='MSE train')
+	# fig, ax = plt.subplots(nrows=2, sharex=True, figsize=(12,9))
+	# ax[0].plot(poly_degrees, LR_b.MSE_test,  label='MSE test',  color='orange', linestyle='--')
+	# ax[0].plot(poly_degrees, LR_b.MSE_train, label='MSE train', color='orange')
+	# ax[0].legend()
+	# ax[0].set(ylabel="MSE score")
+	# ax[1].plot(poly_degrees, LR_b.R2_test,   label=r'R$^2$ test', color='b', linestyle='--')
+	# ax[1].plot(poly_degrees, LR_b.R2_train,  label=r'R$^2$ train', color='b')
+	# ax[1].set(ylabel=r"R$^2$ score")
+	# ax[1].legend()
 	# plt.xlabel('Polynomial degree')
-	# plt.ylabel('Mean Squared Error')
-	# plt.figure(figsize=(12,9))
-	# plt.plot(poly_degrees, LR_b.R2_test, label=r'$R^2 test$')
-	# plt.plot(poly_degrees, LR_b.R2_train, label=r'$R^2 train$')
-	# plt.xlabel('Polynomial degree')
-	# plt.ylabel(r'$R^2 \; Score$')
-	# plt.legend(); plt.show()
+	# fig.tight_layout()
+	# plt.show()
+	# plt.savefig("figures/FrankeFunction/OLS_scores.pdf")
 
 	# ### Beta coefficients
 	# betas = LR_b.beta
 	# var = LR_b.var[::-1]
-	# plt.figure(figsize=(12, 9))
-	# # # print(np.shape(LR_b.var))
-	# # # print(LR_b.var[-1])
 	# ax = plt.axes()
 	# color = plt.cm.viridis(np.linspace(0.9, 0,11))
-	# ax.set_prop_cycle(plt.cycler('color', color))#["axes.prop_cycle"] = plt.cycler('color', color)
+	# ax.set_prop_cycle(plt.cycler('color', color))
 	# ax.set_xticks([i for i in range(1, len(betas[-1])+1)])
 	# for i, beta in enumerate(betas[::-1]):
 	# 	coefficients = beta[~(np.isnan(beta))]
 	# 	beta_indexes = np.arange(1, len(coefficients)+1)
-	# 	plt.errorbar(beta_indexes, coefficients, yerr=np.sqrt(var[i]), marker='o', linestyle='--', capsize=2, label='d = %d' % (5-i))
-	# """ We need to figure out what to do with the scaling.
-	# 	Decide wether np.sqrt of variance as error bars or just the variance. 
-	# 	  Also decide wether we have split's random_state be the same as random seed or set it 
-	# 	  as something else as we have so far """
-	# plt.xlabel('Order of polynomial')
-	# plt.ylabel(r'$\beta\; coefficient \;value$')
+	# 	plt.errorbar(beta_indexes, coefficients, yerr=np.sqrt(var[i]), marker='o', linestyle='--', capsize=4, label='d = %d' % (5-i))
+	# plt.xlabel(r'$\beta$ coefficient number')
+	# plt.ylabel(r'$\beta$ coefficient value')
 	# plt.legend()
+	# plt.tight_layout()
 	# plt.show()
+	# plt.savefig("figures/FrankeFunction/OLS_beta.pdf")
 
 	""" Task c) """
-	# order = 12
-	# LR_c = LinearRegression(order=order, points=20, sigma=0.1, scale=True)
-	# # LR_c.plot_franke_function()
-	# # # print(LR_c.scale)
-	# LR_c.execute_regression(method=LR_c.ols, bootstrap=True, n=400)
-	# poly_degrees = np.arange(1, order+1)
-	# # print(LR_c.MSE_test)
-	# # print(LR_c.var)
-	# plt.plot(poly_degrees, LR_c.MSE_train, label='train')
-	# plt.plot(poly_degrees, LR_c.MSE_test, label='test')
-	# plt.legend()
-	# plt.show()
-	# plt.plot(poly_degrees, LR_c.BIAS, label='BIAS', color='orange')#, s=15)
-	# plt.plot(poly_degrees, LR_c.MSE_test, label='MSE_test', color='blue')#, s=15)
-	# plt.plot(poly_degrees, LR_c.var, label='var', color='red')#, s=15)     
-	# plt.legend()
-	# plt.show()
+	order = 12
+	LR_c = LinearRegression(order=order, points=20, sigma=0.1, scale=True)
+	LR_c.execute_regression(method=LR_c.ols, bootstrap=True, n=400)
+	poly_degrees = np.arange(1, order+1)
+	plt.plot(poly_degrees, LR_c.MSE_train, label='train', color='orange', linestyle='--')
+	plt.plot(poly_degrees, LR_c.MSE_test,  label='test',  color='orange')
+	plt.legend()
+	plt.xlabel("Polynomial degree")
+	plt.ylabel("MSE score")
+	plt.tight_layout()
+	plt.show()
+	plt.savefig("figures/FrankeFunction/OLS_bootstrap.pdf")
+
+	plt.plot(poly_degrees, LR_c.BIAS,     label='BIAS',     color='red')
+	plt.plot(poly_degrees, LR_c.MSE_test, label='MSE_test', color='orange')
+	plt.plot(poly_degrees, LR_c.var,      label='var',      color='green')   
+	plt.legend()
+	plt.xlabel("Polynomial degree")
+	plt.ylabel("MSE score")
+	plt.tight_layout()
+	plt.show()
+	plt.savefig("figures/FrankeFunction/OLS_biasvar.pdf")
 
 	""" Task d) """
 	""" Fails when scale == True, need to fix scaling, remove from crossval func?
@@ -410,20 +443,25 @@ if __name__ == '__main__':
 	# LR_e.execute_regression(method=LR_e.ridge, bootstrap=True, n=100, hyperparams=hyperparams)
 	# MSE_ridge_bootstrap = LR_e.MSE_bootstrap
 	# # print(np.shape(MSE_ridge_bootstrap))
-	# # min_MSE_idx = divmod(MSE_ridge_bootstrap.argmin(), MSE_ridge_bootstrap.shape[1])
+	# # min_MSE_idx = divmod(MSE_ridge_bootstrap.argmin(), MSE_ridge_bootstrap.shape[0])
+	# # print(min_MSE_idx)
 	# fig, ax = plt.subplots(figsize=(10, 5))
+	# # print(MSE_ridge_bootstrap.min())
+	# # ymin, xmin = MSE_ridge_bootstrap) == MSE_ridge_bootstrap)
+	# # print(np.shape(MSE_ridge_bootstrap), xmin, ymin)
+	# i, j = np.unravel_index(np.argmin(MSE_ridge_bootstrap), np.shape(MSE_ridge_bootstrap))
 	# plt.contourf(MSE_ridge_bootstrap, extent=extent, levels=30)#(order*len(hyperparams)))
+	# plt.plot(poly_degrees[j], hyperparams[i], 'o')
 	# # # plt.contourf(poly_degrees, hyperparams, MSE_ridge_bootstrap, cmap=plt.cm.magma, levels=30)
 	# # # plt.plot(min_MSE_idx[0], min_MSE_idx[1], 'o', color='red')
+	# # ax.set_xticklabels(range(1, order+1))
+	# # ax.set_yticklabels(np.log10(hyperparams),out=np.zeros_like(hyperparams), where=(hyperparams!=0))
 	# plt.colorbar()
 	# plt.show()
-	# # sns.heatmap(MSE_ridge_bootstrap, annot=True, ax=ax, cmap="viridis", cbar_kws={'label': 'Accuracy'},fmt='.1e')
 
 	# # # ax.set_title("Test Accuracy BSE 2")
 	# # # ax.set_ylabel("order")
 	# # # ax.set_xlabel("log$_{10}(\lambda)$")
-	# # # ax.set_xticklabels(np.log10(hyperparams,out=np.zeros_like(hyperparams), where=(hyperparams!=0)))
-	# # # ax.set_yticklabels(range(1, order+1))
 	# # ax.add_patch(plt.Rectangle((min_MSE_idx[0], min_MSE_idx[1]), 1, 1, fc='none', ec='red', lw=2, clip_on=False))
 	# # plt.show()
 	# # plt.plot(poly_degrees, LR_e.MSE_train, label='train')
@@ -454,25 +492,28 @@ if __name__ == '__main__':
 	""" Task f) """
 	""" Lasso Bootstrap """
 	""" Lasso does not converge when scale=True, hints that scaling is not implemented correctly """
-	order = 20
-	poly_degrees = np.arange(1, order+1)
-	hyperparams = [10**i for i in range(-10, 0)]
-	extent = [poly_degrees[0], poly_degrees[-1], hyperparams[0], hyperparams[-1]]
-	LR_f = LinearRegression(order=order, points=20, scale=False)
-	LR_f.execute_regression(method=LR_f.lasso, bootstrap=True, n=10, hyperparams=hyperparams)
-	MSE_lasso_bootstrap = LR_f.MSE_bootstrap
-	# print(np.shape(MSE_ridge_bootstrap))
-	# min_MSE_idx = divmod(MSE_ridge_bootstrap.argmin(), MSE_ridge_bootstrap.shape[1])
-	fig, ax = plt.subplots(figsize=(10, 5))
-	plt.contourf(MSE_lasso_bootstrap, extent=extent, levels=30)#(order*len(hyperparams)))
-	# plt.contourf(poly_degrees, hyperparams, MSE_ridge_bootstrap, cmap=plt.cm.magma, levels=30)
-	# plt.plot(min_MSE_idx[0], min_MSE_idx[1], 'o', color='red')
-	plt.colorbar()
-	plt.show()
+	# order = 20
+	# poly_degrees = np.arange(1, order+1)
+	# hyperparams = [10**i for i in range(-10, 0)]
+	# extent = [poly_degrees[0], poly_degrees[-1], hyperparams[0], hyperparams[-1]]
+	# LR_f = LinearRegression(order=order, points=20, scale=False)
+	# LR_f.execute_regression(method=LR_f.lasso, bootstrap=True, n=10, hyperparams=hyperparams)
+	# MSE_lasso_bootstrap = LR_f.MSE_bootstrap
+	# # print(np.shape(MSE_ridge_bootstrap))
+	# # min_MSE_idx = divmod(MSE_ridge_bootstrap.argmin(), MSE_ridge_bootstrap.shape[1])
+	# fig, ax = plt.subplots(figsize=(10, 5))
+	# plt.contourf(MSE_lasso_bootstrap, extent=extent, levels=30)#(order*len(hyperparams)))
+	# # plt.contourf(poly_degrees, hyperparams, MSE_ridge_bootstrap, cmap=plt.cm.magma, levels=30)
+	# # plt.plot(min_MSE_idx[0], min_MSE_idx[1], 'o', color='red')
+	# plt.colorbar()
+	# plt.show()
 	""" Lasso Cross Validation"""
-
-
-
-	""" Task g) """
+	# LR_f.execute_regression(method=LR_f.lasso, crossval=True, kfolds=10, hyperparams=hyperparams)
+	# MSE_lasso_crossval = LR_f.MSE_crossval
+	# fig, ax = plt.subplots(figsize=(10, 5))
+	# plt.contourf(MSE_lasso_crossval, extent=extent, levels=30)
+	# plt.colorbar()
+	# plt.show()
+	
 
 
