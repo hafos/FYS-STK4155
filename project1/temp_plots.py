@@ -380,30 +380,58 @@ if __name__ == '__main__':
 	# # print(LR_c.MSE_test)
 	# # print(LR_c.var)
 
-	# plt.figure(figsize=(12, 9))
+	# plt.figure()
 	# plt.plot(poly_degrees, LR_c.MSE_train, label='train', color='orange', linestyle='--')
 	# plt.plot(poly_degrees, LR_c.MSE_test,  label='test',  color='orange')
 	# plt.legend()
-	# plt.tight_layout()
 	# plt.xlabel("Polynomial degree")
 	# plt.ylabel("MSE score")
+	# plt.tight_layout()
 	# # plt.show()
 	# plt.savefig("figures/FrankeFunction/OLS_bootstrap.pdf")
 
-	# plt.figure(figsize=(12, 9))
+	# plt.figure()
 	# plt.plot(poly_degrees, LR_c.BIAS,     label='BIAS',     color='red')#, s=15)
 	# plt.plot(poly_degrees, LR_c.MSE_test, label='MSE_test', color='orange')#, s=15)
 	# plt.plot(poly_degrees, LR_c.var,      label='var',      color='green')#, s=15)     
 	# plt.legend()
-	# plt.tight_layout()
+	# plt.xlabel("Polynomial degree")
+	# plt.ylabel("MSE score")12
+	# LR_c = LinearRegression(order=order, points=20, sigma=0.1, scale=True)
+	# # LR_c.plot_franke_function()
+	# # # print(LR_c.scale)
+	# LR_c.execute_regression(method=LR_c.ols, bootstrap=True, n=400)
+	# poly_degrees = np.arange(1, order+1)
+	# # print(LR_c.MSE_test)
+	# # print(LR_c.var)
+
+	# plt.figure()
+	# plt.plot(poly_degrees, LR_c.MSE_train, label='train', color='orange', linestyle='--')
+	# plt.plot(poly_degrees, LR_c.MSE_test,  label='test',  color='orange')
+	# plt.legend()
 	# plt.xlabel("Polynomial degree")
 	# plt.ylabel("MSE score")
+	# plt.tight_layout()
+	# # plt.show()
+	# plt.savefig("figures/FrankeFunction/OLS_bootstrap.pdf")
+
+	# plt.figure()
+	# plt.plot(poly_degrees, LR_c.BIAS,     label='BIAS',     color='red')#, s=15)
+	# plt.plot(poly_degrees, LR_c.MSE_test, label='MSE_test', color='orange')#, s=15)
+	# plt.plot(poly_degrees, LR_c.var,      label='var',      color='green')#, s=15)     
+	# plt.legend()
+	# plt.xlabel("Polynomial degree")
+	# plt.ylabel("MSE score")
+	# plt.tight_layout()
+	# # plt.show()
+	# plt.savefig("figures/FrankeFunction/OLS_biasvar.pdf")
+	# plt.tight_layout()
 	# # plt.show()
 	# plt.savefig("figures/FrankeFunction/OLS_biasvar.pdf")
 
-	# """ Task d) """
-	# """ Fails when scale == True, need to fix scaling, remove from crossval func?
-	# 	Add cross_val_score from sklearn to compare against?"""
+	""" Task d) """
+	""" Fails when scale == True, need to fix scaling, remove from crossval func?
+		Add cross_val_score from sklearn to compare against?"""
 	# order = 12
 	# LR_d = LinearRegression(order=order, points=20, scale=True)
 	# kfolds = [i for i in range(5, 11)]
@@ -412,7 +440,7 @@ if __name__ == '__main__':
 	# LR_d.execute_regression(method=LR_d.ols, crossval=True, kfolds=kfolds)
 	# poly_degrees = np.arange(1, order+1)
 	# # print(poly_degrees, type(poly_degrees))
-	# fig, ax = plt.subplots(figsize=(12, 9))
+	# fig, ax = plt.subplots()
 	# #plt.figure(figsize=(12, 9))
 	# plt.plot(poly_degrees, LR_d.MSE_train, label='bootstrap train', color='green', linestyle='--')
 	# plt.plot(poly_degrees, LR_d.MSE_test,  label='bootstrap test', color='green')
@@ -430,16 +458,16 @@ if __name__ == '__main__':
 	""" Task e) """
 	""" GO back and fix what is not done yet """
 	""" Ridge Bootstrap """
-	# order = 12
-	# poly_degrees = np.arange(1, order+1)
-	# hyperparams = [10**i for i in range(-10, 0)]
-	# extent = [poly_degrees[0], poly_degrees[-1], hyperparams[0], hyperparams[-1]]
-	# # # print(hyperparams)
-	# LR_e = LinearRegression(order=order, points=20, scale=True)
-	# LR_e.execute_regression(method=LR_e.ridge, bootstrap=True, n=100, hyperparams=hyperparams)
-	# MSE_ridge_bootstrap = LR_e.MSE_bootstrap
-	# # print(np.shape(MSE_ridge_bootstrap))
-	# # min_MSE_idx = divmod(MSE_ridge_bootstrap.argmin(), MSE_ridge_bootstrap.shape[1])
+	order = 12
+	poly_degrees = np.arange(1, order+1)
+	hyperparams = [10**i for i in range(-10, 0)]
+	extent = [poly_degrees[0], poly_degrees[-1], hyperparams[0], hyperparams[-1]]
+	# # print(hyperparams)
+	LR_e = LinearRegression(order=order, points=20, scale=True)
+	LR_e.execute_regression(method=LR_e.ridge, bootstrap=True, n=100, hyperparams=hyperparams)
+	MSE_ridge_bootstrap = LR_e.MSE_bootstrap
+	# print(np.shape(MSE_ridge_bootstrap))
+	# min_MSE_idx = divmod(MSE_ridge_bootstrap.argmin(), MSE_ridge_bootstrap.shape[1])
 
 	# fig, ax = plt.subplots()
 	# plt.contourf(MSE_ridge_bootstrap, extent=extent, levels=30)#(order*len(hyperparams)))
@@ -450,6 +478,7 @@ if __name__ == '__main__':
 	# cbar = plt.colorbar(pad=0.01)
 	# #cbar.ax.get_yaxis().labelpad = 15
 	# cbar.set_label('MSE score')
+	# plt.tight_layout()
 	# plt.savefig("figures/FrankeFunction/Ridge_bootstrap.pdf")
 	# plt.show()
 	# sns.heatmap(MSE_ridge_bootstrap, annot=True, ax=ax, cmap="viridis", cbar_kws={'label': 'Accuracy'},fmt='.1e')
@@ -475,6 +504,7 @@ if __name__ == '__main__':
 	# 	plt.legend(handles=[h1[0], h2[0], h3[0]])#labels=["MSE_test", "BIAS", "Variance"])
 	# plt.xlabel("Polynomial degree")
 	# plt.ylabel("Pentalty parameter")
+	# plt.tight_layout()
 	# plt.savefig("figures/FrankeFunction/Ridge_biasvar.pdf")
 	# plt.show()
 	""" Ridge Cross validation heatmap is produced but is that enough to do similar analysis as in d)?"""
@@ -490,18 +520,19 @@ if __name__ == '__main__':
 	# plt.ylabel("Pentalty parameter")
 	# cbar = plt.colorbar(pad=0.01)
 	# cbar.set_label('MSE score')
+	# plt.tight_layout()
 	# plt.savefig("figures/FrankeFunction/Ridge_crossval.pdf")
 	# plt.show()
 
 	""" Task f) """
 	""" Lasso Bootstrap """
 	""" Lasso does not converge when scale=True, hints that scaling is not implemented correctly """
-	order = 20
-	poly_degrees = np.arange(1, order+1)
-	hyperparams = [10**i for i in range(-10, 0)]
-	extent = [poly_degrees[0], poly_degrees[-1], hyperparams[0], hyperparams[-1]]
-	LR_f = LinearRegression(order=order, points=20, scale=False)
-	LR_f.execute_regression(method=LR_f.lasso, bootstrap=True, n=10, hyperparams=hyperparams)
+	# order = 20
+	# poly_degrees = np.arange(1, order+1)
+	# hyperparams = [10**i for i in range(-10, 0)]
+	# extent = [poly_degrees[0], poly_degrees[-1], hyperparams[0], hyperparams[-1]]
+	# LR_f = LinearRegression(order=order, points=20, scale=False)
+	# LR_f.execute_regression(method=LR_f.lasso, bootstrap=True, n=10, hyperparams=hyperparams)
 
 	# MSE_lasso_bootstrap = LR_f.MSE_bootstrap
 	# # print(np.shape(MSE_ridge_bootstrap))
@@ -514,6 +545,7 @@ if __name__ == '__main__':
 	# plt.ylabel("Pentalty parameter")
 	# cbar = plt.colorbar(pad=0.01)
 	# cbar.set_label('MSE score')
+	# plt.tight_layout()
 	# plt.savefig("figures/FrankeFunction/Lasso_bootstrap.pdf")
 	# plt.show()
 
@@ -529,23 +561,24 @@ if __name__ == '__main__':
 	# plt.ylabel("Pentalty parameter")
 	# cbar = plt.colorbar(pad=0.01)
 	# cbar.set_label('MSE score')
+	# plt.tight_layout()
 	# plt.savefig("figures/FrankeFunction/Lasso_crossval.pdf")
 	# plt.show()
 
 	""" Lasso Bias-Variance """
 	""" Lolol this is wierd looking"""
-	MSE_lasso= LR_f.MSE_bootstrap
-	BIAS_lasso = LR_f.BIAS_bootstrap
-	var_lasso = LR_f.var_bootstrap
-	for k in range(len(hyperparams)):
-		h1 = plt.plot(poly_degrees, MSE_lasso[k],  label='MSE_test', color='orange', alpha=k*0.1)#, s=15)
-		h2 = plt.plot(poly_degrees, BIAS_lasso[k], label='BIAS',     color='blue',   alpha=k*0.1)#, s=15)
-		h3 = plt.plot(poly_degrees, var_lasso[k],  label='var',      color='red',    alpha=k*0.1)#, s=15)
-		plt.legend(handles=[h1[0], h2[0], h3[0]])#labels=["MSE_test", "BIAS", "Variance"])
-	plt.xlabel("Polynomial degree")
-	plt.ylabel("Score")
-	plt.savefig("figures/FrankeFunction/Lasso_biasvar.pdf")
-	plt.show()
+	# MSE_lasso= LR_f.MSE_bootstrap
+	# BIAS_lasso = LR_f.BIAS_bootstrap
+	# var_lasso = LR_f.var_bootstrap
+	# for k in range(len(hyperparams)):
+	# 	h1 = plt.plot(poly_degrees, MSE_lasso[k],  label='MSE_test', color='orange', alpha=k*0.1)#, s=15)
+	# 	h2 = plt.plot(poly_degrees, BIAS_lasso[k], label='BIAS',     color='blue',   alpha=k*0.1)#, s=15)
+	# 	h3 = plt.plot(poly_degrees, var_lasso[k],  label='var',      color='red',    alpha=k*0.1)#, s=15)
+	# 	plt.legend(handles=[h1[0], h2[0], h3[0]])#labels=["MSE_test", "BIAS", "Variance"])
+	# plt.xlabel("Polynomial degree")
+	# plt.ylabel("Score")
+	# plt.savefig("figures/FrankeFunction/Lasso_biasvar.pdf")
+	# plt.show()
 
 
 
