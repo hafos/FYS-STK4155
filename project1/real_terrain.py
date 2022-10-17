@@ -44,7 +44,7 @@ LR_terrain = LinearRegression(order=order, data=data1, reduce_factor=10, x_pos=0
 
 """ same analysis as in c) BVT """
 order = 12
-# LR_terrain = LinearRegression(order=order, data=data1, reduce_factor=10, x_pos=0, y_pos=1950, scale=True)
+LR_terrain = LinearRegression(order=order, data=data1, reduce_factor=10, x_pos=0, y_pos=1950, scale=True)
 # LR_terrain.execute_regression(method=LR_terrain.ols, bootstrap=True, n=400)
 # poly_degrees = np.arange(1, order+1)
 # plt.figure()
@@ -60,18 +60,42 @@ order = 12
 # plt.show()
 
 """ same cross validation analysis as in d) with OLS """
-order = 12
-LR_terrain = LinearRegression(order=order, data=data1, reduce_factor=10, x_pos=0, y_pos=1950, scale=False)
-kfolds = [i for i in range(5, 11)]
-# LR_terrain.execute_regression(method=LR_terrain.ols, bootstrap=True, n=400)
-LR_terrain.execute_regression(method=LR_terrain.ols, crossval=True, kfolds=kfolds)
+# kfolds = [i for i in range(5, 11)]
+# LR_terrain.execute_regression(method=LR_terrain.ols, crossval=True, kfolds=kfolds)
+# poly_degrees = np.arange(1, order+1)
+# fig, ax = plt.subplots()
+# # plt.plot(poly_degrees, LR_terrain.MSE_train, label='bootstrap train')
+# # plt.plot(poly_degrees, LR_terrain.MSE_test, label='bootstrap test', color='k')
+# color = plt.cm.cool(np.linspace(0.9, 0,11))
+# ax.set_prop_cycle(plt.cycler('color', color))
+# for k in range(len(kfolds)):
+#     plt.plot(poly_degrees, LR_terrain.MSE_CV[k], label=f'crossval k: {kfolds[k]}')
+# plt.legend(fontsize=14)
+# plt.show()
+""" e) """
+# order = 12
 poly_degrees = np.arange(1, order+1)
-fig, ax = plt.subplots()
-# plt.plot(poly_degrees, LR_terrain.MSE_train, label='bootstrap train')
-# plt.plot(poly_degrees, LR_terrain.MSE_test, label='bootstrap test', color='k')
-color = plt.cm.cool(np.linspace(0.9, 0,11))
-ax.set_prop_cycle(plt.cycler('color', color))
-for k in range(len(kfolds)):
-    plt.plot(poly_degrees, LR_terrain.MSE_CV[k], label=f'crossval k: {kfolds[k]}')
-plt.legend(fontsize=14)
-plt.show()
+hyperparams = [10**i for i in range(-10, 0)]
+extent = [poly_degrees[0], poly_degrees[-1], hyperparams[0], hyperparams[-1]]
+# # # print(hyperparams)
+# LR_terrain.execute_regression(method=LR_terrain.ridge, bootstrap=True, n=100, hyperparams=hyperparams)
+# MSE_ridge_bootstrap = LR_terrain.MSE_bootstrap
+# # print(np.shape(MSE_ridge_bootstrap))
+# # min_MSE_idx = divmod(MSE_ridge_bootstrap.argmin(), MSE_ridge_bootstrap.shape[1])
+# fig, ax = plt.subplots(figsize=(10, 5))
+# plt.contourf(MSE_ridge_bootstrap, extent=extent, levels=30)#(order*len(hyperparams)))
+# # # plt.contourf(poly_degrees, hyperparams, MSE_ridge_bootstrap, cmap=plt.cm.magma, levels=30)
+# # # plt.plot(min_MSE_idx[0], min_MSE_idx[1], 'o', color='red')
+# plt.colorbar()
+# plt.show()
+""" e) heatmap w. cross validation yields crazy values with real data """
+# kfolds = [i for i in range(5, 11)]
+# LR_terrain.execute_regression(method=LR_terrain.ridge, crossval=True, kfolds=10, hyperparams=hyperparams)
+# MSE_ridge_crossval = LR_terrain.MSE_crossval
+# # min_MSE_idx = divmod(MSE_ridge_crossval.argmin(), MSE_ridge_crossval.shape[1])
+# fig, ax = plt.subplots(figsize=(10, 5))
+# plt.contourf(MSE_ridge_crossval, extent=extent, levels=30)
+# # sns.heatmap(MSE_ridge_crossval.T, annot=True, ax=ax, cmap="viridis", cbar_kws={'label': 'Accuracy'},fmt='.1e')
+# # ax.add_patch(plt.Rectangle((min_MSE_idx[0], min_MSE_idx[1]), 1, 1, fc='none', ec='red', lw=2, clip_on=False))
+# plt.colorbar()
+# plt.show()
