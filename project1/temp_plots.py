@@ -343,7 +343,7 @@ if __name__ == '__main__':
 	# plt.xlabel('Polynomial degree')
 	# fig.tight_layout()
 	# # plt.show()
-	# plt.savefig("figures/OLS_scores.pdf")
+	# plt.savefig("figures/FrankeFunction/OLS_scores.pdf")
 
 	# ## Beta coefficients
 	# betas = LR_b.beta
@@ -368,7 +368,7 @@ if __name__ == '__main__':
 	# plt.tight_layout()
 	# plt.legend()
 	# # plt.show()
-	# plt.savefig("figures/OLS_beta.pdf")
+	# plt.savefig("figures/FrankeFunction/OLS_beta.pdf")
 
 	""" Task c) """
 	# order = 12
@@ -388,7 +388,7 @@ if __name__ == '__main__':
 	# plt.xlabel("Polynomial degree")
 	# plt.ylabel("MSE score")
 	# # plt.show()
-	# plt.savefig("figures/OLS_bootstrap.pdf")
+	# plt.savefig("figures/FrankeFunction/OLS_bootstrap.pdf")
 
 	# plt.figure(figsize=(12, 9))
 	# plt.plot(poly_degrees, LR_c.BIAS,     label='BIAS',     color='red')#, s=15)
@@ -399,7 +399,7 @@ if __name__ == '__main__':
 	# plt.xlabel("Polynomial degree")
 	# plt.ylabel("MSE score")
 	# # plt.show()
-	# plt.savefig("figures/OLS_biasvar.pdf")
+	# plt.savefig("figures/FrankeFunction/OLS_biasvar.pdf")
 
 	# """ Task d) """
 	# """ Fails when scale == True, need to fix scaling, remove from crossval func?
@@ -424,7 +424,7 @@ if __name__ == '__main__':
 	# plt.xlabel("Polynomial degree")
 	# plt.ylabel("MSE score")
 	# plt.tight_layout()
-	# plt.savefig("figures/OLS_crossval.pdf")
+	# plt.savefig("figures/FrankeFunction/OLS_crossval.pdf")
 	# # plt.show()
 
 	""" Task e) """
@@ -450,7 +450,7 @@ if __name__ == '__main__':
 	# cbar = plt.colorbar(pad=0.01)
 	# #cbar.ax.get_yaxis().labelpad = 15
 	# cbar.set_label('MSE score')
-	# plt.savefig("figures/Ridge_bootstrap.pdf")
+	# plt.savefig("figures/FrankeFunction/Ridge_bootstrap.pdf")
 	# plt.show()
 	# sns.heatmap(MSE_ridge_bootstrap, annot=True, ax=ax, cmap="viridis", cbar_kws={'label': 'Accuracy'},fmt='.1e')
 
@@ -475,7 +475,7 @@ if __name__ == '__main__':
 	# 	plt.legend(handles=[h1[0], h2[0], h3[0]])#labels=["MSE_test", "BIAS", "Variance"])
 	# plt.xlabel("Polynomial degree")
 	# plt.ylabel("Pentalty parameter")
-	# plt.savefig("figures/Ridge_biasvar.pdf")
+	# plt.savefig("figures/FrankeFunction/Ridge_biasvar.pdf")
 	# plt.show()
 	""" Ridge Cross validation heatmap is produced but is that enough to do similar analysis as in d)?"""
 	# kfolds = [i for i in range(5, 11)]
@@ -490,7 +490,7 @@ if __name__ == '__main__':
 	# plt.ylabel("Pentalty parameter")
 	# cbar = plt.colorbar(pad=0.01)
 	# cbar.set_label('MSE score')
-	# plt.savefig("figures/Ridge_crossval.pdf")
+	# plt.savefig("figures/FrankeFunction/Ridge_crossval.pdf")
 	# plt.show()
 
 	""" Task f) """
@@ -502,20 +502,53 @@ if __name__ == '__main__':
 	extent = [poly_degrees[0], poly_degrees[-1], hyperparams[0], hyperparams[-1]]
 	LR_f = LinearRegression(order=order, points=20, scale=False)
 	LR_f.execute_regression(method=LR_f.lasso, bootstrap=True, n=10, hyperparams=hyperparams)
-	MSE_lasso_bootstrap = LR_f.MSE_bootstrap
-	# print(np.shape(MSE_ridge_bootstrap))
-	# min_MSE_idx = divmod(MSE_ridge_bootstrap.argmin(), MSE_ridge_bootstrap.shape[1])
-	fig, ax = plt.subplots()
-	plt.contourf(MSE_lasso_bootstrap, extent=extent, levels=30)#(order*len(hyperparams)))
-	# plt.contourf(poly_degrees, hyperparams, MSE_ridge_bootstrap, cmap=plt.cm.magma, levels=30)
-	# plt.plot(min_MSE_idx[0], min_MSE_idx[1], 'o', color='red')
+
+	# MSE_lasso_bootstrap = LR_f.MSE_bootstrap
+	# # print(np.shape(MSE_ridge_bootstrap))
+	# # min_MSE_idx = divmod(MSE_ridge_bootstrap.argmin(), MSE_ridge_bootstrap.shape[1])
+	# fig, ax = plt.subplots()
+	# plt.contourf(MSE_lasso_bootstrap, extent=extent, levels=30)#(order*len(hyperparams)))
+	# # plt.contourf(poly_degrees, hyperparams, MSE_ridge_bootstrap, cmap=plt.cm.magma, levels=30)
+	# # plt.plot(min_MSE_idx[0], min_MSE_idx[1], 'o', color='red')
+	# plt.xlabel("Polynomial degree")
+	# plt.ylabel("Pentalty parameter")
+	# cbar = plt.colorbar(pad=0.01)
+	# cbar.set_label('MSE score')
+	# plt.savefig("figures/FrankeFunction/Lasso_bootstrap.pdf")
+	# plt.show()
+
+	# """ Lasso Cross Validation"""
+	# kfolds = [i for i in range(5, 11)]
+	# LR_f.execute_regression(method=LR_f.lasso, crossval=True, kfolds=10, hyperparams=hyperparams)
+	# MSE_lasso_crossval = LR_f.MSE_crossval
+	# fig, ax = plt.subplots()
+	# plt.contourf(MSE_lasso_crossval, extent=extent, levels=30)
+	# # sns.heatmap(MSE_lasso_crossval.T, annot=True, ax=ax, cmap="viridis", cbar_kws={'label': 'Accuracy'},fmt='.1e')
+	# # ax.add_patch(plt.Rectangle((min_MSE_idx[0], min_MSE_idx[1]), 1, 1, fc='none', ec='red', lw=2, clip_on=False))
+	# plt.xlabel("Polynomial degree")
+	# plt.ylabel("Pentalty parameter")
+	# cbar = plt.colorbar(pad=0.01)
+	# cbar.set_label('MSE score')
+	# plt.savefig("figures/FrankeFunction/Lasso_crossval.pdf")
+	# plt.show()
+
+	""" Lasso Bias-Variance """
+	""" Lolol this is wierd looking"""
+	MSE_lasso= LR_f.MSE_bootstrap
+	BIAS_lasso = LR_f.BIAS_bootstrap
+	var_lasso = LR_f.var_bootstrap
+	for k in range(len(hyperparams)):
+		h1 = plt.plot(poly_degrees, MSE_lasso[k],  label='MSE_test', color='orange', alpha=k*0.1)#, s=15)
+		h2 = plt.plot(poly_degrees, BIAS_lasso[k], label='BIAS',     color='blue',   alpha=k*0.1)#, s=15)
+		h3 = plt.plot(poly_degrees, var_lasso[k],  label='var',      color='red',    alpha=k*0.1)#, s=15)
+		plt.legend(handles=[h1[0], h2[0], h3[0]])#labels=["MSE_test", "BIAS", "Variance"])
 	plt.xlabel("Polynomial degree")
-	plt.ylabel("Pentalty parameter")
-	cbar = plt.colorbar(pad=0.01)
-	cbar.set_label('MSE score')
-	plt.savefig("figures/Lasso_bootstrap.pdf")
+	plt.ylabel("Score")
+	plt.savefig("figures/FrankeFunction/Lasso_biasvar.pdf")
 	plt.show()
-	""" Lasso Cross Validation"""
+
+
+
 
 
 
