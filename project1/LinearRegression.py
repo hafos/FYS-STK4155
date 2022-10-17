@@ -405,7 +405,7 @@ if __name__ == '__main__':
 	# plt.legend()
 	# plt.xlabel("Polynomial degree")
 	# plt.ylabel("score")
-	# plt.tight_layout()
+	# plt.tight_layout() 
 	# plt.show()
 	# plt.savefig("figures/FrankeFunction/OLS_biasvar.pdf")
 
