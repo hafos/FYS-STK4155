@@ -1,16 +1,11 @@
-from audioop import cross
 import matplotlib.pyplot as plt
 import matplotlib.pylab as pylab
-import seaborn as sns
-import pandas as pd
 import numpy as np 
 
 from sklearn.preprocessing import PolynomialFeatures, StandardScaler
-from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import KFold
 from sklearn import linear_model
 from sklearn.model_selection import train_test_split
-from sklearn.pipeline import make_pipeline
 from sklearn.utils import resample
 from scipy.special import comb
 from imageio import imread
@@ -130,22 +125,6 @@ class LinearRegression:
 		data_scaled = scaler.transform(data_to_scale)
 		return data_scaled
 
-	# can get rid off
-	def get_MSE(self, i, z, z_tilde):
-		self.MSE_test[i-1] = np.mean(np.power(z - z_tilde, 2))
-		self.MSE_train[i-1] = np.mean(np.power(z - z_tilde, 2))
-
-	# def split(self, ratio=0.2): 
-	# 	""" Function for splitting data into training and testing sets using scikit-learn """
-	# 	X_train, X_test, z_train, z_test = train_test_split(self.X, self.z, test_size=ratio)#, random_state=1)
-	#   if self.scale == True: 
-			# X_test -= np.mean(X_train)
-			# X_train -= np.mean(X_train)
-			# z_scale = np.mean(z_train)
-			# z_train -= z_scale
-	# 	return X_train, X_test, z_train, z_test
-	"""Remove ? """
-
 	def ols(self, X_train, z_train):
 		beta = np.linalg.pinv(X_train.T @ X_train) @ X_train.T @ z_train
 		return beta
@@ -161,7 +140,6 @@ class LinearRegression:
 	def lasso(self, X_train, z_train, hyperparam=0):
 		if hasattr(self, 'hyperparam'):
 			hyperparam = self.hyperparam
-		# change tol when scaling fixed so that converges
 		lasso_regression = linear_model.Lasso(alpha=hyperparam, max_iter=int(1e6), tol=3e-2, fit_intercept=False)
 		lasso_regression.fit(X_train, z_train)
 		beta = lasso_regression.coef_
@@ -175,15 +153,6 @@ class LinearRegression:
 		for i in range(n):
 			X_train_resample, z_train_resample = resample(X_train, z_train, random_state = i)
 			X_test_resample = X_test + 0
-			##rescaling
-			# if self.scale == True:
-			# 	# X_train_resample -= np.mean(X_train_resample, axis=0)
-			# 	X_train_resample = self.scaling(X_train_resample)
-			# 	# X_test_resample -= np.mean(X_test, axis=0)
-			# 	X_test_resample = self.scaling(X_test_resample)
-			# 	z_scale = np.mean(z_train_resample)         
-			# 	z_train_resample -= z_scale
-			# 	z_train_resample /= np.std(z_train_resample)
 			beta = method(X_train_resample, z_train_resample)
 			z_test_tilde[:, i] = X_test_resample @ beta  + z_scale
 			score[i] = np.mean((z_test - z_test_tilde[:, i])**2)
@@ -199,12 +168,6 @@ class LinearRegression:
 			z_train = z[train_index] + 0
 			X_test = X[test_index] + 0
 			z_test = z[test_index]
-			# if self.scale == True:
-			# 	X_test  = self.scaling(X_test) # check if should be train similar in bootstrap np.mean(A_train,axis=0)
-			# 	X_train = self.scaling(X_train) #np.mean(A_train,axis=0)
-			# 	z_scale = np.mean(z_train)
-			# 	z_train -= z_scale
-			# 	z_train /= np.std(z_train)
 			beta = method(X_train, z_train)
 			z_test_tilde = X_test @ beta + z_scale
 			score[i] = np.sum((z_test_tilde - z_test)**2)/np.size(z_test_tilde)
@@ -214,11 +177,6 @@ class LinearRegression:
 
 	def execute_regression(self, method=ols, bootstrap=False, n=100, crossval=False, kfolds=10, hyperparams=0):
 		""" Method for doing the Ordinary Least Squares (OLS) regression """
-		# if self.scale == True:
-		# 	self.z = np.array_split(self.z, self.points)
-		# 	self.z = self.scaling(self.z)
-		# 	self.z = np.concatenate(self.z, axis=None)
-		# 	self.X = self.scaling(self.X)
 		X_train, X_test, z_train, z_test = train_test_split(self.X, self.z, test_size=0.2, random_state=1)
 		z_scale = 0
 		if self.scale == True:
@@ -228,8 +186,6 @@ class LinearRegression:
 			z_train /= np.std(z_train)
 			z_test -= np.mean(z_test)
 			z_test /= np.std(z_test)
-			# self.scaling(z_train)
-			# z_test = self.scaling(z_test)
 		if crossval == True and hyperparams == 0:
 			self.MSE_CV = np.zeros((len(kfolds), self.order))
 		elif crossval == True and hyperparams != 0:
@@ -246,21 +202,12 @@ class LinearRegression:
 			current_n_terms = comb(len(self.dataset) + i, i, exact=True)
 			#select only the terms of the full design matrix needed for the current order polynomial
 			X_train_current = X_train[:,0:current_n_terms] + 0
-			# X_train_current -= np.mean(X_train_current)
 			X_test_current =  X_test[:,0:current_n_terms] + 0
 
 			if bootstrap == True:
 				z_train_tilde = np.zeros(len(z_train))
-				#for fig 2.11 of Hastie, Tibshirani, and Friedman
-				# if self.scale == True:
-				# 	X_train_current = self.scaling(X_train_current)
-				# 	z_scale = np.mean(z_train)
-				# beta = method(X_train_current, z_train - z_scale)
-				# z_train_tilde = X_train_current @ beta + z_scale
-
 				X_train_current = X_train[:, 0:current_n_terms] + 0
 				X_test_current =  X_test[:, 0:current_n_terms] + 0
-				#Calcuate the errors
 				if bootstrap == True and hyperparams == 0:
 					beta = method(X_train_current, z_train - z_scale)
 					z_train_tilde = X_train_current @ beta + z_scale
@@ -276,7 +223,7 @@ class LinearRegression:
 						self.BIAS_bootstrap[k, i-1] = np.mean((z_test.reshape(-1, 1) - np.mean(z_test_tilde, axis=1, keepdims=True))**2 )
 						self.var_bootstrap[k, i-1] = np.mean(np.var(z_test_tilde, axis=1, keepdims=True) )
 						k += 1
-						# print(f"MSE - BIAS + var {(self.MSE_test[i-1] - (self.BIAS[i-1] + self.var[i-1]))}")
+						# print(f"MSE - BIAS + var {(self.MSE_test[i-1] - (self.BIAS[i-1] + self.var[i-1]))}") # test line to see that equals 0
 			elif crossval == True:
 				X_curr = self.X[:, 0:current_n_terms] + 0
 				if crossval == True and hyperparams == 0:
@@ -292,7 +239,6 @@ class LinearRegression:
 						k += 1
 					
 			else:
-				#calc both errors and store the betas in the process
 				self.beta[i-1][:current_n_terms] = method(X_train_current, z_train)
 				z_train_tilde = X_train_current @ self.beta[i-1][~np.isnan(self.beta[i-1])] #+ z_scale
 				z_test_tilde = X_test_current @ self.beta[i-1][~np.isnan(self.beta[i-1])]
@@ -300,11 +246,6 @@ class LinearRegression:
 				self.MSE_test[i-1] = np.mean(np.power(z_test - z_test_tilde, 2)) #can delete these two if only need to call method
 				self.R2_train[i-1] = self.r2(z_train, z_train_tilde)
 				self.R2_test[i-1] = self.r2(z_test, z_test_tilde)
-				# print(np.shape(z_train_tilde))
-				# does not work... self.BIAS[i-1] = np.mean((z_test.reshape(-1, 1) - np.mean(z_test_tilde, axis=1, keepdims=True))**2 )
-				# self.var[i-1] = np.var(z_trainz_test_tilde, axis=0, keepdims=True)
-				# print(np.shape(np.var(z_train - z_train_tilde)))
-				# print(type(np.var(z_train - z_train_tilde, keepdims=True)*np.diag(np.linalg.pinv(X_train_current.T @ X_train_current))))
 				self.var[i-1] = np.var(z_train - z_train_tilde, keepdims=True)*np.diag(np.linalg.pinv(X_train_current.T @ X_train_current))
 			
 	def plot_franke_function(self):
@@ -316,9 +257,6 @@ class LinearRegression:
 		surf = ax.plot_surface(self.dataset[0], self.dataset[1], z_plot, cmap=plt.cm.coolwarm, linewidth=0, antialiased=False)
 		# Customize the z axis.
 		ax.set_zlim(-0.10, 1.40)
-		# ax.zaxis.set_major_locator(LinearLocator(10))
-		# ax.zaxis.set_major_formatter(FormatStrFormatter(’%.02f’))
-		# Add a color bar which maps values to colors.
 		ax.grid(False)
 		fig.colorbar(surf, shrink=0.5, aspect=5)
 		plt.show()
@@ -326,8 +264,6 @@ class LinearRegression:
 	def plot_terrain(self):
 		""" Plot entire terrain dataset """
 		fig, ax = plt.subplots()
-		# fig = plt.figure()
-		# ax = plt.axes(projection = '3d')
 		plt.title('Terrain')
 		ax.imshow(self.data, cmap='viridis')
 		plt.xlabel('X')
@@ -349,7 +285,7 @@ class LinearRegression:
 if __name__ == '__main__':
 	""" Task b) """
 	LR_b = LinearRegression(order=5, scale=True, points=40)
-	# LR_b.plot_franke_function()
+	# LR_b.plot_franke_function() # diagnostic line to check if Franke function we are working on makes sense
 	LR_b.execute_regression(method=LR_b.ols)
 	poly_degrees = np.arange(1, 6)
 	fig, ax = plt.subplots(nrows=2, sharex=True, figsize=(12,9))
@@ -409,8 +345,6 @@ if __name__ == '__main__':
 	# plt.savefig("figures/FrankeFunction/OLS_biasvar.pdf")
 
 	""" Task d) """
-	""" Fails when scale == True, need to fix scaling, remove from crossval func?
-		Add cross_val_score from sklearn to compare against?"""
 	order = 12
 	LR_d = LinearRegression(order=order, points=20, scale=False)
 	kfolds = [i for i in range(5, 11)]
@@ -451,7 +385,7 @@ if __name__ == '__main__':
 	cbar = plt.colorbar(pad=0.01)
 	cbar.set_label('MSE score')
 	plt.tight_layout()
-	plt.savefig("figures/FrankeFunction/Ridge_bootstrap.pdf")
+	# plt.savefig("figures/FrankeFunction/Ridge_bootstrap.pdf")
 	plt.show()
 
 	# # plt.plot(poly_degrees, LR_e.MSE_train, label='train')
@@ -470,11 +404,11 @@ if __name__ == '__main__':
 	plt.xlabel("Polynomial degree")
 	plt.ylabel("MSE score")
 	plt.tight_layout()
-	plt.savefig("figures/FrankeFunction/Ridge_biasvar.pdf")
+	# plt.savefig("figures/FrankeFunction/Ridge_biasvar.pdf")
 	plt.show()
 
 	""" Ridge Cross validation heatmap """
-	# LR_e.execute_regression(method=LR_e.ridge, crossval=True, kfolds=10, hyperparams=hyperparams)
+	LR_e.execute_regression(method=LR_e.ridge, crossval=True, kfolds=10, hyperparams=hyperparams)
 	MSE_ridge_crossval = LR_e.MSE_crossval
 	fig, ax = plt.subplots()
 	plt.contourf(MSE_ridge_crossval, extent=extent, levels=30)
@@ -488,8 +422,6 @@ if __name__ == '__main__':
 
 	""" Task f) """
 	""" Lasso Bootstrap """
-	""" Lasso does not converge when scale=True, hints that scaling is not implemented correctly """
-
 	order = 20
 	poly_degrees = np.arange(1, order+1)
 	hyperparams = [10**i for i in range(-10, 0)]
