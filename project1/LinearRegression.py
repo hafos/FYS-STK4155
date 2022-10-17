@@ -241,7 +241,7 @@ class LinearRegression:
 			self.hyperparam = hyperparams[0]
 
 		for i in range(1, self.order+1):
-			print(f'Computing for order: {i}' )
+			print(f'Computing for order: {i}' ) # for testing purposes and to see how far code
 			# current number of terms in polynomial of order given as complete homogeneous symmetric
 			current_n_terms = comb(len(self.dataset) + i, i, exact=True)
 			#select only the terms of the full design matrix needed for the current order polynomial
@@ -329,7 +329,6 @@ class LinearRegression:
 		# fig = plt.figure()
 		# ax = plt.axes(projection = '3d')
 		plt.title('Terrain')
-		print(self.data)
 		ax.imshow(self.data, cmap='viridis')
 		plt.xlabel('X')
 		plt.ylabel('Y')
@@ -349,167 +348,143 @@ class LinearRegression:
 
 if __name__ == '__main__':
 	""" Task b) """
-	# LR_b = LinearRegression(order=5, scale=True, points=40)
-	# # LR_b.plot_franke_function()
-	# LR_b.execute_regression(method=LR_b.ols)
-	# poly_degrees = np.arange(1, 6)
-	# fig, ax = plt.subplots(nrows=2, sharex=True, figsize=(12,9))
-	# ax[0].plot(poly_degrees, LR_b.MSE_test,  label='MSE test',  color='orange', linestyle='--')
-	# ax[0].plot(poly_degrees, LR_b.MSE_train, label='MSE train', color='orange')
-	# ax[0].legend()
-	# ax[0].set(ylabel="MSE score")
-	# ax[1].plot(poly_degrees, LR_b.R2_test,   label=r'R$^2$ test', color='b', linestyle='--')
-	# ax[1].plot(poly_degrees, LR_b.R2_train,  label=r'R$^2$ train', color='b')
-	# ax[1].set(ylabel=r"R$^2$ score")
-	# ax[1].legend()
-	# plt.xlabel('Polynomial degree')
-	# fig.tight_layout()
-	# plt.show()
+	LR_b = LinearRegression(order=5, scale=True, points=40)
+	# LR_b.plot_franke_function()
+	LR_b.execute_regression(method=LR_b.ols)
+	poly_degrees = np.arange(1, 6)
+	fig, ax = plt.subplots(nrows=2, sharex=True, figsize=(12,9))
+	ax[0].plot(poly_degrees, LR_b.MSE_test,  label='MSE test',  color='orange', linestyle='--')
+	ax[0].plot(poly_degrees, LR_b.MSE_train, label='MSE train', color='orange')
+	ax[0].legend()
+	ax[0].set(ylabel="MSE score")
+	ax[1].plot(poly_degrees, LR_b.R2_test,   label=r'R$^2$ test', color='b', linestyle='--')
+	ax[1].plot(poly_degrees, LR_b.R2_train,  label=r'R$^2$ train', color='b')
+	ax[1].set(ylabel=r"R$^2$ score")
+	ax[1].legend()
+	plt.xlabel('Polynomial degree')
+	fig.tight_layout()
+	plt.show()
 	# plt.savefig("figures/FrankeFunction/OLS_scores.pdf")
 
 	# ### Beta coefficients
-	# betas = LR_b.beta
-	# var = LR_b.var[::-1]
-	# ax = plt.axes()
-	# color = plt.cm.viridis(np.linspace(0.9, 0,11))
-	# ax.set_prop_cycle(plt.cycler('color', color))
-	# ax.set_xticks([i for i in range(1, len(betas[-1])+1)])
-	# for i, beta in enumerate(betas[::-1]):
-	# 	coefficients = beta[~(np.isnan(beta))]
-	# 	beta_indexes = np.arange(1, len(coefficients)+1)
-	# 	plt.errorbar(beta_indexes, coefficients, yerr=np.sqrt(var[i]), marker='o', linestyle='--', capsize=4, label='d = %d' % (5-i))
-	# plt.xlabel(r'$\beta$ coefficient number')
-	# plt.ylabel(r'$\beta$ coefficient value')
-	# plt.legend()
-	# plt.tight_layout()
-	# plt.show()
+	betas = LR_b.beta
+	var = LR_b.var[::-1]
+	ax = plt.axes()
+	color = plt.cm.viridis(np.linspace(0.9, 0,11))
+	ax.set_prop_cycle(plt.cycler('color', color))
+	ax.set_xticks([i for i in range(1, len(betas[-1])+1)])
+	for i, beta in enumerate(betas[::-1]):
+		coefficients = beta[~(np.isnan(beta))]
+		beta_indexes = np.arange(1, len(coefficients)+1)
+		plt.errorbar(beta_indexes, coefficients, yerr=np.sqrt(var[i]), marker='o', linestyle='--', capsize=4, label='d = %d' % (5-i))
+	plt.xlabel(r'$\beta$ coefficient number')
+	plt.ylabel(r'$\beta$ coefficient value')
+	plt.legend()
+	plt.tight_layout()
+	plt.show()
 	# plt.savefig("figures/FrankeFunction/OLS_beta.pdf")
 
 	""" Task c) """
-	# order = 12
-	# LR_c = LinearRegression(order=order, points=20, sigma=0.1, scale=True)
-	# LR_c.execute_regression(method=LR_c.ols, bootstrap=True, n=300)
-	# poly_degrees = np.arange(1, order+1)
-	# plt.plot(poly_degrees, LR_c.MSE_train, label='train', color='orange', linestyle='--')
-	# plt.plot(poly_degrees, LR_c.MSE_test,  label='test',  color='orange')
-	# plt.legend()
-	# plt.xlabel("Polynomial degree")
-	# plt.ylabel("MSE score")
-	# plt.tight_layout()
-	# plt.show()
+	order = 12
+	LR_c = LinearRegression(order=order, points=20, sigma=0.1, scale=True)
+	LR_c.execute_regression(method=LR_c.ols, bootstrap=True, n=300)
+	poly_degrees = np.arange(1, order+1)
+	plt.plot(poly_degrees, LR_c.MSE_train, label='train', color='orange', linestyle='--')
+	plt.plot(poly_degrees, LR_c.MSE_test,  label='test',  color='orange')
+	plt.legend()
+	plt.xlabel("Polynomial degree")
+	plt.ylabel("MSE score")
+	plt.tight_layout()
+	plt.show()
 	# plt.savefig("figures/FrankeFunction/OLS_bootstrap.pdf")
 
-	# plt.plot(poly_degrees, LR_c.BIAS,     label=r'BIAS$^2$',     color='red')
-	# plt.plot(poly_degrees, LR_c.MSE_test, label='MSE test', color='orange')
-	# plt.plot(poly_degrees, LR_c.var,      label='var',      color='green')   
-	# plt.legend()
-	# plt.xlabel("Polynomial degree")
-	# plt.ylabel("score")
-	# plt.tight_layout() 
-	# plt.show()
+	plt.plot(poly_degrees, LR_c.BIAS,     label=r'BIAS$^2$',     color='red')
+	plt.plot(poly_degrees, LR_c.MSE_test, label='MSE test', color='orange')
+	plt.plot(poly_degrees, LR_c.var,      label='var',      color='green')   
+	plt.legend()
+	plt.xlabel("Polynomial degree")
+	plt.ylabel("score")
+	plt.tight_layout() 
+	plt.show()
 	# plt.savefig("figures/FrankeFunction/OLS_biasvar.pdf")
 
 	""" Task d) """
 	""" Fails when scale == True, need to fix scaling, remove from crossval func?
 		Add cross_val_score from sklearn to compare against?"""
-	# order = 12
-	# LR_d = LinearRegression(order=order, points=20, scale=False)
-	# kfolds = [i for i in range(5, 11)]
-	# LR_d.execute_regression(method=LR_d.ols, bootstrap=True, n=300)
-	# LR_d.execute_regression(method=LR_d.ols, crossval=True, kfolds=kfolds)
-	# poly_degrees = np.arange(1, order+1)
-	# fig, ax = plt.subplots()
-	# plt.plot(poly_degrees, LR_d.MSE_train, label='bootstrap train', color='k', linestyle='--')
-	# plt.plot(poly_degrees, LR_d.MSE_test,  label='bootstrap test', color='k')
-	# color = plt.cm.cool(np.linspace(0.9, 0,11))
-	# ax.set_prop_cycle(plt.cycler('color', color))
-	# for k in range(len(kfolds)):
-	# 	plt.plot(poly_degrees, LR_d.MSE_CV[k], label=f'k = {kfolds[k]}')
-	# plt.legend(loc='upper center')
-	# plt.xlabel("Polynomial degree")
-	# plt.ylabel("MSE score")
-	# plt.tight_layout()
+	order = 12
+	LR_d = LinearRegression(order=order, points=20, scale=False)
+	kfolds = [i for i in range(5, 11)]
+	LR_d.execute_regression(method=LR_d.ols, bootstrap=True, n=300)
+	LR_d.execute_regression(method=LR_d.ols, crossval=True, kfolds=kfolds)
+	poly_degrees = np.arange(1, order+1)
+	fig, ax = plt.subplots()
+	plt.plot(poly_degrees, LR_d.MSE_train, label='bootstrap train', color='k', linestyle='--')
+	plt.plot(poly_degrees, LR_d.MSE_test,  label='bootstrap test', color='k')
+	color = plt.cm.cool(np.linspace(0.9, 0,11))
+	ax.set_prop_cycle(plt.cycler('color', color))
+	for k in range(len(kfolds)):
+		plt.plot(poly_degrees, LR_d.MSE_CV[k], label=f'k = {kfolds[k]}')
+	plt.legend(loc='upper center')
+	plt.xlabel("Polynomial degree")
+	plt.ylabel("MSE score")
+	plt.tight_layout()
 	# plt.savefig("figures/FrankeFunction/OLS_crossval.pdf")
-	# plt.show()
+	plt.show()
 	
 
 	""" Task e) """
 	""" Ridge Bootstrap """
 
-	# order = 12
-	# poly_degrees = np.arange(1, order+1)
-	# hyperparams = [10**i for i in range(-10, 0)]
-	# extent = [poly_degrees[0], poly_degrees[-1], hyperparams[0], hyperparams[-1]]
-	# LR_e = LinearRegression(order=order, points=20, scale=True)
-	# LR_e.execute_regression(method=LR_e.ridge, bootstrap=True, n=100, hyperparams=hyperparams)
-	# MSE_ridge_bootstrap = LR_e.MSE_bootstrap
-	# print(np.shape(MSE_ridge_bootstrap))
-	# min_MSE_idx = divmod(MSE_ridge_bootstrap.argmin(), MSE_ridge_bootstrap.shape[1])
-	# min_MSE_idx = divmod(MSE_ridge_bootstrap.argmin(), MSE_ridge_bootstrap.shape[0])
-	# print(min_MSE_idx)
+	order = 12
+	poly_degrees = np.arange(1, order+1)
+	hyperparams = [10**i for i in range(-10, 0)]
+	extent = [poly_degrees[0], poly_degrees[-1], np.log10(hyperparams[0]), np.log10(hyperparams[-1])]
+	LR_e = LinearRegression(order=order, points=20, scale=True)
+	LR_e.execute_regression(method=LR_e.ridge, bootstrap=True, n=100, hyperparams=hyperparams)
+	MSE_ridge_bootstrap = LR_e.MSE_bootstrap
 
-	""" Ridge heatmap """
-	# # print(MSE_ridge_bootstrap.min())
-	# # ymin, xmin = MSE_ridge_bootstrap) == MSE_ridge_bootstrap)
-	# # print(np.shape(MSE_ridge_bootstrap), xmin, ymin)
-	# # i, j = np.unravel_index(np.argmin(MSE_ridge_bootstrap), np.shape(MSE_ridge_bootstrap))
-	# fig, ax = plt.subplots()
-	# plt.contourf(MSE_ridge_bootstrap, extent=extent, levels=30)#(order*len(hyperparams)))
-	# # plt.contourf(MSE_ridge_bootstrap, extent=extent, levels=30)#(order*len(hyperparams)))
-	# # plt.plot(poly_degrees[j], hyperparams[i], 'o')
-	# # ax.set_xticklabels(range(1, order+1))
-	# # # ax.set_yticklabels(np.log10(hyperparams),out=np.zeros_like(hyperparams), where=(hyperparams!=0))
-	# # # plt.contourf(poly_degrees, hyperparams, MSE_ridge_bootstrap, cmap=plt.cm.magma, levels=30)
-	# # # plt.plot(min_MSE_idx[0], min_MSE_idx[1], 'o', color='red')
-	# plt.xlabel("Polynomial degree")
-	# plt.ylabel("Pentalty parameter")
-	# cbar = plt.colorbar(pad=0.01)
-	# cbar.set_label('MSE score')
-	# plt.tight_layout()
-	# plt.savefig("figures/FrankeFunction/Ridge_bootstrap.pdf")
-	# plt.show()
-	# # sns.heatmap(MSE_ridge_bootstrap, annot=True, ax=ax, cmap="viridis", cbar_kws={'label': 'Accuracy'},fmt='.1e')
+	# """ Ridge heatmap """
+	fig, ax = plt.subplots()
+	plt.contourf(MSE_ridge_bootstrap, extent=extent, levels=30)#(order*len(hyperparams)))
+	plt.xlabel("Polynomial degree")
+	plt.ylabel(r"Penalty parameter [log$_{10}$]")
+	cbar = plt.colorbar(pad=0.01)
+	cbar.set_label('MSE score')
+	plt.tight_layout()
+	plt.savefig("figures/FrankeFunction/Ridge_bootstrap.pdf")
+	plt.show()
 
-	# # # ax.set_title("Test Accuracy BSE 2")
-	# # # ax.set_ylabel("order")
-	# # # ax.set_xlabel("log$_{10}(\lambda)$")
-	# # ax.add_patch(plt.Rectangle((min_MSE_idx[0], min_MSE_idx[1]), 1, 1, fc='none', ec='red', lw=2, clip_on=False))
-	# # plt.show()
 	# # plt.plot(poly_degrees, LR_e.MSE_train, label='train')
 	# # plt.plot(poly_degrees, LR_e.MSE_test, label='test')
 	# # plt.legend()
 	# # plt.show()
 
 	""" Ridge bias-var analysis analysis with bootstrap """
-	# BIAS_ridge_bootstrap = LR_e.BIAS_bootstrap
-	# var_ridge_bootstrap = LR_e.var_bootstrap
-	# for k in range(len(hyperparams)):
-	# 	h1 = plt.plot(poly_degrees, MSE_ridge_bootstrap[k],  label='MSE test',  color='orange', alpha=k*0.1)#, s=15)
-	# 	h2 = plt.plot(poly_degrees, BIAS_ridge_bootstrap[k], label=r'BIAS$^2$', color='blue',   alpha=k*0.1)#, s=15)
-	# 	h3 = plt.plot(poly_degrees, var_ridge_bootstrap[k],  label='var',       color='red',    alpha=k*0.1)#, s=15)
-	# 	plt.legend(handles=[h1[0], h2[0], h3[0]])#labels=["MSE_test", "BIAS", "Variance"])
-	# plt.xlabel("Polynomial degree")
-	# plt.ylabel("MSE score")
-	# plt.tight_layout()
-	# plt.savefig("figures/FrankeFunction/Ridge_biasvar.pdf")
-	# plt.show()
+	BIAS_ridge_bootstrap = LR_e.BIAS_bootstrap
+	var_ridge_bootstrap = LR_e.var_bootstrap
+	for k in range(len(hyperparams)):
+		h1 = plt.plot(poly_degrees, MSE_ridge_bootstrap[k],  label='MSE test',  color='orange', alpha=k*0.1)#, s=15)
+		h2 = plt.plot(poly_degrees, BIAS_ridge_bootstrap[k], label=r'BIAS$^2$', color='blue',   alpha=k*0.1)#, s=15)
+		h3 = plt.plot(poly_degrees, var_ridge_bootstrap[k],  label='var',       color='red',    alpha=k*0.1)#, s=15)
+		plt.legend(handles=[h1[0], h2[0], h3[0]])#labels=["MSE_test", "BIAS", "Variance"])
+	plt.xlabel("Polynomial degree")
+	plt.ylabel("MSE score")
+	plt.tight_layout()
+	plt.savefig("figures/FrankeFunction/Ridge_biasvar.pdf")
+	plt.show()
 
 	""" Ridge Cross validation heatmap """
-	# kfolds = [i for i in range(5, 11)]
 	# LR_e.execute_regression(method=LR_e.ridge, crossval=True, kfolds=10, hyperparams=hyperparams)
-	# MSE_ridge_crossval = LR_e.MSE_crossval
-	# # min_MSE_idx = divmod(MSE_ridge_crossval.argmin(), MSE_ridge_crossval.shape[1])
-	# fig, ax = plt.subplots()
-	# plt.contourf(MSE_ridge_crossval, extent=extent, levels=30)
-	# # sns.heatmap(MSE_ridge_crossval.T, annot=True, ax=ax, cmap="viridis", cbar_kws={'label': 'Accuracy'},fmt='.1e')
-	# # ax.add_patch(plt.Rectangle((min_MSE_idx[0], min_MSE_idx[1]), 1, 1, fc='none', ec='red', lw=2, clip_on=False))
-	# plt.xlabel("Polynomial degree")
-	# plt.ylabel("Pentalty parameter")
-	# cbar = plt.colorbar(pad=0.01)
-	# cbar.set_label('MSE score')
-	# plt.tight_layout()
+	MSE_ridge_crossval = LR_e.MSE_crossval
+	fig, ax = plt.subplots()
+	plt.contourf(MSE_ridge_crossval, extent=extent, levels=30)
+	plt.xlabel("Polynomial degree")
+	plt.ylabel(r"Penalty parameter [log$_{10}$]")
+	cbar = plt.colorbar(pad=0.01)
+	cbar.set_label('MSE score')
+	plt.tight_layout()
 	# plt.savefig("figures/FrankeFunction/Ridge_crossval.pdf")
-	# plt.show()
+	plt.show()
 
 	""" Task f) """
 	""" Lasso Bootstrap """
@@ -518,39 +493,32 @@ if __name__ == '__main__':
 	order = 20
 	poly_degrees = np.arange(1, order+1)
 	hyperparams = [10**i for i in range(-10, 0)]
-	extent = [poly_degrees[0], poly_degrees[-1], hyperparams[0], hyperparams[-1]]
+	extent = [poly_degrees[0], poly_degrees[-1], np.log10(hyperparams[0]), np.log10(hyperparams[-1])]
 	LR_f = LinearRegression(order=order, points=20, scale=False)
 
-	# LR_f.execute_regression(method=LR_f.lasso, bootstrap=True, n=10, hyperparams=hyperparams)
-	# MSE_lasso_bootstrap = LR_f.MSE_bootstrap
-	# print(np.shape(MSE_ridge_bootstrap))
-	# min_MSE_idx = divmod(MSE_ridge_bootstrap.argmin(), MSE_ridge_bootstrap.shape[1])
+	LR_f.execute_regression(method=LR_f.lasso, bootstrap=True, n=10, hyperparams=hyperparams)
+	MSE_lasso_bootstrap = LR_f.MSE_bootstrap
 	""" Lasso heatmap boot """
-	# fig, ax = plt.subplots()
-	# plt.contourf(MSE_lasso_bootstrap, extent=extent, levels=30)#(order*len(hyperparams)))
-	# # plt.contourf(poly_degrees, hyperparams, MSE_ridge_bootstrap, cmap=plt.cm.magma, levels=30)
-	# # plt.plot(min_MSE_idx[0], min_MSE_idx[1], 'o', color='red')
-	# plt.xlabel("Polynomial degree")
-	# plt.ylabel("Pentalty parameter")
-	# cbar = plt.colorbar(pad=0.01)
-	# cbar.set_label('MSE score')
-	# plt.tight_layout()
+	fig, ax = plt.subplots()
+	plt.contourf(MSE_lasso_bootstrap, extent=extent, levels=30)#(order*len(hyperparams)))
+	plt.xlabel("Polynomial degree")
+	plt.ylabel(r"Penalty parameter [log$_{10}$]")
+	cbar = plt.colorbar(pad=0.01)
+	cbar.set_label('MSE score')
+	plt.tight_layout()
 	# plt.savefig("figures/FrankeFunction/Lasso_bootstrap.pdf")
-	# plt.show()
+	plt.show()
 
-	""" Lasso heatmap Cross Validation"""
-	# kfolds = [i for i in range(5, 11)]
-	# LR_f.execute_regression(method=LR_f.lasso, crossval=True, kfolds=10, hyperparams=hyperparams)
-	# MSE_lasso_crossval = LR_f.MSE_crossval
-	# fig, ax = plt.subplots()
-	# plt.contourf(MSE_lasso_crossval, extent=extent, levels=30)
-	# # sns.heatmap(MSE_lasso_crossval.T, annot=True, ax=ax, cmap="viridis", cbar_kws={'label': 'Accuracy'},fmt='.1e')
-	# # ax.add_patch(plt.Rectangle((min_MSE_idx[0], min_MSE_idx[1]), 1, 1, fc='none', ec='red', lw=2, clip_on=False))
-	# plt.xlabel("Polynomial degree")
-	# plt.ylabel("Pentalty parameter")
-	# cbar = plt.colorbar(pad=0.01)
-	# cbar.set_label('MSE score')
-	# plt.tight_layout()
+	# """ Lasso heatmap Cross Validation"""
+	LR_f.execute_regression(method=LR_f.lasso, crossval=True, kfolds=10, hyperparams=hyperparams)
+	MSE_lasso_crossval = LR_f.MSE_crossval
+	fig, ax = plt.subplots()
+	plt.contourf(MSE_lasso_crossval, extent=extent, levels=30)
+	plt.xlabel("Polynomial degree")
+	plt.ylabel(r"Penalty parameter [log$_{10}$]")
+	cbar = plt.colorbar(pad=0.01)
+	cbar.set_label('MSE score')
+	plt.tight_layout()
 	# plt.savefig("figures/FrankeFunction/Lasso_crossval.pdf")
-	# plt.show()
+	plt.show()
 	
