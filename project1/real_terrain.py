@@ -101,14 +101,14 @@ LR_terrain.execute_regression(method=LR_terrain.ols, bootstrap=True, n=300)
 # order = 12
 # poly_degrees = np.arange(1, order+1)
 # hyperparams = [10**i for i in range(-10, 0)]
-# extent = [poly_degrees[0], poly_degrees[-1], hyperparams[0], hyperparams[-1]]
+# extent = [poly_degrees[0], poly_degrees[-1], np.log10(hyperparams[0]), np.log10(hyperparams[-1])]
 # LR_terrain.execute_regression(method=LR_terrain.ridge, bootstrap=True, n=100, hyperparams=hyperparams)
 # MSE_ridge_bootstrap = LR_terrain.MSE_bootstrap
 
 # fig, ax = plt.subplots()
 # plt.contourf(MSE_ridge_bootstrap, extent=extent, levels=30)
 # plt.xlabel("Polynomial degree")
-# plt.ylabel("Pentalty parameter")
+# plt.ylabel(r"Penalty parameter [log$_{10}$]")
 # cbar = plt.colorbar(pad=0.01)
 # cbar.set_label('MSE score')
 # plt.tight_layout()
@@ -140,7 +140,7 @@ LR_terrain.execute_regression(method=LR_terrain.ols, bootstrap=True, n=300)
 # # sns.heatmap(MSE_ridge_crossval.T, annot=True, ax=ax, cmap="viridis", cbar_kws={'label': 'Accuracy'},fmt='.1e')
 # # ax.add_patch(plt.Rectangle((min_MSE_idx[0], min_MSE_idx[1]), 1, 1, fc='none', ec='red', lw=2, clip_on=False))
 # plt.xlabel("Polynomial degree")
-# plt.ylabel("Pentalty parameter")
+# plt.ylabel(r"Penalty parameter [log$_{10}$]")
 # cbar = plt.colorbar(pad=0.01)
 # cbar.set_label('MSE score')
 # plt.tight_layout()
@@ -157,7 +157,7 @@ LR_terrain.execute_regression(method=LR_terrain.ols, bootstrap=True, n=300)
 order = 12
 poly_degrees = np.arange(1, order+1)
 hyperparams = [10**i for i in range(-10, 0)]
-extent = [poly_degrees[0], poly_degrees[-1], hyperparams[0], hyperparams[-1]]
+extent = [poly_degrees[0], poly_degrees[-1], np.log10(hyperparams[0]), np.log10(hyperparams[-1])]
 
 LR_terrain = LinearRegression(order=order, data=data1, reduce_factor=10, x_pos=0, y_pos=1950, scale=True)
 LR_terrain.execute_regression(method=LR_terrain.lasso, bootstrap=True, n=10, hyperparams=hyperparams)
@@ -169,7 +169,7 @@ plt.contourf(MSE_lasso_bootstrap, extent=extent, levels=30)#(order*len(hyperpara
 # plt.contourf(poly_degrees, hyperparams, MSE_ridge_bootstrap, cmap=plt.cm.magma, levels=30)
 # plt.plot(min_MSE_idx[0], min_MSE_idx[1], 'o', color='red')
 plt.xlabel("Polynomial degree")
-plt.ylabel("Pentalty parameter")
+plt.ylabel(r"Penalty parameter [log$_{10}$]")
 cbar = plt.colorbar(pad=0.01)
 cbar.set_label('MSE score')
 plt.tight_layout()
@@ -183,7 +183,7 @@ MSE_lasso_crossval = LR_terrain.MSE_crossval
 fig, ax = plt.subplots()
 plt.contourf(MSE_lasso_crossval, extent=extent, levels=30)
 plt.xlabel("Polynomial degree")
-plt.ylabel("Pentalty parameter")
+plt.ylabel(r"Penalty parameter [log$_{10}$]")
 cbar = plt.colorbar(pad=0.01)
 cbar.set_label('MSE score')
 plt.tight_layout()
