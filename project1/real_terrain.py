@@ -148,8 +148,6 @@ plt.savefig("figures/Terrain/terra_Ridge_crossval.pdf")
 plt.show()
 
 
-
-
 """ Task f) """
 """ Lasso Bootstrap """
 """ Lasso does not converge when scale=True, hints that scaling is not implemented correctly """
@@ -157,11 +155,12 @@ plt.show()
 order = 12
 poly_degrees = np.arange(1, order+1)
 hyperparams = [10**i for i in range(-10, 0)]
-extent = [poly_degrees[0], poly_degrees[-1], hyperparams[0], hyperparams[-1]]
+extent = [poly_degrees[0], poly_degrees[-1], np.log10(hyperparams[0]), np.log10(hyperparams[-1])]
 
 LR_terrain = LinearRegression(order=order, data=data1, reduce_factor=10, x_pos=0, y_pos=1950, scale=True)
 LR_terrain.execute_regression(method=LR_terrain.lasso, bootstrap=True, n=10, hyperparams=hyperparams)
 MSE_lasso_bootstrap = LR_terrain.MSE_bootstrap
+
 
 # """ Lasso heatmap boot """
 # fig, ax = plt.subplots()
@@ -169,7 +168,7 @@ MSE_lasso_bootstrap = LR_terrain.MSE_bootstrap
 # # plt.contourf(poly_degrees, hyperparams, MSE_ridge_bootstrap, cmap=plt.cm.magma, levels=30)
 # # plt.plot(min_MSE_idx[0], min_MSE_idx[1], 'o', color='red')
 # plt.xlabel("Polynomial degree")
-# plt.ylabel("Pentalty parameter")
+# plt.ylabel(r"Penalty parameter [log$_{10}$]")
 # cbar = plt.colorbar(pad=0.01)
 # cbar.set_label('MSE score')
 # plt.tight_layout()
@@ -183,7 +182,7 @@ MSE_lasso_bootstrap = LR_terrain.MSE_bootstrap
 # fig, ax = plt.subplots()
 # plt.contourf(MSE_lasso_crossval, extent=extent, levels=30)
 # plt.xlabel("Polynomial degree")
-# plt.ylabel("Pentalty parameter")
+# plt.ylabel(r"Penalty parameter [log$_{10}$]")
 # cbar = plt.colorbar(pad=0.01)
 # cbar.set_label('MSE score')
 # plt.tight_layout()
