@@ -132,14 +132,26 @@ class LinearRegression:
 	def ols(self, X_train, z_train):
 		beta = np.linalg.pinv(X_train.T @ X_train) @ X_train.T @ z_train
 		return beta
+
+	def ridge(self, X_train, z_train, hyperparam=0):
+		I = np.identity(X_train.T.shape[0])
+		beta = np.linalg.pinv(X_train.T @ X_train + hyperparam*I) 
+		beta = beta @ X_train.T @ z_train
+		return beta
+
+	def lasso(self, X_train, z_train, hyperparam=0):
+		lasso_regression = linear_model.Lasso(alpha=hyperparam, fit_intercept=False)
+		lasso_regression.fit(X_train, z_train)
+		beta = lasso_regression.coef_
+		return beta
 	
 	def bootstrap(self, X_train, X_test, z_train, z_test, method=ols, n=100):
 		""" Function for doing the bootstrap resampling method """
 		z_scale = 0
 		score = np.zeros(n)
 		z_test_tilde = np.zeros((len(z_test), n))
-		for j in range(0, n):
-			X_train_resample, z_train_resample = resample(X_train, z_train, random_state = j)
+		for i in range(n):
+			X_train_resample, z_train_resample = resample(X_train, z_train, random_state = i)
 			X_test_resample = X_test + 0
 			# print(X_test)
 			##rescaling
@@ -152,13 +164,35 @@ class LinearRegression:
 				z_train_resample -= z_scale
 				z_train_resample /= np.std(z_train_resample)
 			beta = method(X_train_resample, z_train_resample)
-			z_test_tilde[:, j] = X_test_resample @ beta  + z_scale
+			z_test_tilde[:, i] = X_test_resample @ beta  + z_scale
 			# print(z_test_tilde[:, j])
-			score[j] = np.mean((z_test - z_test_tilde[:, j])**2)
+			score[i] = np.mean((z_test - z_test_tilde[:, i])**2)
 		return np.mean(score), z_test_tilde
 
+	def crossval(self, X, z, method, folds):
+		z_scale = 0
+		score = np.zeros(folds)
+		rs = KFold(n_splits=folds, shuffle=True, random_state=1)
+		i = 0
+		for train_index, test_index in rs.split(X):
+			X_train = X[train_index] + 0
+			z_train = z[train_index] + 0
+			X_test = X[test_index] + 0
+			z_test = z[test_index]
+			if self.scale == True:
+				X_test  = self.scaling(X_test) # check if should be train similar in bootstrap np.mean(A_train,axis=0)
+				X_train = self.scaling(X_train) #np.mean(A_train,axis=0)
+				z_scale = np.mean(z_train)
+				z_train -= z_scale
+				z_train /= np.std(z_train)
+			beta = method(X_train, z_train)
+			z_test_tilde = X_test @ beta + z_scale
+			score[i] = np.sum((z_test_tilde - z_test)**2)/np.size(z_test_tilde)
+			i +=1        
+		return np.mean(score)
 
-	def execute_regression(self, method=ols, bootstrap=False, n=100):
+
+	def execute_regression(self, method=ols, bootstrap=False, n=100, crossval=False, kfolds=10):
 		""" Method for doing the Ordinary Least Squares (OLS) regression """
 		# if self.scale == True:
 		# 	self.z = np.array_split(self.z, self.points)
@@ -176,6 +210,8 @@ class LinearRegression:
 			z_test /= np.std(z_test)
 			# self.scaling(z_train)
 			# z_test = self.scaling(z_test)
+		if crossval == True:
+			self.MSE_CV = np.zeros((len(kfolds), order))
 
 		for i in range(1, self.order+1):
 			# current number of terms in polynomial of order given as complete homogeneous symmetric
@@ -185,7 +221,7 @@ class LinearRegression:
 			# X_train_current -= np.mean(X_train_current)
 			X_test_current =  X_test[:,0:current_n_terms] + 0
 
-			if bootstrap==True:
+			if bootstrap == True:
 				z_train_tilde = np.zeros(len(z_train))
 				#for fig 2.11 of Hastie, Tibshirani, and Friedman
 				# if self.scale == True:
@@ -203,9 +239,14 @@ class LinearRegression:
 				self.var[i-1] = np.mean(np.var(z_test_tilde, axis=1, keepdims=True) )
 				# print(self.MSE_test, i)
 				# print(f"MSE - BIAS + var {(self.MSE_test[i-1] - (self.BIAS[i-1] + self.var[i-1]))}")
-			
+			elif crossval == True:
+				X_curr = self.X[:,0:current_n_terms] + 0
+				k = 0
+				for folds in kfolds:
+					# print(folds, type(folds)) 
+					self.MSE_CV[k,i-1] = self.crossval(X_curr, self.z, method, folds)
+					k += 1
 			else:
-				
 				#calc both errors and store the betas in the process
 				# print(np.shape(np.linalg.pinv(X_train_current.T @ X_train) @ X_train_current.T @ z_train), np.shape(X_train_current.T), np.shape(z_train))
 				self.beta[i-1][:current_n_terms] = method(X_train_current, z_train)
@@ -284,23 +325,47 @@ if __name__ == '__main__':
 	# plt.show()
 
 	""" Task c) """
-	order = 12
-	LR_c = LinearRegression(order=order, points=20, sigma=0.1, scale=True)
-	# LR_c.plot_franke_function()
-	# # print(LR_c.scale)
-	LR_c.execute_regression(method=LR_c.ols, bootstrap=True, n=400)
-	poly_degrees = np.arange(1, order+1)
-	# print(LR_c.MSE_test)
-	# print(LR_c.var)
-	plt.plot(poly_degrees, LR_c.MSE_train, label='train')
-	plt.plot(poly_degrees, LR_c.MSE_test, label='test')
-	plt.legend()
-	plt.show()
-	plt.plot(poly_degrees, LR_c.BIAS, label='BIAS', color='orange')#, s=15)
-	plt.plot(poly_degrees, LR_c.MSE_test, label='MSE_test', color='blue')#, s=15)
-	plt.plot(poly_degrees, LR_c.var, label='var', color='red')#, s=15)     
-	plt.legend()
-	plt.show()
+	# order = 12
+	# LR_c = LinearRegression(order=order, points=20, sigma=0.1, scale=True)
+	# # LR_c.plot_franke_function()
+	# # # print(LR_c.scale)
+	# LR_c.execute_regression(method=LR_c.ols, bootstrap=True, n=400)
+	# poly_degrees = np.arange(1, order+1)
+	# # print(LR_c.MSE_test)
+	# # print(LR_c.var)
+	# plt.plot(poly_degrees, LR_c.MSE_train, label='train')
+	# plt.plot(poly_degrees, LR_c.MSE_test, label='test')
+	# plt.legend()
+	# plt.show()
+	# plt.plot(poly_degrees, LR_c.BIAS, label='BIAS', color='orange')#, s=15)
+	# plt.plot(poly_degrees, LR_c.MSE_test, label='MSE_test', color='blue')#, s=15)
+	# plt.plot(poly_degrees, LR_c.var, label='var', color='red')#, s=15)     
+	# plt.legend()
+	# plt.show()
 
 	""" Task d) """
+	""" Fails when scale == True, need to fix scaling, remove from crossval func?
+		Add cross_val_score from sklearn to compare against?"""
+	order = 12
+	LR_d = LinearRegression(order=order, points=20, scale=False)
+	kfolds = [i for i in range(5, 11)]
+	# print(kfolds, np.type(kfolds)) 
+	LR_d.execute_regression(method=LR_d.ols, bootstrap=True, n=400)
+	LR_d.execute_regression(method=LR_d.ols, crossval=True, kfolds=kfolds)
+	poly_degrees = np.arange(1, order+1)
+	# print(poly_degrees, type(poly_degrees))
+	plt.plot(poly_degrees, LR_d.MSE_train, label='bootstrap train')
+	plt.plot(poly_degrees, LR_d.MSE_test, label='bootstrap test')
+	for k in range(len(kfolds)):
+		plt.plot(poly_degrees, LR_d.MSE_CV[k], label=f'crossval k: {kfolds[k]}')
+	plt.legend()
+	plt.show()
+	
+
+	""" Task e) """
+
+	""" Task f) """
+
+	""" Task g) """
+
 
