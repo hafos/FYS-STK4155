@@ -29,8 +29,6 @@ plt.show()
 betas = LR_terrain.beta
 var = LR_terrain.var[::-1]
 plt.figure()
-# # print(np.shape(LR_b.var))
-# # print(LR_b.var[-1])
 ax = plt.axes()
 color = plt.cm.viridis(np.linspace(0.9, 0,11))
 ax.set_prop_cycle(plt.cycler('color', color))
@@ -39,10 +37,6 @@ for i, beta in enumerate(betas[::-1]):
     coefficients = beta[~(np.isnan(beta))]
     beta_indexes = np.arange(1, len(coefficients)+1)
     plt.errorbar(beta_indexes, coefficients, yerr=np.sqrt(var[i]), marker='o', linestyle='--', capsize=2, label='d = %d' % (5-i))
-""" We need to figure out what to do with the scaling.
-    Decide wether np.sqrt of variance as error bars or just the variance. 
-        Also decide wether we have split's random_state be the same as random seed or set it 
-        as something else as we have so far """
 plt.xlabel(r'$\beta$ coefficient number')
 plt.ylabel(r'$\beta$ coefficient value')
 plt.legend()
@@ -101,14 +95,14 @@ plt.show()
 order = 12
 poly_degrees = np.arange(1, order+1)
 hyperparams = [10**i for i in range(-10, 0)]
-extent = [poly_degrees[0], poly_degrees[-1], hyperparams[0], hyperparams[-1]]
+extent = [poly_degrees[0], poly_degrees[-1], np.log10(hyperparams[0]), np.log10(hyperparams[-1])]
 LR_terrain.execute_regression(method=LR_terrain.ridge, bootstrap=True, n=100, hyperparams=hyperparams)
 MSE_ridge_bootstrap = LR_terrain.MSE_bootstrap
 
 fig, ax = plt.subplots()
 plt.contourf(MSE_ridge_bootstrap, extent=extent, levels=30)
 plt.xlabel("Polynomial degree")
-plt.ylabel("Pentalty parameter")
+plt.ylabel(r"Penalty parameter [log$_{10}$]")
 cbar = plt.colorbar(pad=0.01)
 cbar.set_label('MSE score')
 plt.tight_layout()
@@ -140,7 +134,7 @@ plt.contourf(MSE_ridge_crossval, extent=extent, levels=30)
 # sns.heatmap(MSE_ridge_crossval.T, annot=True, ax=ax, cmap="viridis", cbar_kws={'label': 'Accuracy'},fmt='.1e')
 # ax.add_patch(plt.Rectangle((min_MSE_idx[0], min_MSE_idx[1]), 1, 1, fc='none', ec='red', lw=2, clip_on=False))
 plt.xlabel("Polynomial degree")
-plt.ylabel("Pentalty parameter")
+plt.ylabel(r"Penalty parameter [log$_{10}$]")
 cbar = plt.colorbar(pad=0.01)
 cbar.set_label('MSE score')
 plt.tight_layout()
@@ -150,23 +144,21 @@ plt.show()
 
 """ Task f) """
 """ Lasso Bootstrap """
-""" Lasso does not converge when scale=True, hints that scaling is not implemented correctly """
+""" Can take a long time to run as it struggles to converge """
 
-order = 12
-poly_degrees = np.arange(1, order+1)
-hyperparams = [10**i for i in range(-10, 0)]
-extent = [poly_degrees[0], poly_degrees[-1], np.log10(hyperparams[0]), np.log10(hyperparams[-1])]
+# order = 12
+# poly_degrees = np.arange(1, order+1)
+# hyperparams = [10**i for i in range(-10, 0)]
+# extent = [poly_degrees[0], poly_degrees[-1], np.log10(hyperparams[0]), np.log10(hyperparams[-1])]
 
-LR_terrain = LinearRegression(order=order, data=data1, reduce_factor=10, x_pos=0, y_pos=1950, scale=True)
-LR_terrain.execute_regression(method=LR_terrain.lasso, bootstrap=True, n=10, hyperparams=hyperparams)
-MSE_lasso_bootstrap = LR_terrain.MSE_bootstrap
+# LR_terrain = LinearRegression(order=order, data=data1, reduce_factor=10, x_pos=0, y_pos=1950, scale=True)
+# LR_terrain.execute_regression(method=LR_terrain.lasso, bootstrap=True, n=10, hyperparams=hyperparams)
+# MSE_lasso_bootstrap = LR_terrain.MSE_bootstrap
 
 
-# """ Lasso heatmap boot """
+""" Lasso heatmap boot """
 # fig, ax = plt.subplots()
 # plt.contourf(MSE_lasso_bootstrap, extent=extent, levels=30)#(order*len(hyperparams)))
-# # plt.contourf(poly_degrees, hyperparams, MSE_ridge_bootstrap, cmap=plt.cm.magma, levels=30)
-# # plt.plot(min_MSE_idx[0], min_MSE_idx[1], 'o', color='red')
 # plt.xlabel("Polynomial degree")
 # plt.ylabel(r"Penalty parameter [log$_{10}$]")
 # cbar = plt.colorbar(pad=0.01)
@@ -175,8 +167,7 @@ MSE_lasso_bootstrap = LR_terrain.MSE_bootstrap
 # plt.savefig("figures/Terrain/terra_Lasso_bootstrap.pdf")
 # plt.show()
 
-# """ Lasso heatmap Cross Validation"""
-# kfolds = [i for i in range(5, 11)]
+""" Lasso heatmap Cross Validation"""
 # LR_terrain.execute_regression(method=LR_terrain.lasso, crossval=True, kfolds=10, hyperparams=hyperparams)
 # MSE_lasso_crossval = LR_terrain.MSE_crossval
 # fig, ax = plt.subplots()
