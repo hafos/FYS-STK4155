@@ -197,7 +197,7 @@ class LinearRegression:
 			self.hyperparam = hyperparams[0]
 
 		for i in range(1, self.order+1):
-			print(f'Computing for order: {i}' ) # for testing purposes and to see how far code
+			print(f'Computing for order: {i}' ) # for testing purposes and to see how far code has run
 			# current number of terms in polynomial of order given as complete homogeneous symmetric
 			current_n_terms = comb(len(self.dataset) + i, i, exact=True)
 			#select only the terms of the full design matrix needed for the current order polynomial
