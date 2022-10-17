@@ -435,45 +435,29 @@ if __name__ == '__main__':
 	""" Task e) """
 	""" Ridge Bootstrap """
 
-	order = 12
-	poly_degrees = np.arange(1, order+1)
-	hyperparams = [10**i for i in range(-10, 0)]
-	extent = [poly_degrees[0], poly_degrees[-1], np.log10(hyperparams[0]), np.log10(hyperparams[-1])]
-	LR_e = LinearRegression(order=order, points=20, scale=True)
-	LR_e.execute_regression(method=LR_e.ridge, bootstrap=True, n=100, hyperparams=hyperparams)
-	MSE_ridge_bootstrap = LR_e.MSE_bootstrap
-	# print(np.shape(MSE_ridge_bootstrap))
-	min_MSE_idx = divmod(MSE_ridge_bootstrap.argmin(), MSE_ridge_bootstrap.shape[1])
-	min_MSE_idx = divmod(MSE_ridge_bootstrap.argmin(), MSE_ridge_bootstrap.shape[0])
-	# print(min_MSE_idx)
+	# order = 12
+	# poly_degrees = np.arange(1, order+1)
+	# hyperparams = [10**i for i in range(-10, 0)]
+	# extent = [poly_degrees[0], poly_degrees[-1], np.log10(hyperparams[0]), np.log10(hyperparams[-1])]
+	# LR_e = LinearRegression(order=order, points=20, scale=True)
+	# LR_e.execute_regression(method=LR_e.ridge, bootstrap=True, n=100, hyperparams=hyperparams)
+	# MSE_ridge_bootstrap = LR_e.MSE_bootstrap
+	# # print(np.shape(MSE_ridge_bootstrap))
+	# min_MSE_idx = divmod(MSE_ridge_bootstrap.argmin(), MSE_ridge_bootstrap.shape[1])
+	# min_MSE_idx = divmod(MSE_ridge_bootstrap.argmin(), MSE_ridge_bootstrap.shape[0])
+	# # print(min_MSE_idx)
 
-	""" Ridge heatmap """
-	# print(MSE_ridge_bootstrap.min())
-	# ymin, xmin = MSE_ridge_bootstrap) == MSE_ridge_bootstrap)
-	# print(np.shape(MSE_ridge_bootstrap), xmin, ymin)
-	# i, j = np.unravel_index(np.argmin(MSE_ridge_bootstrap), np.shape(MSE_ridge_bootstrap))
-	fig, ax = plt.subplots()
-	plt.contourf(MSE_ridge_bootstrap, extent=extent, levels=30)#(order*len(hyperparams)))
+	# """ Ridge heatmap """
+	# fig, ax = plt.subplots()
 	# plt.contourf(MSE_ridge_bootstrap, extent=extent, levels=30)#(order*len(hyperparams)))
-	# plt.plot(poly_degrees[j], hyperparams[i], 'o')
-	# ax.set_xticklabels(range(1, order+1))
-	# # ax.set_yticklabels(np.log10(hyperparams),out=np.zeros_like(hyperparams), where=(hyperparams!=0))
-	# # plt.contourf(poly_degrees, hyperparams, MSE_ridge_bootstrap, cmap=plt.cm.magma, levels=30)
-	# # plt.plot(min_MSE_idx[0], min_MSE_idx[1], 'o', color='red')
-	plt.xlabel("Polynomial degree")
-	plt.ylabel(r"Penalty parameter [log$_{10}$]")
-	cbar = plt.colorbar(pad=0.01)
-	cbar.set_label('MSE score')
-	plt.tight_layout()
-	plt.savefig("figures/FrankeFunction/Ridge_bootstrap.pdf")
-	plt.show()
-	# # sns.heatmap(MSE_ridge_bootstrap, annot=True, ax=ax, cmap="viridis", cbar_kws={'label': 'Accuracy'},fmt='.1e')
+	# plt.xlabel("Polynomial degree")
+	# plt.ylabel(r"Penalty parameter [log$_{10}$]")
+	# cbar = plt.colorbar(pad=0.01)
+	# cbar.set_label('MSE score')
+	# plt.tight_layout()
+	# plt.savefig("figures/FrankeFunction/Ridge_bootstrap.pdf")
+	# plt.show()
 
-	# # # ax.set_title("Test Accuracy BSE 2")
-	# # # ax.set_ylabel("order")
-	# # # ax.set_xlabel("log$_{10}(\lambda)$")
-	# # ax.add_patch(plt.Rectangle((min_MSE_idx[0], min_MSE_idx[1]), 1, 1, fc='none', ec='red', lw=2, clip_on=False))
-	# # plt.show()
 	# # plt.plot(poly_degrees, LR_e.MSE_train, label='train')
 	# # plt.plot(poly_degrees, LR_e.MSE_test, label='test')
 	# # plt.legend()
@@ -494,14 +478,10 @@ if __name__ == '__main__':
 	# plt.show()
 
 	""" Ridge Cross validation heatmap """
-	# kfolds = [i for i in range(5, 11)]
 	# LR_e.execute_regression(method=LR_e.ridge, crossval=True, kfolds=10, hyperparams=hyperparams)
 	# MSE_ridge_crossval = LR_e.MSE_crossval
-	# # min_MSE_idx = divmod(MSE_ridge_crossval.argmin(), MSE_ridge_crossval.shape[1])
 	# fig, ax = plt.subplots()
 	# plt.contourf(MSE_ridge_crossval, extent=extent, levels=30)
-	# # sns.heatmap(MSE_ridge_crossval.T, annot=True, ax=ax, cmap="viridis", cbar_kws={'label': 'Accuracy'},fmt='.1e')
-	# # ax.add_patch(plt.Rectangle((min_MSE_idx[0], min_MSE_idx[1]), 1, 1, fc='none', ec='red', lw=2, clip_on=False))
 	# plt.xlabel("Polynomial degree")
 	# plt.ylabel(r"Penalty parameter [log$_{10}$]")
 	# cbar = plt.colorbar(pad=0.01)
@@ -514,21 +494,17 @@ if __name__ == '__main__':
 	""" Lasso Bootstrap """
 	""" Lasso does not converge when scale=True, hints that scaling is not implemented correctly """
 
-	order = 20
-	poly_degrees = np.arange(1, order+1)
-	hyperparams = [10**i for i in range(-10, 0)]
-	extent = [poly_degrees[0], poly_degrees[-1], np.log10(hyperparams[0]), np.log10(hyperparams[-1])]
-	LR_f = LinearRegression(order=order, points=20, scale=False)
+	# order = 20
+	# poly_degrees = np.arange(1, order+1)
+	# hyperparams = [10**i for i in range(-10, 0)]
+	# extent = [poly_degrees[0], poly_degrees[-1], np.log10(hyperparams[0]), np.log10(hyperparams[-1])]
+	# LR_f = LinearRegression(order=order, points=20, scale=False)
 
 	# LR_f.execute_regression(method=LR_f.lasso, bootstrap=True, n=10, hyperparams=hyperparams)
 	# MSE_lasso_bootstrap = LR_f.MSE_bootstrap
-	# print(np.shape(MSE_ridge_bootstrap))
-	# min_MSE_idx = divmod(MSE_ridge_bootstrap.argmin(), MSE_ridge_bootstrap.shape[1])
-	""" Lasso heatmap boot """
+	# """ Lasso heatmap boot """
 	# fig, ax = plt.subplots()
 	# plt.contourf(MSE_lasso_bootstrap, extent=extent, levels=30)#(order*len(hyperparams)))
-	# # plt.contourf(poly_degrees, hyperparams, MSE_ridge_bootstrap, cmap=plt.cm.magma, levels=30)
-	# # plt.plot(min_MSE_idx[0], min_MSE_idx[1], 'o', color='red')
 	# plt.xlabel("Polynomial degree")
 	# plt.ylabel(r"Penalty parameter [log$_{10}$]")
 	# cbar = plt.colorbar(pad=0.01)
@@ -537,14 +513,11 @@ if __name__ == '__main__':
 	# plt.savefig("figures/FrankeFunction/Lasso_bootstrap.pdf")
 	# plt.show()
 
-	""" Lasso heatmap Cross Validation"""
-	# kfolds = [i for i in range(5, 11)]
+	# """ Lasso heatmap Cross Validation"""
 	# LR_f.execute_regression(method=LR_f.lasso, crossval=True, kfolds=10, hyperparams=hyperparams)
 	# MSE_lasso_crossval = LR_f.MSE_crossval
 	# fig, ax = plt.subplots()
 	# plt.contourf(MSE_lasso_crossval, extent=extent, levels=30)
-	# # sns.heatmap(MSE_lasso_crossval.T, annot=True, ax=ax, cmap="viridis", cbar_kws={'label': 'Accuracy'},fmt='.1e')
-	# # ax.add_patch(plt.Rectangle((min_MSE_idx[0], min_MSE_idx[1]), 1, 1, fc='none', ec='red', lw=2, clip_on=False))
 	# plt.xlabel("Polynomial degree")
 	# plt.ylabel(r"Penalty parameter [log$_{10}$]")
 	# cbar = plt.colorbar(pad=0.01)
