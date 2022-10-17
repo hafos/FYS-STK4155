@@ -134,6 +134,8 @@ class LinearRegression:
 		return beta
 
 	def ridge(self, X_train, z_train, hyperparam=0):
+		if hasattr(self, 'hyperparam'):
+			hyperparam = self.hyperparam
 		I = np.identity(X_train.T.shape[0])
 		beta = np.linalg.pinv(X_train.T @ X_train + hyperparam*I) 
 		beta = beta @ X_train.T @ z_train
@@ -155,14 +157,14 @@ class LinearRegression:
 			X_test_resample = X_test + 0
 			# print(X_test)
 			##rescaling
-			if self.scale == True:
-				# X_train_resample -= np.mean(X_train_resample, axis=0)
-				X_train_resample = self.scaling(X_train_resample)
-				# X_test_resample -= np.mean(X_test, axis=0)
-				X_test_resample = self.scaling(X_test_resample)
-				z_scale = np.mean(z_train_resample)         
-				z_train_resample -= z_scale
-				z_train_resample /= np.std(z_train_resample)
+			# if self.scale == True:
+			# 	# X_train_resample -= np.mean(X_train_resample, axis=0)
+			# 	X_train_resample = self.scaling(X_train_resample)
+			# 	# X_test_resample -= np.mean(X_test, axis=0)
+			# 	X_test_resample = self.scaling(X_test_resample)
+			# 	z_scale = np.mean(z_train_resample)         
+			# 	z_train_resample -= z_scale
+			# 	z_train_resample /= np.std(z_train_resample)
 			beta = method(X_train_resample, z_train_resample)
 			z_test_tilde[:, i] = X_test_resample @ beta  + z_scale
 			# print(z_test_tilde[:, j])
@@ -179,12 +181,12 @@ class LinearRegression:
 			z_train = z[train_index] + 0
 			X_test = X[test_index] + 0
 			z_test = z[test_index]
-			if self.scale == True:
-				X_test  = self.scaling(X_test) # check if should be train similar in bootstrap np.mean(A_train,axis=0)
-				X_train = self.scaling(X_train) #np.mean(A_train,axis=0)
-				z_scale = np.mean(z_train)
-				z_train -= z_scale
-				z_train /= np.std(z_train)
+			# if self.scale == True:
+			# 	X_test  = self.scaling(X_test) # check if should be train similar in bootstrap np.mean(A_train,axis=0)
+			# 	X_train = self.scaling(X_train) #np.mean(A_train,axis=0)
+			# 	z_scale = np.mean(z_train)
+			# 	z_train -= z_scale
+			# 	z_train /= np.std(z_train)
 			beta = method(X_train, z_train)
 			z_test_tilde = X_test @ beta + z_scale
 			score[i] = np.sum((z_test_tilde - z_test)**2)/np.size(z_test_tilde)
@@ -192,7 +194,7 @@ class LinearRegression:
 		return np.mean(score)
 
 
-	def execute_regression(self, method=ols, bootstrap=False, n=100, crossval=False, kfolds=10):
+	def execute_regression(self, method=ols, bootstrap=False, n=100, crossval=False, kfolds=10, hyperparams=0):
 		""" Method for doing the Ordinary Least Squares (OLS) regression """
 		# if self.scale == True:
 		# 	self.z = np.array_split(self.z, self.points)
@@ -212,6 +214,9 @@ class LinearRegression:
 			# z_test = self.scaling(z_test)
 		if crossval == True:
 			self.MSE_CV = np.zeros((len(kfolds), order))
+		if bootstrap == True and hyperparams != 0:
+			self.MSE_ridge = np.zeros((len(hyperparams), order))
+			self.hyperparam = 0
 
 		for i in range(1, self.order+1):
 			# current number of terms in polynomial of order given as complete homogeneous symmetric
@@ -233,7 +238,16 @@ class LinearRegression:
 				X_train_current = X_train[:, 0:current_n_terms] + 0
 				X_test_current =  X_test[:, 0:current_n_terms] + 0
 				#Calcuate the errors
-				self.MSE_test[i-1], z_test_tilde = self.bootstrap(X_train_current, X_test_current, z_train, z_test, method, n=n)
+				if bootstrap == True and hyperparams == 0:
+					self.MSE_test[i-1], z_test_tilde = self.bootstrap(X_train_current, X_test_current, z_train, z_test, method, n=n)
+				elif bootstrap == True and hyperparams != 0:
+					print('hihi')
+					k = 0
+					for hyperparam in hyperparams:
+						self.hyperparam = hyperparam
+						self.MSE_ridge[k, i-1], z_test_tilde = self.bootstrap(X_train_current, X_test_current, z_train, z_test, method, n=n)
+						k += 1
+
 				self.MSE_train[i-1] = np.mean(np.power(z_train - z_train_tilde, 2))
 				self.BIAS[i-1] = np.mean((z_test.reshape(-1, 1) - np.mean(z_test_tilde, axis=1, keepdims=True))**2 )
 				self.var[i-1] = np.mean(np.var(z_test_tilde, axis=1, keepdims=True) )
@@ -346,23 +360,49 @@ if __name__ == '__main__':
 	""" Task d) """
 	""" Fails when scale == True, need to fix scaling, remove from crossval func?
 		Add cross_val_score from sklearn to compare against?"""
-	order = 12
-	LR_d = LinearRegression(order=order, points=20, scale=False)
-	kfolds = [i for i in range(5, 11)]
-	# print(kfolds, np.type(kfolds)) 
-	LR_d.execute_regression(method=LR_d.ols, bootstrap=True, n=400)
-	LR_d.execute_regression(method=LR_d.ols, crossval=True, kfolds=kfolds)
-	poly_degrees = np.arange(1, order+1)
-	# print(poly_degrees, type(poly_degrees))
-	plt.plot(poly_degrees, LR_d.MSE_train, label='bootstrap train')
-	plt.plot(poly_degrees, LR_d.MSE_test, label='bootstrap test')
-	for k in range(len(kfolds)):
-		plt.plot(poly_degrees, LR_d.MSE_CV[k], label=f'crossval k: {kfolds[k]}')
-	plt.legend()
-	plt.show()
+	# order = 12
+	# LR_d = LinearRegression(order=order, points=20, scale=True)
+	# kfolds = [i for i in range(5, 11)]
+	# # print(kfolds, np.type(kfolds)) 
+	# LR_d.execute_regression(method=LR_d.ols, bootstrap=True, n=400)
+	# LR_d.execute_regression(method=LR_d.ols, crossval=True, kfolds=kfolds)
+	# poly_degrees = np.arange(1, order+1)
+	# # print(poly_degrees, type(poly_degrees))
+	# fig, ax = plt.subplots()
+	# plt.plot(poly_degrees, LR_d.MSE_train, label='bootstrap train')
+	# plt.plot(poly_degrees, LR_d.MSE_test, label='bootstrap test', color='k')
+	# color = plt.cm.cool(np.linspace(0.9, 0,11))
+	# ax.set_prop_cycle(plt.cycler('color', color))#["axes.prop_cycle"] = plt.cycler('color', color)
+	# for k in range(len(kfolds)):
+	# 	plt.plot(poly_degrees, LR_d.MSE_CV[k], label=f'crossval k: {kfolds[k]}')
+	# plt.legend(fontsize=14)
+	# plt.show()
 	
 
 	""" Task e) """
+	""" Bootstrap """
+	order = 12
+	hyperparams = [10**i for i in range(-10, 0)]
+	# print(hyperparams)
+	LR_e = LinearRegression(order=order, points=20, scale=True)
+	LR_e.execute_regression(method=LR_e.ridge, bootstrap=True, n=400, hyperparams=hyperparams)
+	MSE_ridge = LR_e.MSE_ridge
+	print(MSE_ridge)
+	min_MSE_idx = divmod(MSE_ridge.argmin(), MSE_ridge.shape[1])
+	fig, ax = plt.subplots(figsize=(10, 5))
+	sns.heatmap(MSE_ridge.T, annot=True, ax=ax, cmap="viridis", cbar_kws={'label': 'Accuracy'},fmt='.1e')
+	# # ax.set_title("Test Accuracy BSE 2")
+	# # ax.set_ylabel("order")
+	# # ax.set_xlabel("log$_{10}(\lambda)$")
+	# # ax.set_xticklabels(np.log10(hyperparams,out=np.zeros_like(hyperparams), where=(hyperparams!=0)))
+	# # ax.set_yticklabels(range(1, order+1))
+	ax.add_patch(plt.Rectangle((min_MSE_idx[0], min_MSE_idx[1]), 1, 1, fc='none', ec='red', lw=2, clip_on=False))
+	plt.show()
+	# poly_degrees = np.arange(1, order+1)
+	# plt.plot(poly_degrees, LR_e.MSE_train, label='train')
+	# plt.plot(poly_degrees, LR_e.MSE_test, label='test')
+	# plt.legend()
+	# plt.show()
 
 	""" Task f) """
 

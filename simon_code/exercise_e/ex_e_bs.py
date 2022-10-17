@@ -69,6 +69,6 @@ ax.set_xlabel("log$_{10}(\lambda)$")
 ax.set_xticklabels(np.log10(lambdas,out=np.zeros_like(lambdas), where=(lambdas!=0)))
 ax.set_yticklabels(range(1,max_order+1))
 ax.add_patch(plt.Rectangle((min_bs_ind[0], min_bs_ind[1]), 1, 1, fc='none', ec='red', lw=2, clip_on=False))
-
+plt.show()
 print(f"minimum error BS: {np.min(MSE_bs):.2e}")
 print(f"for lambda: {lambdas[min_bs_ind[0]]:.1e} and order: {min_bs_ind[1]}")
