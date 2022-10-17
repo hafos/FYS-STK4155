@@ -16,7 +16,7 @@ plt.xlabel('Polynomial degree')
 plt.ylabel('Mean Squared Error')
 plt.legend()
 plt.tight_layout()
-plt.savefig("figures/Terrain/terra_OLS_MSE.pdf")
+# plt.savefig("figures/Terrain/terra_OLS_MSE.pdf")
 plt.show()
 plt.plot(poly_degrees, LR_terrain.R2_test, label=r'R$^2$ test', linestyle="--")
 plt.plot(poly_degrees, LR_terrain.R2_train, label=r'R$^2$ train')
@@ -24,7 +24,7 @@ plt.xlabel('Polynomial degree')
 plt.ylabel(r'$R^2$ score')
 plt.legend()
 plt.tight_layout()
-plt.savefig("figures/Terrain/terra_OLS_R2.pdf")
+# plt.savefig("figures/Terrain/terra_OLS_R2.pdf")
 plt.show()
 betas = LR_terrain.beta
 var = LR_terrain.var[::-1]
@@ -41,7 +41,7 @@ plt.xlabel(r'$\beta$ coefficient number')
 plt.ylabel(r'$\beta$ coefficient value')
 plt.legend()
 plt.tight_layout()
-plt.savefig("figures/Terrain/terra_OLS_beta.pdf")
+# plt.savefig("figures/Terrain/terra_OLS_beta.pdf")
 plt.show()
 
 """ same analysis as in c) BVT """
@@ -57,7 +57,7 @@ plt.xlabel("Polynomial degree")
 plt.ylabel("MSE score")
 plt.tight_layout()
 plt.show()
-plt.savefig("figures/Terrain/terra_OLS_bootstrap.pdf")
+# plt.savefig("figures/Terrain/terra_OLS_bootstrap.pdf")
 
 plt.plot(poly_degrees, LR_terrain.BIAS,     label=r'BIAS$^2$',     color='red')
 plt.plot(poly_degrees, LR_terrain.MSE_test, label='MSE test', color='orange')
@@ -67,7 +67,7 @@ plt.xlabel("Polynomial degree")
 plt.ylabel("score")
 plt.tight_layout()
 plt.show()
-plt.savefig("figures/Terrain/terra_OLS_biasvar.pdf")
+# plt.savefig("figures/Terrain/terra_OLS_biasvar.pdf")
 
 """ same cross validation analysis as in d) with OLS """
 """ NB!! VERY ODD VALUES """
@@ -86,7 +86,7 @@ plt.legend(loc='upper center')
 plt.xlabel("Polynomial degree")
 plt.ylabel("MSE score")
 plt.tight_layout()
-plt.savefig("figures/Terrain/terra_OLS_crossval.pdf")
+# plt.savefig("figures/Terrain/terra_OLS_crossval.pdf")
 plt.show()
 
 
@@ -106,7 +106,7 @@ plt.ylabel(r"Penalty parameter [log$_{10}$]")
 cbar = plt.colorbar(pad=0.01)
 cbar.set_label('MSE score')
 plt.tight_layout()
-plt.savefig("figures/Terrain/terra_Ridge_bootstrap.pdf")
+# plt.savefig("figures/Terrain/terra_Ridge_bootstrap.pdf")
 plt.show()
 
 """ Ridge bias-var analysis analysis with bootstrap """
@@ -120,7 +120,7 @@ for k in range(len(hyperparams)):
 plt.xlabel("Polynomial degree")
 plt.ylabel("MSE score")
 plt.tight_layout()
-plt.savefig("figures/Terrain/terra_Ridge_biasvar.pdf")
+# plt.savefig("figures/Terrain/terra_Ridge_biasvar.pdf")
 plt.show()
 
 """ Ridge Cross Val """
@@ -138,7 +138,7 @@ plt.ylabel(r"Penalty parameter [log$_{10}$]")
 cbar = plt.colorbar(pad=0.01)
 cbar.set_label('MSE score')
 plt.tight_layout()
-plt.savefig("figures/Terrain/terra_Ridge_crossval.pdf")
+# plt.savefig("figures/Terrain/terra_Ridge_crossval.pdf")
 plt.show()
 
 
