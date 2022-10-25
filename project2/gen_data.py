@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 
 
 class functions:
-	def __init__(self, points = 20, sigma=0.1, dimension=1, order = 1,coef = None):
+	def __init__(self, points = 2, sigma=0.1, dimension=3, order = 1,coef = None):
 		""" Constructor for generating an instance of the class.
 
 		Arguments
@@ -48,6 +48,12 @@ class functions:
 		#generates random data points
 		#self.data = np.random.rand(points,dimension)  
 		self.data = np.random.uniform(-1,1,(points,dimension))
+		meshed_data = np.zeros((np.power(points,dimension),dimension))
+		i = 0
+		for variab in map(lambda x: np.reshape(x,(x.size)),np.meshgrid(*self.data.T)):
+			meshed_data[:,i] = variab
+			i+=1
+		self.data = meshed_data
 		
 	def polynomial(self):
 		#Calc indices for multidim. polynomial up to the given order
@@ -63,6 +69,6 @@ class functions:
 		return self.data, funcval
 		
 	 
-func = functions(order = 2, coef = [0,1,0],sigma=0.1)
+func = functions(order = 2, sigma=0.1)
 data, funcval = func.polynomial()
-plt.scatter(data,funcval)
+print(data)
