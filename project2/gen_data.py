@@ -3,16 +3,11 @@
 """
 @author: simon hille
 """
-import time
+
 import numpy as np
 import scipy as sp
 import itertools as itt
-import matplotlib.pyplot as plt
-from sklearn.preprocessing import PolynomialFeatures
-from regression import LinearRegression,GradDecent,StochGradDecent
 
-def CostOLS(y,X,beta):
-    return 1/X.shape[0]*((y-X@beta).T@(y-X@beta))
 
 class functions:
     def __init__(self, points = 20, sigma=0.1, dimension=1, order = 1,coef = None):
@@ -39,19 +34,21 @@ class functions:
 		IndexError:
 			If number of coef doesnt mathch dimensions & order
 		"""
+        
         numberofterms = sp.special.comb(dimension + order,order,exact=True)
-        if coef == None: coef = np.ones(numberofterms)
+        if coef == None: 
+            coef = np.ones(numberofterms)
         if numberofterms!=len(coef):
             raise IndexError(f'expected {sp.special.comb(dimension + order,order,exact=True)} coeficients')
+        
         self.points = points
         self.sigma = sigma
         self.dimension = dimension
         self.order = order
         self.coef = coef
+        
         #ensures reproducibility
-        np.random.seed(1999)
-        #generates random data points
-        #self.data = np.random.rand(points,dimension)  
+        np.random.seed(1999) 
         self.data = np.random.uniform(-1,1,(points,dimension))
         meshed_data = np.zeros((np.power(points,dimension),dimension))
         i = 0
@@ -72,36 +69,3 @@ class functions:
                 polynom[:,j+1] *= self.data[:,i]  
         funcval = np.sum(polynom,axis=1,keepdims=True) + np.random.normal(0, self.sigma, (self.data.shape[0],1))
         return self.data, funcval
-	
-    def design_matrix(self):
-        poly = PolynomialFeatures(degree=self.order)
-        X = poly.fit_transform(self.data)
-        return X
-	
-	 
-func = functions(order = 3, dimension=1, sigma=0,points=100)
-data, funcval = func.polynomial()
-poly = PolynomialFeatures(degree=3)
-X = poly.fit_transform(data)
-
-reg = LinearRegression(X,funcval)
-beta = reg.ols()
-
-gd = GradDecent(X,funcval,CostOLS)
-start = time.time()
-beta2 = gd.const(iterations=200)
-end = time.time()
-print(end - start)
-beta3 = gd.momentum(iterations=500)
-
-start = time.time()
-sd = StochGradDecent(X,funcval,CostOLS)
-beta4 = sd.const(iterations=200)
-end = time.time()
-print(end - start)
-beta5 = sd.momentum(iterations=200)
-#print(beta)
-print(beta2)
-print(beta4)
-print(beta5)
-plt.scatter(data,funcval)
