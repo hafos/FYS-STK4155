@@ -31,6 +31,7 @@ reg = LinearRegression(X,funcval)
 gd = GradDecent(X,funcval,CostOLS)
 sd = StochGradDecent(X,funcval,CostOLS)
 
+
 beta1 = reg.ols()
 beta2 = gd.const()
 beta3 = gd.momentum()
@@ -39,10 +40,33 @@ beta5 = gd.adagrad(momentum = True,learningrate = 1)
 beta6 = gd.rmsprop()
 beta7 = gd.adam()
 
-print(beta1)
-print(beta2)
-print(beta3)
-print(beta4)
-print(beta5)
-print(beta6)
-print(beta7)
+
+
+beta8 =  sd.const()
+beta9 = sd.momentum()
+beta10 = sd.adagrad()
+beta11 = sd.adagrad(momentum = True,learningrate = 1)
+beta12 = sd.rmsprop()
+beta13 = sd.adam()
+
+
+print("Gradient Decent")
+print(f'OLS: \n {beta1}')
+print(f' const: \n {beta2}')
+print(f'momentum: \n {beta3}')
+print(f'adagrad without momentum: \n {beta4}')
+print(f'adagrad with momentum: \n {beta5}')
+print(f'RMSprop: \n {beta6}')
+print(f' adam: \n {beta7}')
+
+
+print("Stochastic Gradient decent")
+print(f'OLS: \n {beta1}')
+print(f' const: \n {beta8}')
+print(f'momentum: \n {beta9}')
+print(f'adagrad without momentum: \n {beta10}')
+print(f'adagrad with momentum: \n {beta11}')
+print(f'RMSprop: \n {beta12}')
+print(f' adam: \n {beta13}')
+
+plt.scatter(data,funcval)

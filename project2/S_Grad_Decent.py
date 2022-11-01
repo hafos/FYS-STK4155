@@ -85,8 +85,8 @@ class StochGradDecent:
                 beta -= learningrate*gradient
         return(beta)
     
-    def momentum(self, epochs = int(10e2), batches = 10, learningrate= 10e0, 
-                 delta_momentum = 0.1):
+    def momentum(self, epochs = int(10e2), batches = 10, learningrate= 10e-1, 
+                 delta_momentum = 0.3):
         """
         Momentum based Stochastic Gradient Decent
         
@@ -97,9 +97,9 @@ class StochGradDecent:
         batches: int
             Number of batches (default: 10)
         learningrate: float
-            Starting learningrate (default: 10e0)
+            Starting learningrate (default: 10e-2)
         delta_momentum: float
-            momentum parameter (default: 0.1)           
+            momentum parameter (default: 0.3)           
         """
         
         X_train = self.X_train.copy()
@@ -119,8 +119,8 @@ class StochGradDecent:
                 change = new_change
         return beta 
     
-    def adagrad(self, epochs = int(10e2), batches = 10, learningrate= 10e-3, 
-                momentum = False, delta_momentum = 0.1):
+    def adagrad(self, epochs = int(10e2), batches = 10, learningrate= 10e-1, 
+                momentum = False, delta_momentum = 0.3):
         """
         Stochastic Gradient Decent with ADAGRAD
         
@@ -131,11 +131,11 @@ class StochGradDecent:
         batches: int
             Number of batches (default: 10)  
         learningrate: float
-            Starting learningrate (default: 10e-3)
+            Starting learningrate (default: 10e-1)
         momentum: boolean
             Choose if ADAGRAD is perfomed with or without momentum (default: False)
         delta_momentum: float
-            momentum parameter (default: 0.1)
+            momentum parameter (default: 0.3)
             
         Errors
         ---------
