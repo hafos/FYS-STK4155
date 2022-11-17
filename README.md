@@ -10,3 +10,20 @@ The changes after midnight was mainly clean up removing files that should not be
 ------------------------
 PROJECT 2:
 We again have a extendet deadline
+
+In the folder scrips you find all scripts used to generate the output we used / that was demanded.
+In the following we will briefly summeries what each script does:
+
+compare_time.py: (used data: Francke function)
+  Prints out the time per epochs and the time per operation for GD and SGD for a constant learningrate
+ 
+compare_gd_sdg.py: (used data: Francke function)
+  Generates two plots for a constant learningrate to compare GD with SGD
+  The first is a plot were for two different learningrates the MSE i plotted against the number of epochs.
+  The second is a plot were for for different number of batches, the MSE is plotted against the number of epochs.
+
+sgd_lr_batches.py: (used data: Francke function)
+  Generates a headmap, were the MSE is plotted for different learningrates and number of batches.
+  
+  
+  
