@@ -11,8 +11,8 @@ The changes after midnight was mainly clean up removing files that should not be
 PROJECT 2:
 We again have a extendet deadline
 
-In the folder scrips you find all scripts used to generate the output we used / that was demanded.
-In the following we will briefly summeries what each script does:
+In the folder scrips you find all scripts used to generate outputs we used / that were demanded.
+In the following we will briefly summarize what each script does:
 
 compare_time.py: (used data: Francke function)
   Prints out the time per epochs and the time per operation for GD and SGD for a constant learningrate
