@@ -69,3 +69,16 @@ class functions:
                 polynom[:,j+1] *= self.data[:,i]  
         funcval = np.sum(polynom,axis=1,keepdims=True) + np.random.normal(0, self.sigma, (self.data.shape[0],1))
         return self.data, funcval
+    
+    def FrankeFunction(self):
+        if self.data.shape[1] !=2:
+            raise IndexError('the Franke Function is two dimensional')
+        x = self.data[:,0]
+        y = self.data[:,1]
+        term1 =  0.75 * np.exp(-(0.25*(9*x-2)**2)      - 0.25*((9*y-2)**2))
+        term2 =  0.75 * np.exp(-(     (9*x+1)**2)/49.0 -  0.1*(9*y+1))
+        term3 =  0.5  * np.exp(-(9*x-7)**2/4.0 - 0.25*((9*y-3)**2))
+        term4 = -0.2  * np.exp(-(9*x-4)**2     -       (9*y-7)**2)
+        funcval = term1 + term2 + term3 + term4 + np.random.normal(0, self.sigma, self.data.shape[0])
+        funcval = np.atleast_2d(funcval).T
+        return self.data, funcval

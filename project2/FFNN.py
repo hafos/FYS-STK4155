@@ -1,3 +1,9 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+@author: simon hille
+"""
+
 import numpy as np
 from functions import activation_functions as act_func
 from functions import costfunctions
@@ -180,7 +186,7 @@ order = 2
 batches = 1
 
 func = functions(order = order, dimension=dimension, sigma=0.0,
-                 coef=coef,points= 4)
+                 coef=coef,points= 6)
 data, funcval = func.polynomial()
 
 costfunc = costfunctions.CostOLS
@@ -188,13 +194,13 @@ costfunc = costfunctions.CostOLS
 #data = np.array_split(trainval,batches)
 
 nn = FFNN(X_train = data, trainval = funcval,
-             h_layors = 2, h_neurons = 20, categories = 1,
+             h_layors = 1, h_neurons = 20, categories = 1,
              CostFunc = costfunc, 
              h_actf = act_func.identity,
              o_actf = act_func.identity,
-             methode = "momentum", learningrate = 0.01)
+             methode = "momentum", learningrate = 0.1)
 
-epochs = 2
+epochs = 200
 w_upd = None
 b_upd = None
 for itera in range(epochs):
@@ -203,4 +209,6 @@ for itera in range(epochs):
         nn.backpropagation(z,a)
         w_upd, b_upd = nn.update_WandB(w_upd,b_upd,delta_momentum=0.8)
 z,a = nn.FF()
+print(funcval)
+print(a[1+1])
 print(np.mean(np.power((funcval-a[2]),2)))

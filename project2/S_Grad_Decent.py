@@ -5,11 +5,6 @@
 """
 
 import numpy as np
-from autograd import grad
- 
-
-#ensures reproducibility
-np.random.seed(1999)
 
 class StochGradDecent:
     """Class for performing Stochastic Gradient Decent methods on a given dataset"""
@@ -47,6 +42,8 @@ class StochGradDecent:
         if costfunc is None: 
             raise TypeError("Cost func is missing")
         if beta is None: 
+            #ensures reproducibility
+            np.random.seed(1999)
             beta = np.random.randn(X_train.shape[1],1)
         if beta.shape[0] != X_train.shape[1]: 
             raise IndexError("dim. of beta is wrong")
@@ -76,7 +73,7 @@ class StochGradDecent:
         
         X_train = np.array_split(X_train,batches,axis=0)
         trainval = np.array_split(trainval,batches)
-        
+             
         for itera in range(epochs):
             for i in range(batches):
                 rd_ind = np.random.randint(batches)
@@ -109,7 +106,8 @@ class StochGradDecent:
         
         X_train = np.array_split(X_train,batches,axis=0)
         trainval = np.array_split(trainval,batches)
-
+        
+        np.random.seed(1999) #ensures reproducibility
         for itera in range(epochs):
             for i in range(batches):
                 rd_ind = np.random.randint(batches)
@@ -154,6 +152,7 @@ class StochGradDecent:
         X_train = np.array_split(X_train,batches,axis=0)
         trainval = np.array_split(trainval,batches)
         
+        np.random.seed(1999) #ensures reproducibility
         for itera in range(epochs):
             for i in range(batches):
                 rd_ind = np.random.randint(batches)
@@ -199,6 +198,7 @@ class StochGradDecent:
         
         X_train = np.array_split(X_train,batches,axis=0)
         trainval = np.array_split(trainval,batches)
+        np.random.seed(1999) #ensures reproducibility
         
         for itera in range(epochs):
             for i in range(batches):
@@ -239,9 +239,9 @@ class StochGradDecent:
         X_train = np.array_split(X_train,batches,axis=0)
         trainval = np.array_split(trainval,batches)
         
+        np.random.seed(1999) #ensures reproducibility
         for itera in range(epochs):
             for i in range(batches):
-                rd_ind = np.random.randint(batches)
                 costfunc = self.costfunc(trainval[rd_ind],X_train[rd_ind],beta)
                 gradient = costfunc.derivative()
                 m = t1 * m + (1-t1) * gradient

@@ -5,10 +5,6 @@
 """
 
 import numpy as np
-from time import sleep
-
-#ensures reproducibility
-np.random.seed(1999)
 
 class GradDecent:
     """Class for performing Gradient Decent methods on a given dataset"""
@@ -45,7 +41,10 @@ class GradDecent:
             raise TypeError("Class needs data as Input: <X_train> and <trainval> not provided")	
         if costfunc is None: 
             raise TypeError("Cost func is missing")
-        if beta is None: beta = np.random.randn(X_train.shape[1],1)
+        if beta is None:             
+            #ensures reproducibility
+            np.random.seed(1999)
+            beta = np.random.randn(X_train.shape[1],1)
         if beta.shape[0] != X_train.shape[1]: 
             raise IndexError("dim. of beta is wrong")
         
@@ -75,7 +74,6 @@ class GradDecent:
             costfunc = self.costfunc(trainval,X_train,beta)
             gradient = costfunc.derivative()
             beta -= learningrate*gradient
-            if itera == 2: sleep(5)
         return beta
     
     def momentum(self, iterations = int(10e3), learningrate= 10e-3, 

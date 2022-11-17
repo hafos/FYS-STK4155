@@ -16,15 +16,15 @@ from functions import costfunctions
 import time
 
 
-dimension = 1
-coef = [3.5,3,4]
+dimension = 2
+coef = [3.5,3,4,3,3,3]
 order = 2
 
 func = functions(order = order, dimension=dimension, sigma=0.0,
-                 coef=coef,points= 20000)
+                 coef=coef,points= 100)
 costfunc = costfunctions.CostOLS_beta
 
-data, funcval = func.polynomial()
+data, funcval = func.FrankeFunction()
 poly = PolynomialFeatures(degree=order)
 X = poly.fit_transform(data)
 
