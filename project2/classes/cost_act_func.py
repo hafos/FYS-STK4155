@@ -17,7 +17,7 @@ class CostOLS_beta:
     
 class CostOLS:     
     def func(y,ytilde):
-        return np.mean(np.matmul((y-ytilde).T,(y-ytilde)))
+        return np.mean(np.power((y-ytilde),2))
     def derivative(y,ytilde):
         return (2/ytilde.shape[0])*(ytilde-y)
     
@@ -30,18 +30,33 @@ class Ridge_beta:
     def derivative(self,y,X,beta):
         XT = X.T
         return -2/X.shape[0]*(XT @ (y-X@beta)) + 2*self.hyperpar*beta
+    
+class Ridge:
+    ###WRRROOOONGGGG
+    def __init__(self,hyperpar = 0.0):
+        self.hyperpar = hyperpar
+
+    def func(self,y,ytilde):
+        return np.mean(np.power((y-ytilde),2)) + self.hyperpar 
+    def derivative(self,y,ytilde):
+        return (2/ytilde.shape[0])*(ytilde-y) + 2*self.hyperpar
             
     
 
 class activation_functions:
     """Class for different activation functions """
     
-    def sigmoid(self):
-        x = self.x
-        return 1/(1 + np.exp(-x)), 1/(1 + np.exp(-x))*(1-1/(1 + np.exp(-x)))
+    class sigmoid:
+        def __init__(self,x):
+            self.exp_x = np.exp(-x)
+            
+        def func(self): 
+            return 1/(1 + self.exp_x)
+        def derivative(self):
+            return 1/(1 + self.exp_x)*(1-1/(1 + self.exp_x))
     
-    class identity():
-        def __init__(self,x) -> None:
+    class identity:
+        def __init__(self,x):
             self.x = x
         def func(self): return self.x
         def derivative(self): return np.ones(self.x.shape)
