@@ -26,11 +26,10 @@ class Ridge_beta:
         self.hyperpar = hyperpar
     def func(self,y,X,beta):
         XBeta = X@beta
-        return 1/X.shape[0]*((y-XBeta).T@(y-XBeta)) + self.hyperpar(beta.T@beta)
+        return 1/X.shape[0]*((y-XBeta).T@(y-XBeta)) + self.hyperpar * (beta.T@beta)
     def derivative(self,y,X,beta):
         XT = X.T
-        print(y.shape)
-        return -2/X.shape[0]*(XT @ (y-X@beta)) + 2*self.hyperpar
+        return -2/X.shape[0]*(XT @ (y-X@beta)) + 2*self.hyperpar*beta
             
     
 
