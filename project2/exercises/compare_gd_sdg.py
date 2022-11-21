@@ -6,14 +6,19 @@
 
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import PolynomialFeatures
+import numpy as np
+import sys
+
+sys.path.append('../classes')
+
 from Grad_Decent import GradDecent
 from S_Grad_Decent import StochGradDecent
 from gen_data import functions
-from functions import costfunctions
-import numpy as np
+from cost_act_func import CostOLS_beta
+
 
 func = functions(dimension=2, sigma=0.25 ,points= 100)
-costfunc = costfunctions.CostOLS_beta
+costfunc = CostOLS_beta
 
 
 data, funcval = func.FrankeFunction()
@@ -40,8 +45,8 @@ for lr in learningrates:
     for it in epochs:
         beta_gd = gd.const(iterations = it, learningrate = lr)
         beta_sd = sd.const(epochs = it, batches = 4, learningrate = lr)
-        MSE_gd[i,j] = costfunc(funcval,X,beta_gd).func()
-        MSE_sd[i,j] = costfunc(funcval,X,beta_sd).func()
+        MSE_gd[i,j] = costfunc.func(funcval,X,beta_gd)
+        MSE_sd[i,j] = costfunc.func(funcval,X,beta_sd)
         j +=1
     i+=1
     
@@ -72,7 +77,7 @@ for it in epochs:
     j = 0
     for bs in batchsizes:
         beta_sd = sd.const(epochs = it, batches = bs, learningrate = 0.01)
-        MSE_sd[j,i] = costfunc(funcval,X,beta_sd).func()
+        MSE_sd[j,i] = costfunc.func(funcval,X,beta_sd)
         j +=1
     i += 1
 

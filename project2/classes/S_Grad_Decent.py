@@ -73,12 +73,13 @@ class StochGradDecent:
         
         X_train = np.array_split(X_train,batches,axis=0)
         trainval = np.array_split(trainval,batches)
-             
+        
+        np.random.seed(1999) #ensures reproducibility
         for itera in range(epochs):
             for i in range(batches):
                 rd_ind = np.random.randint(batches)
-                costfunc = self.costfunc(trainval[rd_ind],X_train[rd_ind],beta)
-                gradient = costfunc.derivative()
+                costfunc = self.costfunc
+                gradient = costfunc.derivative(trainval[rd_ind],X_train[rd_ind],beta)
                 beta -= learningrate*gradient
         return(beta)
     
@@ -111,8 +112,8 @@ class StochGradDecent:
         for itera in range(epochs):
             for i in range(batches):
                 rd_ind = np.random.randint(batches)
-                costfunc = self.costfunc(trainval[rd_ind],X_train[rd_ind],beta)
-                gradient = costfunc.derivative()
+                costfunc = self.costfunc
+                gradient = costfunc.derivative(trainval[rd_ind],X_train[rd_ind],beta)
                 new_change = learningrate*gradient+delta_momentum*change
                 beta -= new_change
                 change = new_change
@@ -156,8 +157,8 @@ class StochGradDecent:
         for itera in range(epochs):
             for i in range(batches):
                 rd_ind = np.random.randint(batches)
-                costfunc = self.costfunc(trainval[rd_ind],X_train[rd_ind],beta)
-                gradient = costfunc.derivative()
+                costfunc = self.costfunc
+                gradient = costfunc.derivative(trainval[rd_ind],X_train[rd_ind],beta)
                 Giter += gradient @ gradient.T
                 coef = np.c_[learningrate/(delta+np.sqrt(np.diagonal(Giter)))]
                 
@@ -203,8 +204,8 @@ class StochGradDecent:
         for itera in range(epochs):
             for i in range(batches):
                 rd_ind = np.random.randint(batches)
-                costfunc = self.costfunc(trainval[rd_ind],X_train[rd_ind],beta)
-                gradient = costfunc.derivative()
+                costfunc = self.costfunc
+                gradient = costfunc.derivative(trainval[rd_ind],X_train[rd_ind],beta)
                 s = t*s + (1-t)*np.power(gradient,2)
                 coef = learningrate/np.sqrt(delta+np.sqrt(s))
                 beta -= np.multiply(coef,gradient)
@@ -243,8 +244,8 @@ class StochGradDecent:
         for itera in range(epochs):
             for i in range(batches):
                 rd_ind = np.random.randint(batches)
-                costfunc = self.costfunc(trainval[rd_ind],X_train[rd_ind],beta)
-                gradient = costfunc.derivative()
+                costfunc = self.costfunc
+                gradient = costfunc.derivative(trainval[rd_ind],X_train[rd_ind],beta)
                 m = t1 * m + (1-t1) * gradient
                 m_hat = m / (1 - np.power(t1,itera+1))
                 s = t2 * s + (1-t2) * np.power(gradient,2)

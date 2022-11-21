@@ -8,14 +8,18 @@ Created on Fri Nov 18 11:54:29 2022
 
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import PolynomialFeatures
+import numpy as np
+import sys
+
+sys.path.append('../classes')
+
 from S_Grad_Decent import StochGradDecent
 from gen_data import functions
-from functions import costfunctions
-import numpy as np
-import seaborn as sns
+from cost_act_func import CostOLS_beta
+
 
 func = functions(dimension=2, sigma=0.25 ,points= 100)
-costfunc = costfunctions.CostOLS_beta
+costfunc = CostOLS_beta
 
 
 data, funcval = func.FrankeFunction()
@@ -36,7 +40,7 @@ i = 0
 for par in mompar:
     beta_momentum = sd.momentum(epochs = epochs, batches = batches, learningrate = eta,
                             delta_momentum = par)
-    MSE[i] = costfunc(funcval,X,beta_momentum).func()
+    MSE[i] = costfunc.func(funcval,X,beta_momentum)
     i += 1
 
 plt.scatter(mompar,MSE)
@@ -55,9 +59,9 @@ for lr in learningrates:
     beta_ada = sd.adagrad(epochs = epochs, batches = batches, learningrate = lr)
     beta_rms = sd.rmsprop(epochs = epochs, batches = batches, learningrate = lr)
     beta_adam= sd.adam(epochs = epochs, batches = batches, learningrate = lr)
-    MSE_ada[i] = costfunc(funcval,X,beta_ada).func()
-    MSE_rms[i] = costfunc(funcval,X,beta_rms).func()
-    MSE_adam[i] = costfunc(funcval,X,beta_adam).func()
+    MSE_ada[i] = costfunc.func(funcval,X,beta_ada)
+    MSE_rms[i] = costfunc.func(funcval,X,beta_rms)
+    MSE_adam[i] = costfunc.func(funcval,X,beta_adam)
     i += 1
 
 print(f"learningrates: \t {learningrates}")

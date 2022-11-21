@@ -8,20 +8,25 @@ Created on Tue Nov  1 12:33:41 2022
 
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import PolynomialFeatures
+from sklearn.model_selection import train_test_split
+import time
+import sys
+
+sys.path.append('../classes')
+
 from Linear_Regression import LinearRegression
 from Grad_Decent import GradDecent
 from S_Grad_Decent import StochGradDecent
 from gen_data import functions
-from functions import costfunctions
-import time
-from sklearn.model_selection import train_test_split
+from cost_act_func import CostOLS_beta
+
 
 
 dimension = 2
 order = 2
 
 func = functions(order = order, dimension=dimension, sigma=0.0, points= 100)
-costfunc = costfunctions.CostOLS_beta
+costfunc = CostOLS_beta
 
 data, funcval = func.FrankeFunction()
 poly = PolynomialFeatures(degree=order)
@@ -78,4 +83,4 @@ print(f'RMSprop: \n {beta12}')
 print(f' adam: \n {beta13}')
 
 
-plt.scatter(data,funcval)
+#plt.scatter(data,funcval)

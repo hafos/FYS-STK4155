@@ -8,14 +8,19 @@ Created on Thu Nov 17 15:16:47 2022
 
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import PolynomialFeatures
-from S_Grad_Decent import StochGradDecent
-from gen_data import functions
-from functions import costfunctions
 import numpy as np
 import seaborn as sns
+import sys
+
+sys.path.append('../classes')
+
+from S_Grad_Decent import StochGradDecent
+from gen_data import functions
+from cost_act_func import CostOLS_beta
+
 
 func = functions(dimension=2, sigma=0.25 ,points= 100)
-costfunc = costfunctions.CostOLS_beta
+costfunc = CostOLS_beta
 
 
 data, funcval = func.FrankeFunction()
@@ -36,7 +41,7 @@ for bs in batchsizes:
     j = 0
     for lr in learningrates:
         beta = sd.const(epochs = epochs, batches = bs, learningrate = lr)
-        MSE[i,j] = costfunc(funcval,X,beta).func()
+        MSE[i,j] = costfunc.func(funcval,X,beta)
         j += 1
     i += 1
 

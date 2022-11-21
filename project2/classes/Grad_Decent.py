@@ -71,8 +71,8 @@ class GradDecent:
         beta = self.beta.copy()
          
         for itera in range(int(iterations)):
-            costfunc = self.costfunc(trainval,X_train,beta)
-            gradient = costfunc.derivative()
+            costfunc = self.costfunc
+            gradient = costfunc.derivative(trainval,X_train,beta)
             beta -= learningrate*gradient
         return beta
     
@@ -98,8 +98,8 @@ class GradDecent:
         change = 0
         
         for itera in range(iterations):
-            costfunc = self.costfunc(trainval,X_train,beta)
-            gradient = costfunc.derivative()
+            costfunc = self.costfunc
+            gradient = costfunc.derivative(trainval,X_train,beta)
             new_change = learningrate*gradient+delta_momentum*change
             beta -= new_change
             change = new_change
@@ -135,8 +135,8 @@ class GradDecent:
         change = 0
         
         for itera in range(iterations):
-            costfunc = self.costfunc(trainval,X_train,beta)
-            gradient = costfunc.derivative()
+            costfunc = self.costfunc
+            gradient = costfunc.derivative(trainval,X_train,beta)
             Giter +=gradient @ gradient.T
             coef = np.c_[learningrate/(delta+np.sqrt(np.diagonal(Giter)))]
             
@@ -175,8 +175,8 @@ class GradDecent:
         delta  = 1e-8
         
         for itera in range(0,iterations):
-            costfunc = self.costfunc(trainval,X_train,beta)
-            gradient = costfunc.derivative()
+            costfunc = self.costfunc
+            gradient = costfunc.derivative(trainval,X_train,beta)
             s = t*s + (1-t)*np.power(gradient,2)
             coef = learningrate/np.sqrt(delta+np.sqrt(s))
             beta -= np.multiply(coef,gradient)
@@ -207,8 +207,8 @@ class GradDecent:
         delta  = 1e-8
         
         for itera in range(0,iterations):
-            costfunc = self.costfunc(trainval,X_train,beta)
-            gradient = costfunc.derivative()
+            costfunc = self.costfunc
+            gradient = costfunc.derivative(trainval,X_train,beta)
             m = t1 * m + (1-t1) * gradient
             m_hat = m / (1 - np.power(t1,itera+1))
             s = t2 * s + (1-t2) * np.power(gradient,2)

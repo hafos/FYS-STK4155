@@ -5,15 +5,19 @@
 """
 
 from sklearn.preprocessing import PolynomialFeatures
+import time
+import numpy as np
+import sys
+
+sys.path.append('../classes')
+
 from Grad_Decent import GradDecent
 from S_Grad_Decent import StochGradDecent
 from gen_data import functions
-from functions import costfunctions
-import time
-import numpy as np
+from cost_act_func import CostOLS_beta
 
 func = functions(dimension=2, sigma=0.25 ,points= 100)
-costfunc = costfunctions.CostOLS_beta
+costfunc = CostOLS_beta
 
 
 data, funcval = func.FrankeFunction()
