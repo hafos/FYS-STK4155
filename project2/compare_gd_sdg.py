@@ -12,7 +12,7 @@ from gen_data import functions
 from functions import costfunctions
 import numpy as np
 
-func = functions(dimension=2, sigma=0.25 ,points= 50)
+func = functions(dimension=2, sigma=0.25 ,points= 100)
 costfunc = costfunctions.CostOLS_beta
 
 

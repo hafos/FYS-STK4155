@@ -14,23 +14,24 @@ from S_Grad_Decent import StochGradDecent
 from gen_data import functions
 from functions import costfunctions
 import time
+from sklearn.model_selection import train_test_split
 
 
 dimension = 2
-coef = [3.5,3,4,3,3,3]
 order = 2
 
-func = functions(order = order, dimension=dimension, sigma=0.0,
-                 coef=coef,points= 100)
+func = functions(order = order, dimension=dimension, sigma=0.0, points= 100)
 costfunc = costfunctions.CostOLS_beta
 
 data, funcval = func.FrankeFunction()
 poly = PolynomialFeatures(degree=order)
 X = poly.fit_transform(data)
 
-reg = LinearRegression(X,funcval)
-gd = GradDecent(X,funcval,costfunc=costfunc)
-sd = StochGradDecent(X,funcval,costfunc=costfunc)
+X_train, X_test, f_train, f_test = train_test_split(X, funcval, test_size=0.2, random_state=1)
+
+reg = LinearRegression(X_train,f_train)
+gd = GradDecent(X_train,f_train,costfunc=costfunc)
+sd = StochGradDecent(X_train,f_train,costfunc=costfunc)
 
 
 beta1 = reg.ols()

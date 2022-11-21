@@ -34,6 +34,24 @@ class costfunctions:
         def derivative(self):
             return (2/self.ytilde.shape[0])*(self.ytilde-self.y)
     
+    class Ridge_beta:
+        def __init__(self,y,X,beta,hyperpar):
+            self.y = y
+            self.X = X
+            self.beta = beta
+            self.hyperpar = hyperpar
+        
+            self.XBeta = X@beta
+            self.XT = X.T
+            self.n = X.shape[0]
+        
+        def func(self):
+            return
+        
+        def derivative(self):
+            return -2/self.n*self.XT @ (self.X @ self.beta - self.y) + 2*self.hyperpar
+            
+    
 
 class activation_functions:
     """Class for different activation functions """

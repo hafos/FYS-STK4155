@@ -242,6 +242,7 @@ class StochGradDecent:
         np.random.seed(1999) #ensures reproducibility
         for itera in range(epochs):
             for i in range(batches):
+                rd_ind = np.random.randint(batches)
                 costfunc = self.costfunc(trainval[rd_ind],X_train[rd_ind],beta)
                 gradient = costfunc.derivative()
                 m = t1 * m + (1-t1) * gradient

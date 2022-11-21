@@ -25,10 +25,9 @@ poly = PolynomialFeatures(degree=order)
 X = poly.fit_transform(data)
 
 sd = StochGradDecent(X,funcval,costfunc=costfunc)
-epochs = 1000
-
+epochs = 100
 learningrates = [1e-1, 1e-2, 1e-3, 1e-4]
-batchsizes = [1,10,100,1000]
+batchsizes = [1,2,4,8,16,32,64,128,256,512,1024]
 
 MSE = np.zeros((len(batchsizes),len(learningrates)))
 
