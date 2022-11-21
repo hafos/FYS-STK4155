@@ -13,7 +13,7 @@ class CostOLS_beta:
         
     def derivative(y,X,beta):
         XT = X.T
-        return -2/X.shape[0]*(XT @ y-XT @ (X @ beta))
+        return -2/X.shape[0]*(XT @ (y-X@beta))
     
 class CostOLS:     
     def func(y,ytilde):
@@ -28,7 +28,9 @@ class Ridge_beta:
         XBeta = X@beta
         return 1/X.shape[0]*((y-XBeta).T@(y-XBeta)) + self.hyperpar(beta.T@beta)
     def derivative(self,y,X,beta):
-        return -2/X.shape[0]*X.T @ (X @ beta - y) + 2*self.hyperpar
+        XT = X.T
+        print(y.shape)
+        return -2/X.shape[0]*(XT @ (y-X@beta)) + 2*self.hyperpar
             
     
 
