@@ -28,20 +28,9 @@ from gen_data import functions
 from cost_act_func import Ridge_beta
 from Linear_Regression import LinearRegression
 
-def scale_mean_std(X,y) -> tuple:
-
-    X[:, 0] = 0
-    mean_X = np.mean(X, axis=0)
-    X_scaled = (X - mean_X)
-
-    mean_y = np.mean(y)
-    y_scaled = (y - mean_y)
-
-    
-    return X_scaled, y_scaled
 
 dimension = 2
-order = 2
+order = 6
 
 epochs = 150
 batches = 32
@@ -59,8 +48,6 @@ lambdas= np.zeros(5)
 lambdas[:4] = np.power(10.0,-1+-1*np.arange(4))
 
 MSE = np.zeros((len(learningrates),len(lambdas)))
-
-#X, funcval = scale_mean_std(X, funcval)
 
 i = 0
 for lr in learningrates:
