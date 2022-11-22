@@ -12,7 +12,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sys
 
-sys.path.append('../classes')
+sys.path.append('../src')
 
 dimension = 2
 batches = 1

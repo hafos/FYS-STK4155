@@ -6,7 +6,7 @@
 
 import sys
 
-sys.path.append('../classes')
+sys.path.append('../src')
 
 
 from FFNN import FFNN

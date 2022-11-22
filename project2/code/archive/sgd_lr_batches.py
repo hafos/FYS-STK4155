@@ -12,7 +12,7 @@ import numpy as np
 import seaborn as sns
 import sys
 
-sys.path.append('../classes')
+sys.path.append('../src')
 
 from S_Grad_Decent import StochGradDecent
 from gen_data import functions

@@ -12,7 +12,7 @@ from sklearn.model_selection import train_test_split
 import time
 import sys
 
-sys.path.append('../classes')
+sys.path.append('../src')
 
 from Linear_Regression import LinearRegression
 from Grad_Decent import GradDecent

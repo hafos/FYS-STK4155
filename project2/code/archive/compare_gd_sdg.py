@@ -9,7 +9,7 @@ from sklearn.preprocessing import PolynomialFeatures
 import numpy as np
 import sys
 
-sys.path.append('../classes')
+sys.path.append('../src')
 
 from Grad_Decent import GradDecent
 from S_Grad_Decent import StochGradDecent
