@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+    #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 @author: simon hille
@@ -120,7 +120,7 @@ class FFNN():
         
         return z,a
     
-    def backpropagation(self, z, a):
+    def backpropagation(self, z, a, trainval):
         
         delta, weight_grad, bias_grad = [],[],[]
         
@@ -129,7 +129,7 @@ class FFNN():
         
         #Output Layor
         costfunc = self.costfunc
-        gradient = costfunc.derivative(self.trainval,a[h_layors+1])
+        gradient = costfunc.derivative(trainval,a[h_layors+1])
         
         o_actf = self.o_actf(z[h_layors+1])
         funcgrad = o_actf.derivative()

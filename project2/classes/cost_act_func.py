@@ -5,6 +5,8 @@
 """
 
 import numpy as np
+        
+
 
 class CostOLS_beta:
     def func(y,X,beta):
@@ -60,6 +62,17 @@ class activation_functions:
             self.x = x
         def func(self): return self.x
         def derivative(self): return np.ones(self.x.shape)
+        
+    class relu:
+        def __init__(self,x):
+            self.x = x
+
+        def func(self): 
+            return np.maximum(0,self.x)
+        def derivative(self):
+            return np.heaviside(self.x,0)
+
+
     
     def probability(self):
         x = self.x

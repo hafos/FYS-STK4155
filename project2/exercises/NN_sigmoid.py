@@ -4,6 +4,10 @@
 @author: simon hille
 """
 
+import sys
+
+sys.path.append('../classes')
+
 
 from FFNN import FFNN
 from gen_data import functions
@@ -12,15 +16,12 @@ from cost_act_func import Ridge
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-import sys
-
-sys.path.append('../classes')
 
 dimension = 2
-epochs = 500
-batches = 1
+epochs = 1000
+batches = 64
 
-func = functions(dimension=dimension, sigma=0.0,points= 100)
+func = functions(dimension=dimension, sigma=0.25, points= 100)
 data, funcval = func.FrankeFunction()
     
 learningrates = [1e-1, 1e-2, 1e-3, 1e-4]
@@ -29,6 +30,9 @@ lambdas = [0]
 #lambdas[:4] = np.power(10.0,-1+-1*np.arange(4))
 
 MSE = np.zeros((len(learningrates),len(lambdas)))
+
+split_data = np.array_split(data,batches,axis=0)
+split_funcval = np.array_split(funcval,batches)
 
 i = 0
 for lr in learningrates:
@@ -41,10 +45,13 @@ for lr in learningrates:
               h_actf = act_func.sigmoid,
               o_actf = act_func.identity,
               methode = "const", learningrate = lr)
+        
+        np.random.seed(1999) #ensures reproducibility
         for itera in range(epochs):
             for _ in range(batches):
-                z,a = nn.FF()
-                nn.backpropagation(z,a)
+                rd_ind = np.random.randint(batches)
+                z,a = nn.FF(split_data[rd_ind])
+                nn.backpropagation(z,a,split_funcval[rd_ind])
                 nn.update_WandB()
         z,a = nn.FF()
         MSE[i,j] = costfunc.func(funcval,a[len(a)-1])
