@@ -3,13 +3,22 @@ Date: 21.11.22
 
 @author: semyaat
 """
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import PolynomialFeatures
+
 import matplotlib.pyplot as plt
 import matplotlib.pylab as pylab
 import seaborn as sns
 import numpy as np 
 import time
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import PolynomialFeatures
+
+import sys
+sys.path.append('src')
+from Linear_Regression import LinearRegression
+from Grad_Decent import GradDecent
+from S_Grad_Decent import StochGradDecent
+from gen_data import functions
+from cost_act_func import CostOLS_beta, Ridge_beta
 
 plt.style.use('ggplot')
 plt.rcParams.update({'font.size': 14})
@@ -23,14 +32,19 @@ params = {'legend.fontsize': 25,
 			'ytick.labelsize': 'x-large'}
 pylab.rcParams.update(params)
 
-import sys
-sys.path.append('src')
+## Initialize 
+func = functions(dimension=2, sigma=0.25 , points=100)
+costfunc = CostOLS_beta
 
-from Linear_Regression import LinearRegression
-from Grad_Decent import GradDecent
-from S_Grad_Decent import StochGradDecent
-from gen_data import functions
-from cost_act_func import CostOLS_beta, Ridge_beta
+data, funcval = func.FrankeFunction()
+
+order = 6
+poly = PolynomialFeatures(degree=order)
+X = poly.fit_transform(data)
+
+X_train, X_test, z_train, z_test = train_test_split(X, funcval, test_size=0.2, random_state=1)
+
+## Define functions 
 
 def timing(X, funcval): 
     reg = LinearRegression(X, funcval)
@@ -334,23 +348,57 @@ def compare_GD_SGD_all(X, funcval):
     # plt.show()
     print("[DONE]")
 
+def lr_updates(X, funcval): 
+    sd = StochGradDecent(X, funcval, costfunc=costfunc)
+    epochs = 100
+    eta = 1e-1
+    batches = 512
+
+    mompar = [0.6,0.5,0.4,0.3,0.2,0.1,0]
+    MSE = np.zeros(len(mompar))
+
+    i = 0
+    for par in mompar:
+        beta_momentum = sd.momentum(epochs = epochs, batches = batches, learningrate = eta,
+                                delta_momentum = par)
+        MSE[i] = costfunc.func(funcval,X,beta_momentum)
+        i += 1
+
+    plt.scatter(mompar,MSE)
+    plt.title("Momentum based stochastic gradient decent")
+    plt.xlabel("momentum parameter")
+    plt.ylabel("MSE")
+    plt.show()
+
+    learningrates = [0.001,0.01,0.1,1]
+    MSE_ada = np.zeros(len(learningrates))
+    MSE_adam = np.zeros(len(learningrates))
+    MSE_rms = np.zeros(len(learningrates))
+
+    i = 0
+    for lr in learningrates:
+        beta_ada = sd.adagrad(epochs = epochs, batches = batches, learningrate = lr)
+        beta_rms = sd.rmsprop(epochs = epochs, batches = batches, learningrate = lr)
+        beta_adam= sd.adam(epochs = epochs, batches = batches, learningrate = lr)
+        MSE_ada[i] = costfunc.func(funcval,X,beta_ada)
+        MSE_rms[i] = costfunc.func(funcval,X,beta_rms)
+        MSE_adam[i] = costfunc.func(funcval,X,beta_adam)
+        i += 1
+
+    print(f"learningrates: \t {learningrates}")
+    print(f"MSE adagrad: \t {MSE_ada}")
+    print(f"MSE rmsprop: \t {MSE_rms}")
+    print(f"MSE adam: \t {MSE_adam}")
 
 
-## Initialize 
-func = functions(dimension=2, sigma=0.25 , points=100)
-costfunc = CostOLS_beta
-
-data, funcval = func.FrankeFunction()
-
-order = 6
-poly = PolynomialFeatures(degree=order)
-X = poly.fit_transform(data)
-
-X_train, X_test, z_train, z_test = train_test_split(X, funcval, test_size=0.2, random_state=1)
+    #beta_adamom = sd.adagrad(momentum = True,learningrate = 1)
+    #beta_rmsprop = sd.rmsprop()
+    #beta_adam = sd.adam()
 
 ## Run plots 
 # compare_time(X_train, z_train)
 # compare_GD_SGD(X_train, z_train)
 # SGD_lr_batches(X_train, z_train)
 # SGD_ridge(X_train, z_train)
-# compare_GD_SGD_all(X, funcval)
+# compare_GD_SGD_all(X, z_train)
+# lr_updates(X, z_train)
