@@ -5,4 +5,4 @@ Our group consists of Simon Hille, Semya Tønnessen and Oskar Hafstad.
 Contains the work on project 1 on regression analysis and resampling methods. 
 
 ## Project 2 
-Contains the work on project 2 on classification and Regression, from linear and logistic regression to neural networks. 
+Contains the work on project 2 on Classification and Regression, from linear and logistic regression to neural networks. 
