@@ -35,13 +35,10 @@ class CostOLS:
         return (2/ytilde.shape[0])*(ytilde-y)
     
 class cross_entropy:
-    def __init__(self,hyperpar = 0.0):
-        self.hyperpar = hyperpar
-
-    def func(self,y,ytilde):
+    def func(y,ytilde):
         funcval = np.sum(y*np.log(ytilde) + (1-y)*np.log(1-ytilde))
         return -1/y.size * np.sum(funcval)
-    def derivative(self,y,ytilde):
+    def derivative(y,ytilde):
         return -1/y.size*(y/(ytilde)-(1-y)/(1-ytilde))
             
     

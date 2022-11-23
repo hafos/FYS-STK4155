@@ -16,34 +16,37 @@ from cost_act_func import CostOLS
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.model_selection import train_test_split
 import time
 
 dimension = 2
-epochs = range(0,100)
-batches = 32
+epochs = range(0,30)
+batches = 128
 
 func = functions(dimension=dimension, sigma=0.25, points= 100)
 data, funcval = func.FrankeFunction()
 
 learningrate = 0.01
-neurons = 5
+neurons = 25
 hlayors = 1
 
 MSE = np.zeros((3,len(epochs)))
 
-split_data = np.array_split(data,batches,axis=0)
-split_funcval = np.array_split(funcval,batches)
+X_train, X_test, f_train, f_test = train_test_split(data, funcval, test_size=0.2, random_state=1)
+
+split_data = np.array_split(X_train,batches,axis=0)
+split_funcval = np.array_split(f_train,batches)
 
 
 costfunc = CostOLS
-nn_zeros = FFNN(X_train = data, trainval = funcval,
+nn_zeros = FFNN(X_train = X_train, trainval = f_train,
       h_layors = hlayors, h_neurons = neurons, categories = 1,
       createbias = "zeros", CostFunc = costfunc, 
       h_actf = act_func.sigmoid,
       o_actf = act_func.identity,
       methode = "const", learningrate = learningrate)
 
-nn_ones = FFNN(X_train = data, trainval = funcval,
+nn_ones = FFNN(X_train = X_train, trainval = f_train,
       h_layors = hlayors, h_neurons = neurons, categories = 1,
       createbias = "ones", CostFunc = costfunc, 
       h_actf = act_func.sigmoid,
@@ -51,7 +54,7 @@ nn_ones = FFNN(X_train = data, trainval = funcval,
       methode = "const", learningrate = learningrate)
 
 
-nn_rand = FFNN(X_train = data, trainval = funcval,
+nn_rand = FFNN(X_train = X_train, trainval = f_train,
       h_layors = hlayors, h_neurons = neurons, categories = 1,
       CostFunc = costfunc, 
       h_actf = act_func.sigmoid,
@@ -76,16 +79,18 @@ for epoch in epochs:
             nn_ones.update_WandB()
             nn_rand.update_WandB()
             
-    z_zeros,a_zeros = nn_zeros.FF()
-    z_ones,a_ones = nn_ones.FF()
-    z_rand,a_rand = nn_rand.FF()
+    z_zeros,a_zeros = nn_zeros.FF(X_test)
+    z_ones,a_ones = nn_ones.FF(X_test)
+    z_rand,a_rand = nn_rand.FF(X_test)
     
-    MSE[0,i] = costfunc.func(funcval,a_zeros[len(a_zeros)-1])
-    MSE[1,i] = costfunc.func(funcval,a_ones[len(a_ones)-1])
-    MSE[2,i] = costfunc.func(funcval,a_rand[len(a_rand)-1])
+    MSE[0,i] = costfunc.func(f_test,a_zeros[len(a_zeros)-1])
+    MSE[1,i] = costfunc.func(f_test,a_ones[len(a_ones)-1])
+    MSE[2,i] = costfunc.func(f_test,a_rand[len(a_rand)-1])
     i += 1
 
 plt.plot(epochs,MSE[0,:], label = "zeros")
 plt.plot(epochs,MSE[1,:], label = "ones")
 plt.plot(epochs,MSE[2,:], label = "rand")
+plt.xlabel("epochs")
+plt.ylabel("MSE")
 plt.legend()
