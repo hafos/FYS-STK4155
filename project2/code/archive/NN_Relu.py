@@ -46,8 +46,7 @@ for lr in learningrates:
     for itera in range(epochs):
         for _ in range(batches):
             rd_ind = np.random.randint(batches)
-            z,a = nn.FF(split_data[rd_ind])
-            print(a[len(a)-1])   
+            z,a = nn.FF(split_data[rd_ind]) 
             nn.backpropagation(z,a,split_funcval[rd_ind])
             nn.update_WandB()
     z,a = nn.FF()

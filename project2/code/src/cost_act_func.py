@@ -49,31 +49,32 @@ class activation_functions:
     """Class for different activation functions """
     
     class sigmoid:
-        def __init__(self,x):
-            self.exp_x = np.exp(-x)
-            
-        def func(self): 
-            return 1/(1 + self.exp_x)
-        def derivative(self):
-            return 1/(1 + self.exp_x)*(1-1/(1 + self.exp_x))
+        def func(x): 
+            return 1/(1 + np.exp(-x))
+        def derivative(x):
+            exp_x = np.exp(-x)
+            return 1/(1 + exp_x)*(1-1/(1 + exp_x))
     
     class identity:
-        def __init__(self,x):
-            self.x = x
-        def func(self): return self.x
-        def derivative(self): return np.ones(self.x.shape)
+        def func(x): return x
+        def derivative(x): return np.ones(x.shape)
         
     class relu:
-        def __init__(self,x):
-            self.x = x
-
-        def func(self): 
-            return np.maximum(0,self.x)
-        def derivative(self):
-            return np.heaviside(self.x,0)
-
-
+        def func(x): 
+            return np.maximum(0,x)
+        def derivative(x):
+            return np.heaviside(x,0)
     
-    def probability(self):
-        x = self.x
-        return np.exp(x)/np.sum(np.exp(x),axis=1,keepdims=True)
+    class leaky_relu:
+        def __init__(self,hyperpar):
+            self.hyperpar = hyperpar
+
+        def func(self,x): 
+            var = x.copy()
+            var[var<0] = self.hyperpar*var[var<0]
+            return var
+        def derivative(self,x):
+            var = x.copy()
+            var[var<0] = self.hyperpar
+            var[var>0] = 1
+            return var

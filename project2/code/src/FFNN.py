@@ -1,4 +1,4 @@
-    #!/usr/bin/env python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 @author: simon hille
@@ -110,13 +110,13 @@ class FFNN():
         #hidden_layor
         for i in range(0,h_layors):
             z.append( a[i]@self.weights[i]+self.bias[i] )
-            h_actf = self.h_actf(z[i+1])
-            a.append( h_actf.func() )
+            h_actf = self.h_actf
+            a.append( h_actf.func(z[i+1]) )
             
         #output_layor
         z.append(a[h_layors]@self.weights[h_layors]+self.bias[h_layors])
-        o_actf = self.o_actf(z[h_layors+1])
-        a.append(o_actf.func())
+        o_actf = self.o_actf
+        a.append(o_actf.func(z[h_layors+1]))
         
         return z,a
     
@@ -131,14 +131,14 @@ class FFNN():
         costfunc = self.costfunc
         gradient = costfunc.derivative(trainval,a[h_layors+1])
         
-        o_actf = self.o_actf(z[h_layors+1])
-        funcgrad = o_actf.derivative()
+        o_actf = self.o_actf
+        funcgrad = o_actf.derivative(z[h_layors+1])
         
         delta.append(gradient*funcgrad)
         
         for l in range(0,h_layors):
-            h_actf = self.h_actf(z[h_layors-l])
-            funcgrad = h_actf.derivative()
+            h_actf = self.h_actf
+            funcgrad = h_actf.derivative(z[h_layors-l])
             
             temp = delta[l] @ weights[h_layors - l].T
             
