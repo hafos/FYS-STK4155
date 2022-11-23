@@ -76,6 +76,34 @@ class GradDecent:
             beta -= learningrate*gradient
         return beta
     
+    
+    def adaptive(self, iterations = int(10e3), t_0= 10e-3, t_1 = 1.0):
+        """
+        Gradient Decent with a adaptive learningrate
+        
+        Arguments
+        ---------
+        iterations: int
+            Number of iterations (default: 10e3)   
+        learningrate: float
+            learningrate (default: 10e-3)
+        t_0: float
+            parameter 1 (default: 10e-3)
+        t_1: float
+            parameter 2 (default: 1.0)
+        """
+        
+        X_train = self.X_train
+        trainval = self.trainval
+        beta = self.beta.copy()
+         
+        for itera in range(int(iterations)):
+            costfunc = self.costfunc
+            gradient = costfunc.derivative(trainval,X_train,beta)
+            learningrate = t_0/(t_1+itera)
+            beta -= learningrate*gradient
+        return beta
+    
     def momentum(self, iterations = int(10e3), learningrate= 10e-3, 
                  delta_momentum = 0.1):
         

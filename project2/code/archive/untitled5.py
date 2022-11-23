@@ -35,20 +35,18 @@ split_funcval = np.array_split(y_train,batches)
 
 costfunc = cross_entropy()
 nn = FFNN(X_train = X_train, trainval = y_train,
-      h_layors = 2, h_neurons = 20, categories = 1,
+      h_layors = 1, h_neurons = 20, categories = 1,
       CostFunc = costfunc,
       h_actf = act_func.sigmoid,
-      o_actf = act_func.classification,
-      methode = "const", learningrate = 0.01)
+      o_actf = act_func.sigmoid,
+      methode = "const", learningrate = 0.1)
 
 np.random.seed(1999) #ensures reproducibility
 for itera in range(epochs):
     for _ in range(batches):
         rd_ind = np.random.randint(batches)
         z,a = nn.FF(split_data[rd_ind])
-        #print(costfunc.func(split_funcval[rd_ind],a[len(a)-1]))
         nn.backpropagation(z,a,split_funcval[rd_ind])
-        #time.sleep(10000)
         nn.update_WandB()
 z,a = nn.FF(X_test)
 z_train,a_train = nn.FF(X_train)

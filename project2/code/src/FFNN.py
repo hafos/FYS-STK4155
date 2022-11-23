@@ -162,7 +162,7 @@ class FFNN():
         
         return z,a
     
-    def backpropagation(self, z, a, trainval):
+    def backpropagation(self, z, a, trainval, hyperpar = 0.0):
         
         delta, weight_grad, bias_grad = [],[],[]
         
@@ -187,7 +187,7 @@ class FFNN():
             delta.append(temp * funcgrad)
         
         for i in range(len(self.weights)):
-            weight_grad.append(a[h_layors-i].T @ delta[i])
+            weight_grad.append(a[h_layors-i].T @ delta[i] + 2*hyperpar*weights[h_layors-i])
             bias_grad.append(np.mean(delta[i],axis = 0))
         
         self.weight_grad = weight_grad.copy()
@@ -202,7 +202,7 @@ class FFNN():
                 for i in range(self.h_layors+1):
                     self.weights[i] -= self.learningrate*self.weight_grad[self.h_layors-i]
                     self.bias[i] -= self.learningrate * self.bias_grad[self.h_layors-i]
-                return None
+                return self.weights
             
             case "momentum":
                 w_newupd = []

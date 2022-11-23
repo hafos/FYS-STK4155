@@ -39,10 +39,10 @@ class cross_entropy:
         self.hyperpar = hyperpar
 
     def func(self,y,ytilde):
-        funcval = -np.sum(y*np.log10(ytilde))
-        return 1/funcval.size * np.sum(funcval)
+        funcval = np.sum(y*np.log(ytilde) + (1-y)*np.log(1-ytilde))
+        return -1/y.size * np.sum(funcval)
     def derivative(self,y,ytilde):
-        return -y/np.log(10)*ytilde
+        return -1/y.size*(y/(ytilde)-(1-y)/(1-ytilde))
             
     
 
@@ -79,14 +79,3 @@ class activation_functions:
             var[var<0] = self.hyperpar
             var[var>0] = 1
             return var
-    
-    class classification:
-        def func(x):
-            exp_term = np.exp(x)
-            probabilities = exp_term / np.sum(exp_term)
-            return probabilities
-        
-        def derivative(x):
-            exp_term = np.exp(x)
-            probabilities = exp_term / np.sum(exp_term)
-            return probabilities*(1-probabilities)

@@ -83,7 +83,42 @@ class StochGradDecent:
                 beta -= learningrate*gradient
         return(beta)
     
-    def momentum(self, epochs = int(10e2), batches = 10, learningrate= 10e-1, 
+    def adaptive(self, epochs = int(10e2), batches = 10, t_0 = 10e-1,
+                 t_1=1.0):
+        """
+        Stochastic Gradient Decent with a adaptive learningrate
+        
+        Arguments
+        ---------
+        epochs: int
+            Number of epochs (default: 10e2)  
+        batches: int
+            Number of batches (default: 10)
+        t_0: float
+            parameter 1 (default: 10e-3)
+        t_1: float
+            parameter 2 (default: 1.0)
+        """
+        
+        X_train = self.X_train.copy()
+        trainval = self.trainval.copy()
+        beta = self.beta.copy()
+        
+        X_train = np.array_split(X_train,batches,axis=0)
+        trainval = np.array_split(trainval,batches)
+        
+        np.random.seed(1999) #ensures reproducibility
+        for itera in range(epochs):
+            for i in range(batches):
+                rd_ind = np.random.randint(batches)
+                costfunc = self.costfunc
+                gradient = costfunc.derivative(trainval[rd_ind],X_train[rd_ind],beta)
+                learningrate = t_0/(t_1+itera)
+                beta -= learningrate*gradient
+        return(beta)
+        
+    
+    def momentum(self, epochs = int(10e2), batches = 10, learningrate = 10e-1, 
                  delta_momentum = 0.3):
         """
         Momentum based Stochastic Gradient Decent
