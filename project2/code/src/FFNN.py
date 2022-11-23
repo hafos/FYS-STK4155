@@ -11,7 +11,7 @@ from cost_act_func import CostOLS
 class FFNN():
     """ Class for our own Feed-Forward-Neural-Net code """
     def __init__(self, X_train = None, trainval = None,
-                 h_layors = 1, h_neurons = 1, categories = None,
+                 h_layors = 1, h_neurons = 1, categories = None, createbias = "random",
                  CostFunc = None, h_actf = act_func.sigmoid, o_actf = act_func.identity,
                  methode = "static", learningrate = 0.01):
         """ 
@@ -30,6 +30,8 @@ class FFNN():
             Number of neurons in the hidden layors (default: None)
         categories: int
             Number of output categores (default: None)
+        createbias: string ("random or "ones" or "zeros")
+            How the initial biases get created (default: random)
         CostFunc: class
             Class containing the cost function and its derivative used for the backpropagation
         h_actf: class
@@ -51,6 +53,7 @@ class FFNN():
         self.X_train = X_train
         self.trainval = trainval
         self.categories = categories
+        self.createbias = createbias
         
         self.h_actf = h_actf
         self.o_actf = o_actf
@@ -71,29 +74,67 @@ class FFNN():
         weights = []
         bias = []
         
-        ###BIAS and WEIGHTS for the hidden layors###
+        ###WEIGHTS###
         
         #first hidden layor
         np.random.seed(1999) #ensures reproducibility
         temp1 = np.random.randn(self.X_train.shape[1], h_neurons)
-        temp2 = np.random.randn(h_neurons) + 0.01
         weights.append(temp1)
-        bias.append(temp2)
-        
+
         #all other hidden layors
+        np.random.seed(1999) #ensures 
         for _ in range(1,self.h_layors):
             temp1 = np.random.randn(h_neurons, h_neurons)
-            temp2 = np.random.randn(h_neurons) + 0.01
             weights.append(temp1)
-            bias.append(temp2)
         
-        ###BIAS and WEIGHTS for the output layor###
-        
+        #output layor
         np.random.seed(1999) #ensures 
         temp1 = np.random.randn(h_neurons, self.categories)
-        temp2 = np.zeros(self.categories) + 0.1
         weights.append(temp1)
-        bias.append(temp2)
+        
+        ###BIAS###
+        
+        match self.createbias:
+            case "random":
+                #first hidden layor
+                np.random.seed(1999) #ensures reproducibility
+                temp2 = np.random.randn(h_neurons) + 0.01
+                bias.append(temp2)
+                #all other hidden layors
+                for _ in range(1,self.h_layors):
+                    temp2 = np.random.randn(h_neurons) + 0.01
+                    bias.append(temp2)
+                #output layor
+                temp2 = np.random.randn(self.categories) + 0.1
+                bias.append(temp2)
+                
+            case "ones":
+                #first hidden layor
+                temp2 = np.ones(h_neurons) + 0.01
+                bias.append(temp2)
+                #all other hidden layors
+                for _ in range(1,self.h_layors):
+                    temp2 = np.ones(h_neurons) + 0.01
+                    bias.append(temp2)
+                #output layor
+                temp2 = np.ones(self.categories) + 0.1
+                bias.append(temp2) 
+                
+            case "zeros":
+                #first hidden layor
+                temp2 = np.zeros(h_neurons) + 0.01
+                bias.append(temp2)
+                #all other hidden layors
+                for _ in range(1,self.h_layors):
+                    temp2 = np.zeros(h_neurons) + 0.01
+                    bias.append(temp2)
+                #output layor
+                temp2 = np.zeros(self.categories) + 0.1
+                bias.append(temp2)
+            
+            case _:
+                raise TypeError("input for <createbias> is invalid")
+        
         return weights,bias
         
     def FF(self, X=None):
@@ -112,6 +153,7 @@ class FFNN():
             z.append( a[i]@self.weights[i]+self.bias[i] )
             h_actf = self.h_actf
             a.append( h_actf.func(z[i+1]) )
+        
             
         #output_layor
         z.append(a[h_layors]@self.weights[h_layors]+self.bias[h_layors])

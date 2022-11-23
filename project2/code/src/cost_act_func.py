@@ -16,13 +16,8 @@ class CostOLS_beta:
     def derivative(y,X,beta):
         XT = X.T
         return -2/X.shape[0]*(XT @ (y-X@beta))
-    
-class CostOLS:     
-    def func(y,ytilde):
-        return np.mean(np.power((y-ytilde),2))
-    def derivative(y,ytilde):
-        return (2/ytilde.shape[0])*(ytilde-y)
-    
+
+#we split ridge for faster calc. for hyperpar = 0
 class Ridge_beta:
     def __init__(self,hyperpar = 0.0):
         self.hyperpar = hyperpar
@@ -32,16 +27,22 @@ class Ridge_beta:
     def derivative(self,y,X,beta):
         XT = X.T
         return -2/X.shape[0]*(XT @ (y-X@beta)) + 2*self.hyperpar*beta
+
+class CostOLS:     
+    def func(y,ytilde):
+        return np.mean(np.power((y-ytilde),2))
+    def derivative(y,ytilde):
+        return (2/ytilde.shape[0])*(ytilde-y)
     
-class Ridge:
-    ###WRRROOOONGGGG
+class cross_entropy:
     def __init__(self,hyperpar = 0.0):
         self.hyperpar = hyperpar
 
     def func(self,y,ytilde):
-        return np.mean(np.power((y-ytilde),2)) + self.hyperpar 
+        funcval = -np.sum(y*np.log10(ytilde))
+        return 1/funcval.size * np.sum(funcval)
     def derivative(self,y,ytilde):
-        return (2/ytilde.shape[0])*(ytilde-y) + 2*self.hyperpar
+        return -y/np.log(10)*ytilde
             
     
 
@@ -66,7 +67,7 @@ class activation_functions:
             return np.heaviside(x,0)
     
     class leaky_relu:
-        def __init__(self,hyperpar):
+        def __init__(self,hyperpar = 0.01):
             self.hyperpar = hyperpar
 
         def func(self,x): 
@@ -78,3 +79,14 @@ class activation_functions:
             var[var<0] = self.hyperpar
             var[var>0] = 1
             return var
+    
+    class classification:
+        def func(x):
+            exp_term = np.exp(x)
+            probabilities = exp_term / np.sum(exp_term)
+            return probabilities
+        
+        def derivative(x):
+            exp_term = np.exp(x)
+            probabilities = exp_term / np.sum(exp_term)
+            return probabilities*(1-probabilities)

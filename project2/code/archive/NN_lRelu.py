@@ -6,7 +6,7 @@
 
 import sys
 
-sys.path.append('../src')
+sys.path.append('../classes')
 
 
 from FFNN import FFNN
@@ -19,8 +19,9 @@ import seaborn as sns
 import time
 
 dimension = 2
-epochs = 200
-batches = 64
+epochs = 100
+batches = 300
+learningrate = 0.1
 
 func = functions(dimension=dimension, sigma=0.25, points= 100)
 data, funcval = func.FrankeFunction()
@@ -35,9 +36,9 @@ i = 0
 for lr in learningrates:
     costfunc = CostOLS
     nn = FFNN(X_train = data, trainval = funcval,
-          h_layors = 1, h_neurons = 20, categories = 1,
+          h_layors = 1, h_neurons = 30, categories = 1,
           CostFunc = costfunc, 
-          h_actf = act_func.relu,
+          h_actf = act_func.leaky_relu(hyperpar = 0.0),
           o_actf = act_func.identity,
           methode = "const", learningrate = lr)
         
