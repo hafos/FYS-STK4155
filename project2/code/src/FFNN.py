@@ -183,7 +183,6 @@ class FFNN():
             funcgrad = h_actf.derivative(z[h_layors-l])
             
             temp = delta[l] @ weights[h_layors - l].T
-            
             delta.append(temp * funcgrad)
         
         for i in range(len(self.weights)):
