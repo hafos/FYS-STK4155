@@ -42,12 +42,15 @@ from FrankeFunction import FrankeFunction
 from activation_functions import sigmoid,identity,relu,leaky_relu
 
 class CostOLS:     
+    """"
+    Defines the Cost function and its derivative used for all calculations in this script
+    """
     def func(y,ytilde):
         return np.mean(np.power((y-ytilde),2))
     def grad(y,ytilde):
         return (2/ytilde.shape[0])*(ytilde-y)
 
-
+#Generate data and split it into test/train sets
 data, funcval = FrankeFunction(points = 100, sigma=0.25)
 X_train, X_test, f_train, f_test = train_test_split(data, funcval, test_size=0.2, random_state=1)
 
@@ -251,8 +254,7 @@ def part_d():
     plt.ylabel("MSE")
     plt.legend()
 
-
-#part_a()
+part_a()
 #part_b()
 #part_c()
 #part_c(relu)
