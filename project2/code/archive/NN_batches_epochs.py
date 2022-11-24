@@ -4,6 +4,7 @@
 @author: simon hille
 """
 
+from sklearn.model_selection import train_test_split
 import sys
 
 sys.path.append('../src')
@@ -22,10 +23,12 @@ dimension = 2
 func = functions(dimension=dimension, sigma=0.25,points= 100)
 data, funcval = func.FrankeFunction()
 
+X_train, X_test, f_train, f_test = train_test_split(data, funcval, test_size=0.2, random_state=1)
+
  
 
 h_layors = 1
-neurons = 15
+neurons = 25
 learningrate = 0.1
 batches = [1,4,8,16,32,64,128]
 epochs = np.arange(0,300,50)
@@ -37,10 +40,10 @@ MSE = np.zeros((len(batches),len(epochs)))
 i = 0
 for batch in batches:
     j = 0
-    split_data = np.array_split(data,batch,axis=0)
-    split_funcval = np.array_split(funcval,batch)
+    split_data = np.array_split(X_train,batch,axis=0)
+    split_funcval = np.array_split(f_train,batch)
     for epoch in epochs:
-        nn = FFNN(X_train = data, trainval = funcval,
+        nn = FFNN(X_train = X_train, trainval = f_train,
                   h_layors = h_layors, h_neurons = neurons, categories = 1,
                   CostFunc = costfunc, 
                   h_actf = act_func.sigmoid,
@@ -54,8 +57,8 @@ for batch in batches:
                 z,a = nn.FF(split_data[rd_ind])
                 nn.backpropagation(z,a,split_funcval[rd_ind])
                 nn.update_WandB()
-        z,a = nn.FF()
-        MSE[i,j] = CostOLS.func(funcval,a[len(a)-1])
+        z,a = nn.FF(X_test)
+        MSE[i,j] = CostOLS.func(f_test,a[len(a)-1])
         j += 1
     i += 1
 

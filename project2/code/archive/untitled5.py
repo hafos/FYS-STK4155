@@ -27,15 +27,15 @@ target = cancer.target.reshape(-1,1)
 
 X_train, X_test, y_train, y_test = train_test_split(data,target,random_state=0)
 
-epochs = 1000
+epochs = 150
 batches = 32
 
 split_data = np.array_split(X_train,batches,axis=0)
 split_funcval = np.array_split(y_train,batches)
 
-costfunc = cross_entropy()
+costfunc = cross_entropy
 nn = FFNN(X_train = X_train, trainval = y_train,
-      h_layors = 1, h_neurons = 20, categories = 1,
+      h_layors = 1, h_neurons = 25, categories = 1,
       CostFunc = costfunc,
       h_actf = act_func.sigmoid,
       o_actf = act_func.sigmoid,

@@ -13,6 +13,7 @@ from FFNN import FFNN
 from gen_data import functions
 from cost_act_func import activation_functions as act_func
 from cost_act_func import CostOLS
+from sklearn.model_selection import train_test_split
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -20,9 +21,9 @@ import time
 
 dimension = 2
 epochs = 150
-batches = 32
+batches = 128
 h_layors = 1
-neurons = 15
+neurons = 25
 
 func = functions(dimension=dimension, sigma=0.25, points= 100)
 data, funcval = func.FrankeFunction()
@@ -33,15 +34,18 @@ lambdas= np.zeros(lambda_values)
 lambdas[:lambda_values-1] = np.power(10.0,1-1*np.arange(lambda_values-1))
 
 MSE = np.zeros((len(learningrates),len(lambdas)))
-split_data = np.array_split(data,batches,axis=0)
-split_funcval = np.array_split(funcval,batches)
+
+X_train, X_test, f_train, f_test = train_test_split(data, funcval, test_size=0.2, random_state=1)
+
+split_data = np.array_split(X_train,batches,axis=0)
+split_funcval = np.array_split(f_train,batches)
 
 i = 0
 for lr in learningrates:
     j = 0
     for param in lambdas:
         costfunc = CostOLS
-        nn = FFNN(X_train = data, trainval = funcval,
+        nn = FFNN(X_train = X_train, trainval = f_train,
               h_layors = h_layors, h_neurons = neurons, categories = 1,
               CostFunc = costfunc, 
               h_actf = act_func.leaky_relu(hyperpar = 0.01),
@@ -55,8 +59,8 @@ for lr in learningrates:
                 z,a = nn.FF(split_data[rd_ind]) 
                 nn.backpropagation(z,a,split_funcval[rd_ind],hyperpar=param)
                 weights = nn.update_WandB()
-        z,a = nn.FF()
-        MSE[i,j] = costfunc.func(funcval,a[len(a)-1])
+        z,a = nn.FF(X_test)
+        MSE[i,j] = costfunc.func(f_test,a[len(a)-1])
         j += 1
     i += 1
 
