@@ -22,20 +22,7 @@ class StochGradDecent:
         costfunc: class
             If one wants to use gradient decent, a cost function and the derivative
             has to be provided (default: None)
-
-        Errors
-        ------
-        TypeError:
-            If no data is provided
-            If no cost function is provided for gradient decent
-        Index Error:
-            Dimension of given starting beta is wrong
         """
-        
-        if X_train is None or f_train is None:
-            raise TypeError("Class needs data as Input: <X_train> and <trainval> not provided")	
-        if costfunc is None: 
-            raise TypeError("Cost func is missing")
         
         self.X_train = X_train
         self.f_train = f_train
@@ -165,11 +152,6 @@ class StochGradDecent:
             Choose if ADAGRAD is perfomed with or without momentum (default: False)
         delta_momentum: float
             momentum parameter (default: 0.3)
-            
-        Errors
-        ---------
-        TypeError: 
-            if <momentum> is not bolean
         """
         
         X_train = self.X_train.copy()

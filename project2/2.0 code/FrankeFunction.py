@@ -6,10 +6,22 @@
 
 import numpy as np
 
-def FrankeFunction(points = 100, sigma=0.25, data = None):
-    if data is None:
-        np.random.seed(1999) 
-        data = np.random.uniform(-1,1,(points,2))
+def FrankeFunction(points = 100, sigma=0.25):
+    """
+    Generate data and function values for the Franke function
+            
+    Arguments
+    
+    ---------
+    points: int
+        Number of points for each dimensions. The total amount of datapoints is
+        points squared (default: 100)
+    sigma: float
+        Normal distributed error added to the function values (default: 0.25)
+    """
+    
+    np.random.seed(1999) 
+    data = np.random.uniform(-1,1,(points,2))
     meshed_data = np.zeros((np.power(points,2),2))
     i = 0
     for variab in map(lambda x: np.reshape(x,(x.size)),np.meshgrid(*data.T)):
