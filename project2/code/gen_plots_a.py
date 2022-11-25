@@ -220,11 +220,10 @@ def SGD_ridge(X, funcval):
     """
     reg = LinearRegression(X, funcval)
 
-    epochs = 150
-    batches = 32
+    epochs = 200
+    batches = 16
     
-    # learningrates = [1e-1, 1e-2, 1e-3, 1e-4]
-    learningrates = [0.1, 0.01, 0.001, 0.0001]
+    learningrates = [1e-1, 1e-2, 1e-3, 1e-4]
     lambdas= np.zeros(5)
     lambdas[:4] = np.power(10.0,-1+-1*np.arange(4))
 
@@ -234,8 +233,7 @@ def SGD_ridge(X, funcval):
     for lr in learningrates:
         j = 0
         for params in lambdas:
-            costfunc = Ridge_beta(hyperpar = params)
-            sd = StochGradDecent(X, funcval, costfunc=costfunc)
+            sd = StochGradDecent(X_train, f_train, cost_fn=cross_entropy())
             beta = sd.const(epochs = epochs, batches = batches, learningrate = lr)
             MSE[i,j] = costfunc.func(funcval, X, beta)
             j += 1
