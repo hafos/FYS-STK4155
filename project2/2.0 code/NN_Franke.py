@@ -3,7 +3,7 @@
 """ 
 @author: simon
 
-This script generates every plot needed for Fitting the Franke Function with the help of a FFNN.
+This script generates every plot needed for fitting the Franke Function with the help of a FFNN.
 RuntimeWarning: overflow are normal since we get into regions were the NN does not converge!
 We did choose the identity as the output activation function everytime.
 Here is a quick overview what each function does:
@@ -187,7 +187,7 @@ def part_c(func = sigmoid):
     fig, ax = plt.subplots(figsize=(10, 5))
     MSE[MSE > 10e1] = np.nan
     test = sns.heatmap(MSE, annot=True, ax=ax, cmap="viridis", cbar_kws={'label': 'MSE'}, fmt='1.3e')
-    ax.set_xlabel("lambda")
+    ax.set_xlabel("l2 parameter")
     ax.set_ylabel("log$_{10}$(eta)")
     ax.set_xticklabels(l2s)
     ax.set_yticklabels(np.log10(etas))
