@@ -211,7 +211,7 @@ def part_c(func = sigmoid):
     print("\n")
 
 def part_d():
-    print("accuracy for different bias inits:...")
+    print("MSE for different bias inits:...")
     batches = 512
     neurons = 15
     eta = 0.1
