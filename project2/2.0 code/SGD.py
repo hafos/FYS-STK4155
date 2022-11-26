@@ -30,14 +30,14 @@ class StochGradDecent:
         np.random.seed(1999)
         self.beta = np.random.randn(X_train.shape[1],1)
         
-    def const(self, epochs = int(10e2), batches = 10, learningrate= 10e-3):
+    def const(self, epochs = int(10e1), batches = 10, learningrate= 10e-3):
         """
         Stochastic Gradient Decent with a constant learningrate
         
         Arguments
         ---------
         epochs: int
-            Number of epochs (default: 10e2)  
+            Number of epochs (default: 10e1)  
         batches: int
             Number of batches (default: 10)
         learningrate: float
@@ -61,19 +61,19 @@ class StochGradDecent:
         
         return(beta)
     
-    def adaptive(self, epochs = int(10e2), batches = 10, t_0 = 10e-1,
-                 t_1=1.0):
+    def adaptive(self, epochs = int(10e1), batches = 10, t_0 = 2*10e-1,
+                 t_1=0.3):
         """
         Stochastic Gradient Decent with a adaptive learningrate
         
         Arguments
         ---------
         epochs: int
-            Number of epochs (default: 10e2)  
+            Number of epochs (default: 10e1)  
         batches: int
             Number of batches (default: 10)
         t_0: float
-            parameter 1 (default: 10e-3)
+            parameter 1 (default: 2*10e-3)
         t_1: float
             parameter 2 (default: 1.0)
         """
@@ -91,13 +91,13 @@ class StochGradDecent:
                 rd_ind = np.random.randint(batches)
                 cost_fn = self.cost_fn
                 gradient = cost_fn.grad(f_train[rd_ind],X_train[rd_ind],beta)
-                learningrate = t_0/(t_1+itera)
+                learningrate = t_0/(t_1+(itera+1))
                 beta -= learningrate*gradient
         
         return(beta)
         
     
-    def momentum(self, epochs = int(10e2), batches = 10, learningrate = 10e-1, 
+    def momentum(self, epochs = int(10e1), batches = 10, learningrate = 10e-1, 
                  delta_momentum = 0.3):
         """
         Momentum based Stochastic Gradient Decent
@@ -105,7 +105,7 @@ class StochGradDecent:
         Arguments
         ---------
         epochs: int
-            Number of epochs (default: 10e2)  
+            Number of epochs (default: 10e1)  
         batches: int
             Number of batches (default: 10)
         learningrate: float
@@ -135,7 +135,7 @@ class StochGradDecent:
         
         return beta 
     
-    def adagrad(self, epochs = int(10e2), batches = 10, learningrate= 10e-1, 
+    def adagrad(self, epochs = int(10e1), batches = 10, learningrate= 10e-1, 
                 momentum = False, delta_momentum = 0.3):
         """
         Stochastic Gradient Decent with ADAGRAD
@@ -143,7 +143,7 @@ class StochGradDecent:
         Arguments
         ---------
         epochs: int
-            Number of epochs (default: 10e2)  
+            Number of epochs (default: 10e1)  
         batches: int
             Number of batches (default: 10)  
         learningrate: float
@@ -186,7 +186,7 @@ class StochGradDecent:
         
         return beta
     
-    def rmsprop(self, epochs = int(10e2), batches = 10, learningrate= 10e-3, 
+    def rmsprop(self, epochs = int(10e1), batches = 10, learningrate= 10e-3, 
                 t = 0.9):
         """
         Stochastic Gradient Decent with RMSprop
@@ -194,7 +194,7 @@ class StochGradDecent:
         Arguments
         ---------
         epochs: int
-            Number of epochs (default: 10e2)  
+            Number of epochs (default: 10e1)  
         batches: int
             Number of batches (default: 10)  
         learningrate: float
@@ -224,7 +224,7 @@ class StochGradDecent:
         
         return beta
 
-    def adam(self, epochs = int(10e2), batches = 10, learningrate= 0.1, 
+    def adam(self, epochs = int(10e1), batches = 10, learningrate= 0.1, 
              t1 = 0.9, t2 = 0.99):
         """
         Stochastic Gradient Decent with ADAM
@@ -232,7 +232,7 @@ class StochGradDecent:
         Arguments
         ---------
         epochs: int
-            Number of epochs (default: 10e2)  
+            Number of epochs (default: 10e1)  
         batches: int
             Number of batches (default: 10)    
         learningrate: float

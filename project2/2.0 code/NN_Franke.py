@@ -13,7 +13,7 @@ part_a():
     and neurons (per hidden layor)
     
 part_b()
-    Plots the MSE against different number of epochs and number of batches
+    Plots the MSE against different number of epochs and number of operations
 
 part_c()
     Plots the MSE for sigmoid act. function against different l2 and learningrate values
@@ -39,7 +39,7 @@ from sklearn.model_selection import train_test_split
 from FFNN import FFNN
 from layer import layer
 from FrankeFunction import FrankeFunction
-from activation_functions import sigmoid,identity,relu,leaky_relu
+from activation_functions import sigmoid,identity,relu,leaky_relu,tanh
 
 class CostOLS:     
     """"
@@ -55,8 +55,10 @@ data, funcval = FrankeFunction(points = 100, sigma=0.25)
 X_train, X_test, f_train, f_test = train_test_split(data, funcval, test_size=0.2, random_state=1)
 
 def part_a():
-    epochs = 150    
-    batches = 32
+    print("MSE for different number of hidden layors and neurons:...")
+    
+    epochs = 64
+    batches = 64
     eta = 0.1
     l2 = 0.0
     
@@ -114,17 +116,21 @@ def part_a():
     ax.set_yticklabels(layors)
     ax.set_title("NN with sigmoid")
     heatmap.set_facecolor('xkcd:grey')
+    plt.show()
+    print("[DONE]")
+    print("\n")
 
 def part_b():
+    print("MSE for different number of batches and operations:...")
+    
     eta = 0.1
     l2 = 0.0
     neurons = 15
     
-    batches = [1,4,8,16,32,64,128]
-    epochs = np.arange(0,300,50)
-    epochs[0] = 5
+    batches = np.power(2,np.arange(4,10)).astype("int")
+    numbofit = (batches[-1]*np.arange(5,12))
     
-    MSE = np.zeros((len(batches),len(epochs)))
+    MSE = np.zeros((len(batches),len(numbofit)))
     
     nn = FFNN(parameters=X_train.shape[1], cost_fn = CostOLS)
     nn.add_layer(layer(neurons = neurons, act_fn = sigmoid))
@@ -133,10 +139,10 @@ def part_b():
     i = 0
     for ba in batches:
         j = 0
-        for epo in epochs:
+        for it in numbofit:
             nn.reset()
             weights = nn.train(X_train = X_train, f_train = f_train, 
-                               eta=eta, batches = ba ,epochs = epo, l2 = l2)
+                               eta=eta, batches = ba ,epochs = int(it/ba), l2 = l2)
             z, a = nn.feed_forward(X_test)
             
             MSE[i,j] = CostOLS.func(f_test,a[-1]) + l2 * np.sum(np.power(weights,2))
@@ -147,16 +153,20 @@ def part_b():
     fig, ax = plt.subplots(figsize=(10, 5))
     MSE[MSE > 10e1] = np.nan
     heatmap = sns.heatmap(MSE, annot=True, ax=ax, cmap="viridis", cbar_kws={'label': 'MSE'}, fmt='1.3e')
-    ax.set_xlabel("epochs")
+    ax.set_xlabel("number of iterations")
     ax.set_ylabel("batches")
-    ax.set_xticklabels(epochs)
+    ax.set_xticklabels(numbofit)
     ax.set_yticklabels(batches)
     ax.set_title("NN with sigmoid")
     heatmap.set_facecolor('xkcd:grey')
+    plt.show()
+    print("[DONE]")
+    print("\n")
 
 def part_c(func = sigmoid):
-    epochs = 150
-    batches = 32
+    print("MSE for different number of l2 parameters and learningrates:...")
+    epochs = 10
+    batches = 512
     neurons = 15
     
     etas = [1e0,1e-1, 1e-2, 1e-3, 1e-4]
@@ -188,32 +198,36 @@ def part_c(func = sigmoid):
     MSE[MSE > 10e1] = np.nan
     test = sns.heatmap(MSE, annot=True, ax=ax, cmap="viridis", cbar_kws={'label': 'MSE'}, fmt='1.3e')
     ax.set_xlabel("l2 parameter")
-    ax.set_ylabel("log$_{10}$(eta)")
+    ax.set_ylabel("eta")
     ax.set_xticklabels(l2s)
-    ax.set_yticklabels(np.log10(etas))
+    ax.set_yticklabels(etas)
     if type(func) is type:
         ax.set_title(f"NN with {func.__name__}")
     else: 
         ax.set_title(f"NN with {func.__class__.__name__}")
     test.set_facecolor('xkcd:grey')
+    plt.show()
+    print("[DONE]")
+    print("\n")
 
 def part_d():
-    batches = 32
+    print("accuracy for different bias inits:...")
+    batches = 512
     neurons = 15
-    eta = 0.01
+    eta = 0.1
     l2 = 0
     
-    epochs = range(0,20)
+    epochs = range(1,12)
     
     MSE = np.zeros((3,len(epochs)))
     
     nn1 = FFNN(parameters=X_train.shape[1], cost_fn = CostOLS)
-    nn1.add_layer(layer(neurons = neurons, act_fn = sigmoid))
+    nn1.add_layer(layer(neurons = neurons, act_fn = tanh))
     nn1.add_layer(layer(neurons = f_train.shape[1], act_fn = identity))
     
     nn2 = FFNN(parameters=X_train.shape[1], cost_fn = CostOLS)
-    nn2.add_layer(layer(neurons = neurons, act_fn = sigmoid, createbias="ones"))
-    nn2.add_layer(layer(neurons = f_train.shape[1], act_fn = identity, createbias="ones"))
+    nn2.add_layer(layer(neurons = neurons, act_fn = tanh, createbias="ones"))
+    nn2.add_layer(layer(neurons = f_train.shape[1], act_fn = tanh, createbias="ones"))
     
     nn3 = FFNN(parameters=X_train.shape[1], cost_fn = CostOLS)
     nn3.add_layer(layer(neurons = neurons, act_fn = sigmoid, createbias="zeros"))
@@ -253,13 +267,18 @@ def part_d():
     plt.xlabel("epochs")
     plt.ylabel("MSE")
     plt.legend()
+    plt.show()
+    print("[DONE]")
+    print("\n")
 
 part_a()
-#part_b()
-#part_c()
-#part_c(relu)
-#part_c(leaky_relu(hyperpar = 0.01))
-#part_d()
+part_b()
+part_c()
+part_c(relu)
+part_c(leaky_relu(hyperpar = 0.01))
+part_c(tanh)
+part_d()
+
 
 
 

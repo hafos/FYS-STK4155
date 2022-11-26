@@ -3,7 +3,7 @@
 """ 
 @author: simon
 
-This script generates every plot needed for fitting the Wisconson breast cancer data set
+This script generates every plot for analysis of the Wisconson breast cancer data set
 with the help of a FFNN.
 RuntimeWarning: overflow are normal since we get into regions were the NN does not converge!
 We did choose the sigmoid function as the output activation function everytime.
@@ -14,13 +14,14 @@ part_a():
     and neurons (per hidden layor)
     
 part_b()
-    Plots the accuracy against different number of epochs and number of batches
+    Plots the accuracy against different number of epochs and number of operations
 
 part_c()
     Plots the accuracy for sigmoid act. function against different l2 and learningrate values
     
 part_c(tanh)
-    Plots the accuracy for tanh act. function against different l2 and learningrate values
+    Plots the accuracy for tanh as hidden act.function and sigmoid as tanh act.func
+    against different l2 and learningrate values
     
 part_d():
     Creates a Plot were for differnt bias initializations the accuracy is plottet 
@@ -65,8 +66,9 @@ X_test = scaler.transform(X_test)
 
 
 def part_a():
-    epochs = 150    
-    batches = 32
+    print("accuracy for different number of hidden layors and neurons:...")
+    epochs = 16
+    batches = 64
     eta = 0.1
     l2 = 0.0
     
@@ -120,6 +122,7 @@ def part_a():
         i += 1
         
     fig, ax = plt.subplots(figsize=(10, 5))
+    accuracy[accuracy < 1e-3] = np.nan
     heatmap = sns.heatmap(accuracy, annot=True, ax=ax, cmap="viridis_r", cbar_kws={'label': 'accuracy'}, fmt='1.3e')
     ax.set_xlabel("neurons")
     ax.set_ylabel("hidden layors")
@@ -127,17 +130,20 @@ def part_a():
     ax.set_yticklabels(layors)
     ax.set_title("NN with sigmoid")
     heatmap.set_facecolor('xkcd:grey')
+    plt.show()
+    print("[DONE]")
+    print("\n")
 
 def part_b():
+    print("Accuracy for different number of batches and operations:...")
     eta = 0.1
     l2 = 0.0
-    neurons = 20
+    neurons = 10
     
-    batches = [1,4,8,16,32,64,128]
-    epochs = np.arange(0,300,50)
-    epochs[0] = 5
+    batches = np.power(2,np.arange(5,9)).astype("int")
+    numbofit = (batches[-1]*np.arange(1,9))
     
-    accuracy = np.zeros((len(batches),len(epochs)))
+    accuracy = np.zeros((len(batches),len(numbofit)))
     
     nn = FFNN(parameters=X_train.shape[1], cost_fn = cross_entropy)
     nn.add_layer(layer(neurons = neurons, act_fn = sigmoid))
@@ -146,10 +152,10 @@ def part_b():
     i = 0
     for ba in batches:
         j = 0
-        for epo in epochs:
+        for it in numbofit:
             nn.reset()
             weights = nn.train(X_train = X_train, f_train = f_train, 
-                               eta=eta, batches = ba ,epochs = epo, l2 = l2)
+                               eta=eta, batches = ba ,epochs = int(it/ba) , l2 = l2)
             z, a = nn.feed_forward(X_test)
             
             prediction = a[-1].round()
@@ -159,18 +165,23 @@ def part_b():
         i += 1
         
     fig, ax = plt.subplots(figsize=(10, 5))
+    accuracy[accuracy < 1e-3] = np.nan
     heatmap = sns.heatmap(accuracy, annot=True, ax=ax, cmap="viridis_r", cbar_kws={'label': 'accuracy'}, fmt='1.3e')
-    ax.set_xlabel("epochs")
+    ax.set_xlabel("number of operations")
     ax.set_ylabel("batches")
-    ax.set_xticklabels(epochs)
+    ax.set_xticklabels(numbofit)
     ax.set_yticklabels(batches)
     ax.set_title("NN with sigmoid")
     heatmap.set_facecolor('xkcd:grey')
+    plt.show()
+    print("[DONE]")
+    print("\n")
 
-def part_c(func = sigmoid):
-    epochs = 200
-    batches = 16
-    neurons = 20
+def part_c(hfunc = sigmoid, ofunc = sigmoid, titel = None):
+    print("Accuracy for different number of l2 parameters and learningrates:...")
+    epochs = 7
+    batches = 256
+    neurons = 10
     
     etas = [1e0,1e-1, 1e-2, 1e-3, 1e-4]
     n = 7
@@ -180,8 +191,8 @@ def part_c(func = sigmoid):
     accuracy = np.zeros((len(etas),len(l2s)))
     
     nn = FFNN(parameters=X_train.shape[1], cost_fn = cross_entropy)
-    nn.add_layer(layer(neurons = neurons, act_fn = func))
-    nn.add_layer(layer(neurons = f_train.shape[1], act_fn = sigmoid))
+    nn.add_layer(layer(neurons = neurons, act_fn = hfunc))
+    nn.add_layer(layer(neurons = f_train.shape[1], act_fn = ofunc))
     
     i = 0
     for eta in etas:
@@ -200,37 +211,39 @@ def part_c(func = sigmoid):
     
     fig, ax = plt.subplots(figsize=(10, 5))
     accuracy[accuracy < 1e-3] = np.nan
-    test = sns.heatmap(accuracy, annot=True, ax=ax, cmap="viridis_r", cbar_kws={'label': 'accuracy'}, fmt='1.3e')
+    heatmap = sns.heatmap(accuracy, annot=True, ax=ax, cmap="viridis_r", cbar_kws={'label': 'accuracy'}, fmt='1.3e')
     ax.set_xlabel("l2 parameter")
-    ax.set_ylabel("log$_{10}$(eta)")
+    ax.set_ylabel("eta")
     ax.set_xticklabels(l2s)
-    ax.set_yticklabels(np.log10(etas))
-    if type(func) is type:
-        ax.set_title(f"NN with {func.__name__}")
-    else: 
-        ax.set_title(f"NN with {func.__class__.__name__}")
-    test.set_facecolor('xkcd:grey')
+    ax.set_yticklabels(etas)
+    heatmap.set_facecolor('xkcd:grey')
+    if titel is not None:
+        plt.title(titel)
+    plt.show()
+    print("[DONE]")
+    print("\n")
 
 def part_d():
-    batches = 16
-    neurons = 20
+    print("accuracy for different bias inits:...")
+    batches = 7
+    neurons = 10
     eta = 0.1
     l2 = 0
     
-    epochs = range(0,20)
+    epochs = range(1,12)
     
     accuracy = np.zeros((3,len(epochs)))
     
     nn1 = FFNN(parameters=X_train.shape[1], cost_fn = cross_entropy)
-    nn1.add_layer(layer(neurons = neurons, act_fn = sigmoid))
+    nn1.add_layer(layer(neurons = neurons, act_fn = tanh))
     nn1.add_layer(layer(neurons = f_train.shape[1], act_fn = sigmoid))
     
     nn2 = FFNN(parameters=X_train.shape[1], cost_fn = cross_entropy)
-    nn2.add_layer(layer(neurons = neurons, act_fn = sigmoid, createbias="ones"))
+    nn2.add_layer(layer(neurons = neurons, act_fn = tanh, createbias="ones"))
     nn2.add_layer(layer(neurons = f_train.shape[1], act_fn = sigmoid, createbias="ones"))
     
     nn3 = FFNN(parameters=X_train.shape[1], cost_fn = cross_entropy)
-    nn3.add_layer(layer(neurons = neurons, act_fn = sigmoid, createbias="zeros"))
+    nn3.add_layer(layer(neurons = neurons, act_fn = tanh, createbias="zeros"))
     nn3.add_layer(layer(neurons = f_train.shape[1], act_fn = sigmoid, createbias="zeros"))
     
     i = 0
@@ -270,18 +283,22 @@ def part_d():
     plt.xlabel("epochs")
     plt.ylabel("accuracy")
     plt.legend()
+    plt.show()
+    print("[DONE]")
+    print("\n")
 
-#part_a()
-#part_b()
-#part_c()
-part_c(tanh)
-#part_d()
+
+part_a()
+part_b()
+part_c(titel="NN with sigmoid as h_act_fun and o_act_fun")
+part_c(hfunc=tanh,titel="NN with tanh as h_act_fun and sigmoid as o_act_fun")
+part_d()
 
 """
-With relu and leaky relu as activation function for the hidden layors the NN
-does not converge
+The following do not converge
 """
 #part_c(relu)
+#part_c(tanh,tanh)
 #part_c(leaky_relu(hyperpar = 0.001))
 
 
