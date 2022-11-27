@@ -1,6 +1,6 @@
 The second project in Applied Data Analysis and Machine Learing of Oskar Hafstad, Simon H. Hille & Semya A. Tønnessen. 
 
-We have an extended deadline, and will update the repo until 25.11.22 23:59. 
+Due to extenuating circumstances we have an extended deadline until 23:59 23.12.2022. 
 
 ## Abstract 
 XXX: Insert abstract from pdf here 
