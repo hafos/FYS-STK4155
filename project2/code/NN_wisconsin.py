@@ -9,21 +9,17 @@ RuntimeWarning: overflow are normal since we get into regions were the NN does n
 We did choose the sigmoid function as the output activation function everytime.
 Here is a quick overview what each function does:
 
-part_a():
+plot_neurons_vs_layers(batches, epochs, eta, l2)
     Plots the accuracy against different number of layors of hidden layor 
     and neurons (per hidden layor)
     
-part_b()
+plot_epochs_vs_batches(neurons, h_layers, eta, l2)
     Plots the accuracy against different number of epochs and number of operations
 
-part_c()
+plot_lambda_vs_eta(neurons, h_layers, batches, epochs, hfunc, ofunc, title)
     Plots the accuracy for sigmoid act. function against different l2 and learningrate values
     
-part_c(tanh)
-    Plots the accuracy for tanh as hidden act.function and sigmoid as tanh act.func
-    against different l2 and learningrate values
-    
-part_d():
+plot_bias(batches, neurons, eta, l2)
     Creates a Plot were for differnt bias initializations the accuracy is plottet 
     against the number of epochs
 
@@ -209,7 +205,7 @@ def plot_lambda_vs_eta(neurons=10, h_layers=1, batches=256, epochs=7, \
     
     fig, ax = plt.subplots(figsize=(10, 5))
     accuracy[accuracy < 1e-3] = np.nan
-    heatmap = sns.heatmap(accuracy, annot=True, ax=ax, cmap="viridis_r", cbar_kws={'label': 'accuracy'}, fmt='1.3e')
+    heatmap = sns.heatmap(accuracy, annot=True, ax=ax, cmap="viridis_r", cbar_kws={'label': 'accuracy'}, fmt='.4f')
     ax.set_xlabel(r"\lambda")
     ax.set_ylabel(r"\eta")
     ax.set_xticklabels(l2s)
@@ -288,6 +284,8 @@ def plot_bias(batches = 7, neurons = 10, eta = 0.1, l2=0.0):
 plot_neurons_vs_layers(batches=64, epochs=16, eta=0.1, l2=0.0)
 plot_epochs_vs_batches(neurons=10, h_layers=1, eta=0.1, l2=0.0)
 plot_lambda_vs_eta(neurons=10, h_layers=1, batches=256, epochs=7, hfunc = sigmoid, ofunc = sigmoid, title = "sigmoid")
+"""Plots the accuracy for tanh as hidden act.function and sigmoid as tanh act.func
+    against different l2 and learningrate values"""
 plot_lambda_vs_eta(neurons=10, h_layers=1, batches=256, epochs=7, hfunc = tanh, ofunc = sigmoid, title = "tanh_sig")
 plot_bias(batches = 7, neurons = 10, eta = 0.1, l2=0.0)
 

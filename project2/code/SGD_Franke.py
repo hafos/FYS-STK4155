@@ -37,6 +37,9 @@ from sklearn.preprocessing import PolynomialFeatures
 from SGD import StochGradDecent
 from FrankeFunction import FrankeFunction
 
+# Save figures (Y/N)
+save = "Y"
+
 class CostOLS:     
     """"
     Defines the Cost function and its derivative used for all calculations in this script
@@ -60,14 +63,14 @@ data = poly.fit_transform(data)
 
 X_train, X_test, f_train, f_test = train_test_split(data, funcval, test_size=0.2, random_state=1)
 
-def part_a():
+def plot_epochs(n_epoch=300):
     print("GD for different learningrates (eta):...", end = "")
     
     cost_fn = CostOLS()
     sgd = StochGradDecent(X_train, f_train, cost_fn = cost_fn)
     
     etas = [1e-1, 1e-2, 1e-3]
-    epochs = np.arange(300)
+    epochs = np.arange(n_epoch)
  
     MSE = np.zeros((len(etas),len(epochs)))
 
@@ -83,18 +86,18 @@ def part_a():
     for i in range(len(etas)):
         plt.plot(epochs, MSE[i,:], label = fr"GD with $\eta$ = {etas[i]}")
         plt.legend()
-    plt.tight_layout()
+    # plt.tight_layout()
     plt.ylabel("MSE")
     plt.xlabel("epochs")
-    plt.show()
-    print("[DONE]")
-    print("\n")
+    if save == "Y": 
+        plt.savefig(f"../results/figures/Regression/SGD_epochs.pdf")
+    else:
+        plt.show()    
+    print("[DONE]\n")
     
-def part_b():
+def plot_lambda_vs_learningrates(epochs=500):
     print("MSE for different learningrates and l2 parameters for GD:...")
-    
-    epochs = 500
-    
+        
     etas = [1e-1, 1e-2, 1e-3, 1e-4]
     n = 5
     l2s = np.zeros(n)
@@ -114,23 +117,24 @@ def part_b():
         i += 1
 
     fig, ax = plt.subplots(figsize=(10, 5))
-    sns.heatmap(MSE, annot=True, ax=ax, cmap="viridis", cbar_kws={'label': 'MSE'}, fmt='1.3e')
+    sns.heatmap(MSE, annot=True, ax=ax, cmap="viridis", cbar_kws={'label': 'MSE'}, fmt='.4f')
     ax.set_xlabel(r"l2 parameter")
     ax.set_ylabel(r"$\eta$")
     ax.set_xticklabels(l2s)
     ax.set_yticklabels(etas)
-    plt.show()
-    print("[DONE]")
-    print("\n")
+    if save == "Y": 
+        plt.savefig(f"../results/figures/Regression/SGD_MSE_lambda_eta.pdf")
+    else:
+        plt.show()    
+    print("[DONE]\n")
 
-def part_c():
+def plot_MSE_learningrates_GD_extra(n_epochs=200, eta=1e-1):
     print("compare different learningrate upgrade methodes for GD:...")
     
     cost_fn = CostOLS()
     sgd = StochGradDecent(X_train, f_train, cost_fn=cost_fn)
 
-    eta = 1e-1
-    epochs = np.arange(0,200)
+    epochs = np.arange(0, n_epochs)
     #compare for one higher number of operations
     epochs = np.append(epochs, 1024)
     
@@ -164,8 +168,10 @@ def part_c():
     plt.ylabel("MSE")
     plt.xlabel("number of operations")
     plt.legend(prop={'size': 8})
-    plt.title("GD for different learningrate upgrade methodes")
-    plt.show()
+    if save == "Y": 
+        plt.savefig(f"../results/figures/Regression/GD_MSE_learningrates_extra.pdf")
+    else:
+        plt.show()
     
     j = 0
     print(f"MSE for GD after {epochs[-2]} iterations for")
@@ -183,15 +189,11 @@ def part_c():
             print(f"{name}: {MSE[j,-1]}")
             j += 1
 
-    print("[DONE]")
-    print("\n")
+    print("[DONE]\n")
 
-def part_d(batches = 4):
+def time_GD_vs_SGD(batches=4, epochs=200, eta=0.1):
     print("compare calc. time for GD and SGD:...")
-    
-    epochs = 200
-    eta  = 0.1
-    
+
     cost_fn = CostOLS()
     sgd = StochGradDecent(X_train, f_train, cost_fn=cost_fn)
     
@@ -212,20 +214,16 @@ def part_d(batches = 4):
         print(f"The first list element corresponds to GD and the second one to SGD with {batches} batches")
         print(f"time per epoch in s: \t \t {times/epochs}")
         print(f"time per operation in s: \t {times/(epochs*size)}")
-        print("[DONE]")
-        print("\n")
+        print("[DONE]\n")
 
-    
-def part_e(): 
+def plot_operations_vs_batches(eta=1e-1): 
     print("SGD for different number of operations and batches:...", end = "")
     
     cost_fn = CostOLS()
     sgd = StochGradDecent(X_train, f_train, cost_fn = cost_fn)
 
-    eta = 1e-1
     batches = np.power(2,np.arange(0,8)).astype("int")
     numbofit = (batches[-1]*np.arange(1,9))
-    
 
     # Initialize and calculate the MSE 
     MSE = np.zeros((len(batches),len(numbofit)))
@@ -240,23 +238,22 @@ def part_e():
         i += 1
     
     fig, ax = plt.subplots(figsize=(10, 5))
-    sns.heatmap(MSE, annot=True, ax=ax, cmap="viridis_r", cbar_kws={'label': 'MSE'}, fmt='1.3e')
-    ax.set_xlabel("number of operations")
-    ax.set_ylabel("number of batches")
+    sns.heatmap(MSE, annot=True, ax=ax, cmap="viridis_r", cbar_kws={'label': 'MSE'}, fmt='.4f')
+    ax.set_xlabel("Number of Operations")
+    ax.set_ylabel("Number of Batches")
     ax.set_xticklabels(numbofit)
     ax.set_yticklabels(batches)
-    plt.show()
-    print("[DONE]")
-    print("\n")
+    if save == "Y": 
+        plt.savefig(f"../results/figures/Regression/SGD_op_batch.pdf")
+    else:
+        plt.show()
 
-def part_f():
+def plot_MSE_learningrates_SGD_extra(batches=64, eta=1e-1):
     print("compare different learningrate upgrade methodes for SGD:...")
     
     cost_fn = CostOLS()
     sgd = StochGradDecent(X_train, f_train, cost_fn=cost_fn)
-
-    eta = 1e-1
-    batches = 64
+    
     epochs = np.arange(0,16)
 
     methodes = ["SGD","SGD adaptive","SGD with momentum","SGD Adagrad", "SGD Adagrad with momentum","SGD RMS","SGD ADAM"]
@@ -287,10 +284,12 @@ def part_f():
         j += 1
     
     plt.ylabel("MSE")
-    plt.xlabel("number of operations")
+    plt.xlabel("Number of Operations")
     plt.legend(prop={'size': 8})
-    plt.title("SGD for different learningrate upgrade methodes")
-    plt.show()
+    if save == "Y": 
+        plt.savefig(f"../results/figures/Regression/SGD_MSE_learningrates_extra.pdf")
+    else:
+        plt.show()
     
     j = 0
     print(f"MSE for SGD after {(epochs[-9,]+1)*batches} operations for")
@@ -298,7 +297,7 @@ def part_f():
         for name in methodes:
             print(f"{name}: {MSE[j,epochs[-9]]}")
             j += 1
-    
+
     print("\n")
     
     j = 0
@@ -308,12 +307,11 @@ def part_f():
             print(f"{name}: {MSE[j,-1]}")
             j += 1
 
-    print("[DONE]")
-    print("\n")
+    print("[DONE]\n")
 
-part_a()
-part_b()
-part_c()
-part_d()
-part_e()
-part_f()
+plot_epochs(n_epoch=300)
+plot_lambda_vs_learningrates(epochs=500)
+plot_MSE_learningrates_GD_extra(n_epochs=200, eta=1e-1)
+time_GD_vs_SGD(batches=4, epochs=200, eta=0.1)
+plot_operations_vs_batches(eta=1e-1)
+plot_MSE_learningrates_SGD_extra(batches=64, eta=1e-1)
