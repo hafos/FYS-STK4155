@@ -31,16 +31,20 @@ To run a function comment in the call at the bottom of the script
 """
 
 import numpy as np
-import seaborn as sns
 import matplotlib.pyplot as plt
+import seaborn as sns
 import time
 from sklearn.model_selection import train_test_split
 from sklearn.datasets import load_breast_cancer
 from sklearn.preprocessing import StandardScaler
+
 from FFNN import FFNN
 from layer import layer
 from FrankeFunction import FrankeFunction
 from activation_functions import sigmoid,identity,relu,leaky_relu,tanh
+
+# Save figures (Y/N)
+save = "Y"
 
 class cross_entropy:
     """"
@@ -52,25 +56,21 @@ class cross_entropy:
     def grad(y,ytilde):
         return -1/y.size*(y/(ytilde)-(1-y)/(1-ytilde))
 
-#Get breast cancer data and split it into test/train sets
+# Get breast cancer data and split it into test/train sets
 cancer = load_breast_cancer()
 data = cancer.data
 target = cancer.target.reshape(-1,1)
 X_train, X_test, f_train, f_test = train_test_split(data, target, test_size=0.2, random_state=1)
 
-#rescale
+# rescale
 scaler = StandardScaler()
 scaler.fit(X_train)
 X_train = scaler.transform(X_train)
 X_test = scaler.transform(X_test)
 
 
-def part_a():
-    print("accuracy for different number of hidden layors and neurons:...")
-    epochs = 16
-    batches = 64
-    eta = 0.1
-    l2 = 0.0
+def plot_neurons_vs_layers(batches=64, epochs=16, eta=0.1, l2=0.0):
+    print("Accuracy for different number of hidden layors and neurons:...")
     
     layors = np.arange(1,4)
     neurons = np.arange(0,35,5)
@@ -123,22 +123,21 @@ def part_a():
         
     fig, ax = plt.subplots(figsize=(10, 5))
     accuracy[accuracy < 1e-3] = np.nan
-    heatmap = sns.heatmap(accuracy, annot=True, ax=ax, cmap="viridis_r", cbar_kws={'label': 'accuracy'}, fmt='1.3e')
-    ax.set_xlabel("neurons")
-    ax.set_ylabel("hidden layors")
+    heatmap = sns.heatmap(accuracy, annot=True, ax=ax, cmap="viridis_r", cbar_kws={'label': 'accuracy'}, fmt='.4f')
+    ax.set_xlabel("Neurons")
+    ax.set_ylabel("Hidden Layers")
     ax.set_xticklabels(neurons)
     ax.set_yticklabels(layors)
-    ax.set_title("NN with sigmoid")
     heatmap.set_facecolor('xkcd:grey')
-    plt.show()
-    print("[DONE]")
-    print("\n")
+    if save == "Y": 
+        fig.savefig("../results/figures/Classification/NN_class_sigmoid_neurons_layers.pdf")
+    else:
+        plt.show()
 
-def part_b():
+    print("[DONE]\n")
+
+def plot_epochs_vs_batches(neurons=10, h_layers=1, eta=0.1, l2=0.0):
     print("Accuracy for different number of batches and operations:...")
-    eta = 0.1
-    l2 = 0.0
-    neurons = 10
     
     batches = np.power(2,np.arange(5,9)).astype("int")
     numbofit = (batches[-1]*np.arange(1,9))
@@ -166,22 +165,21 @@ def part_b():
         
     fig, ax = plt.subplots(figsize=(10, 5))
     accuracy[accuracy < 1e-3] = np.nan
-    heatmap = sns.heatmap(accuracy, annot=True, ax=ax, cmap="viridis_r", cbar_kws={'label': 'accuracy'}, fmt='1.3e')
-    ax.set_xlabel("number of operations")
-    ax.set_ylabel("batches")
+    heatmap = sns.heatmap(accuracy, annot=True, ax=ax, cmap="viridis_r", cbar_kws={'label': 'accuracy'}, fmt='.4f')
+    ax.set_xlabel("Number of Iterations")
+    ax.set_ylabel("Batches")
     ax.set_xticklabels(numbofit)
     ax.set_yticklabels(batches)
-    ax.set_title("NN with sigmoid")
     heatmap.set_facecolor('xkcd:grey')
-    plt.show()
-    print("[DONE]")
-    print("\n")
+    if save == "Y": 
+        fig.savefig("../results/figures/Classification/NN_class_sigmoid_iterations_batches.pdf")
+    else:
+        plt.show()    
+    print("[DONE]\n")
 
-def part_c(hfunc = sigmoid, ofunc = sigmoid, titel = None):
+def plot_lambda_vs_eta(neurons=10, h_layers=1, batches=256, epochs=7, \
+    hfunc = sigmoid, ofunc = sigmoid, title = None):
     print("Accuracy for different number of l2 parameters and learningrates:...")
-    epochs = 7
-    batches = 256
-    neurons = 10
     
     etas = [1e0,1e-1, 1e-2, 1e-3, 1e-4]
     n = 7
@@ -212,24 +210,21 @@ def part_c(hfunc = sigmoid, ofunc = sigmoid, titel = None):
     fig, ax = plt.subplots(figsize=(10, 5))
     accuracy[accuracy < 1e-3] = np.nan
     heatmap = sns.heatmap(accuracy, annot=True, ax=ax, cmap="viridis_r", cbar_kws={'label': 'accuracy'}, fmt='1.3e')
-    ax.set_xlabel("l2 parameter")
-    ax.set_ylabel("eta")
+    ax.set_xlabel(r"\lambda")
+    ax.set_ylabel(r"\eta")
     ax.set_xticklabels(l2s)
     ax.set_yticklabels(etas)
     heatmap.set_facecolor('xkcd:grey')
-    if titel is not None:
-        plt.title(titel)
-    plt.show()
-    print("[DONE]")
-    print("\n")
+    if save == "Y": 
+        if title is not None:
+            fig.savefig(f"../results/figures/Classification/NN_class_{title}_l2_eta.pdf")
+    else: 
+        plt.show()
+    print("[DONE]\n")
 
-def part_d():
+def plot_bias(batches = 7, neurons = 10, eta = 0.1, l2=0.0):
     print("accuracy for different bias inits:...")
-    batches = 7
-    neurons = 10
-    eta = 0.1
-    l2 = 0
-    
+   
     epochs = range(1,12)
     
     accuracy = np.zeros((3,len(epochs)))
@@ -283,25 +278,22 @@ def part_d():
     plt.xlabel("epochs")
     plt.ylabel("accuracy")
     plt.legend()
-    plt.show()
-    print("[DONE]")
-    print("\n")
+    if save == "Y": 
+        plt.savefig(f"../results/figures/Classification/NN_class_bias.pdf")
+    else:
+        plt.show()    
+    print("[DONE]\n")
 
 
-part_a()
-part_b()
-part_c(titel="NN with sigmoid as h_act_fun and o_act_fun")
-part_c(hfunc=tanh,titel="NN with tanh as h_act_fun and sigmoid as o_act_fun")
-part_d()
+plot_neurons_vs_layers(batches=64, epochs=16, eta=0.1, l2=0.0)
+plot_epochs_vs_batches(neurons=10, h_layers=1, eta=0.1, l2=0.0)
+plot_lambda_vs_eta(neurons=10, h_layers=1, batches=256, epochs=7, hfunc = sigmoid, ofunc = sigmoid, title = "sigmoid")
+plot_lambda_vs_eta(neurons=10, h_layers=1, batches=256, epochs=7, hfunc = tanh, ofunc = sigmoid, title = "tanh_sig")
+plot_bias(batches = 7, neurons = 10, eta = 0.1, l2=0.0)
 
 """
 The following do not converge
 """
-#part_c(relu)
-#part_c(tanh,tanh)
-#part_c(leaky_relu(hyperpar = 0.001))
-
-
-
-
-
+# plot_lambda_vs_eta(neurons=10, h_layers=1, batches=256, epochs=7, hfunc = tanh, ofunc = tanh, title = "tanh_sig")
+# plot_lambda_vs_eta(neurons=10, h_layers=1, batches=256, epochs=7, hfunc = relu, ofunc = sigmoid, title = "tanh_sig")
+# plot_lambda_vs_eta(neurons=10, h_layers=1, batches=256, epochs=7, hfunc = leaky_relu(hyperpar = 0.001), ofunc = sigmoid, title = "tanh_sig")

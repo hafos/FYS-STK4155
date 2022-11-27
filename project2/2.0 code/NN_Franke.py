@@ -8,11 +8,11 @@ RuntimeWarning: overflow are normal since we get into regions were the NN does n
 We did choose the identity as the output activation function everytime.
 Here is a quick overview what each function does:
 
-part_a():
-    Plots the MSE against different number of layors of hidden layor 
-    and neurons (per hidden layor)
+plot_neurons_vs_layers(batches, epochs, eta)
+    Plots the MSE against different number of layers of hidden layer 
+    and neurons (per hidden layer)
     
-part_b()
+plot_epochs_vs_batches(neurons, h_layers, eta)
     Plots the MSE against different number of epochs and number of operations
 
 part_c()
@@ -32,14 +32,18 @@ To run a function comment in the call at the bottom of the script
 """
 
 import numpy as np
-import seaborn as sns
 import matplotlib.pyplot as plt
+import seaborn as sns
 import time
 from sklearn.model_selection import train_test_split
+
 from FFNN import FFNN
 from layer import layer
 from FrankeFunction import FrankeFunction
 from activation_functions import sigmoid,identity,relu,leaky_relu,tanh
+
+# Save figures (Y/N)
+save = "Y"
 
 class CostOLS:     
     """"
@@ -50,20 +54,15 @@ class CostOLS:
     def grad(y,ytilde):
         return (2/ytilde.shape[0])*(ytilde-y)
 
-#Generate data and split it into test/train sets
+# Generate data and split it into test/train sets
 data, funcval = FrankeFunction(points = 100, sigma=0.25)
 X_train, X_test, f_train, f_test = train_test_split(data, funcval, test_size=0.2, random_state=1)
 
-def part_a():
-    print("MSE for different number of hidden layors and neurons:...")
-    
-    epochs = 64
-    batches = 64
-    eta = 0.1
-    l2 = 0.0
+def plot_neurons_vs_layers(batches=32, epochs=150, eta=0.1, l2=0.0):
+    print("MSE for different number of hidden layers and neurons:...")
     
     layors = np.arange(1,4)
-    neurons = np.arange(0,35,5)
+    neurons = np.arange(0,40,5)
     neurons[0] = 1
     
     MSE = np.zeros((len(layors),len(neurons)))
@@ -76,7 +75,7 @@ def part_a():
         nn.add_layer(layer(neurons = nr, act_fn = sigmoid))
         nn.add_layer(layer(neurons = f_train.shape[1], act_fn = identity))
         weights = nn.train(X_train = X_train, f_train = f_train, 
-                           eta=eta, batches = batches,epochs = epochs, l2 = l2)
+                           eta=eta, batches = batches, epochs = epochs, l2 = l2)
         z, a = nn.feed_forward(X_test)
         
         MSE[0,i] = CostOLS.func(f_test,a[-1]) + l2 * np.sum(np.power(weights,2))
@@ -87,9 +86,8 @@ def part_a():
         nn.add_layer(layer(neurons = nr, act_fn = sigmoid))
         nn.add_layer(layer(neurons = f_train.shape[1], act_fn = identity))
         weights = nn.train(X_train = X_train, f_train = f_train, 
-                           eta=eta, batches = batches,epochs = epochs, l2 = l2)
+                           eta=eta, batches = batches, epochs = epochs, l2 = l2)
         z, a = nn.feed_forward(X_test)
-
 
         MSE[1,i] = CostOLS.func(f_test,a[-1]) + l2 * np.sum(np.power(weights,2))
         
@@ -100,7 +98,7 @@ def part_a():
         nn.add_layer(layer(neurons = nr, act_fn = sigmoid))
         nn.add_layer(layer(neurons = f_train.shape[1], act_fn = identity))
         weights = nn.train(X_train = X_train, f_train = f_train, 
-                           eta=eta, batches = batches,epochs = epochs, l2 = l2)
+                           eta=eta, batches = batches, epochs = epochs, l2 = l2)
         z, a = nn.feed_forward(X_test)
         
         MSE[2,i] = CostOLS.func(f_test,a[-1]) + l2 * np.sum(np.power(weights,2))
@@ -109,23 +107,21 @@ def part_a():
         
     fig, ax = plt.subplots(figsize=(10, 5))
     MSE[MSE > 10e1] = np.nan
-    heatmap = sns.heatmap(MSE, annot=True, ax=ax, cmap="viridis", cbar_kws={'label': 'MSE'}, fmt='1.3e')
-    ax.set_xlabel("neurons")
-    ax.set_ylabel("hidden layors")
+    heatmap = sns.heatmap(MSE, annot=True, ax=ax, cmap="viridis", cbar_kws={'label': 'MSE'}, fmt='.4f')
+    ax.set_xlabel("Neurons")
+    ax.set_ylabel("Hidden Layers")
     ax.set_xticklabels(neurons)
     ax.set_yticklabels(layors)
-    ax.set_title("NN with sigmoid")
     heatmap.set_facecolor('xkcd:grey')
-    plt.show()
-    print("[DONE]")
-    print("\n")
+    if save == "Y": 
+        fig.savefig("../results/figures/Regression/NN_reg_sigmoid_neurons_layers.pdf")
+    else:
+        plt.show()
 
-def part_b():
+    print("[DONE]\n")
+
+def plot_epochs_vs_batches(neurons=15, h_layers=1, eta=0.1, l2=0.0):
     print("MSE for different number of batches and operations:...")
-    
-    eta = 0.1
-    l2 = 0.0
-    neurons = 15
     
     batches = np.power(2,np.arange(4,10)).astype("int")
     numbofit = (batches[-1]*np.arange(5,12))
@@ -145,29 +141,27 @@ def part_b():
                                eta=eta, batches = ba ,epochs = int(it/ba), l2 = l2)
             z, a = nn.feed_forward(X_test)
             
-            MSE[i,j] = CostOLS.func(f_test,a[-1]) + l2 * np.sum(np.power(weights,2))
+            MSE[i,j] = CostOLS.func(f_test,a[-1]) + l2 * np.sum(np.power(weights, 2))
             
             j += 1
         i += 1
         
     fig, ax = plt.subplots(figsize=(10, 5))
     MSE[MSE > 10e1] = np.nan
-    heatmap = sns.heatmap(MSE, annot=True, ax=ax, cmap="viridis", cbar_kws={'label': 'MSE'}, fmt='1.3e')
-    ax.set_xlabel("number of iterations")
-    ax.set_ylabel("batches")
+    heatmap = sns.heatmap(MSE, annot=True, ax=ax, cmap="viridis", cbar_kws={'label': 'MSE'}, fmt='.4f')
+    ax.set_xlabel("Number of Iterations")
+    ax.set_ylabel("Batches")
     ax.set_xticklabels(numbofit)
     ax.set_yticklabels(batches)
-    ax.set_title("NN with sigmoid")
     heatmap.set_facecolor('xkcd:grey')
-    plt.show()
-    print("[DONE]")
-    print("\n")
+    if save == "Y": 
+        fig.savefig("../results/figures/Regression/NN_reg_sigmoid_iterations_batches.pdf")
+    else:
+        plt.show()    
+    print("[DONE]\n")
 
-def part_c(func = sigmoid):
+def plot_lambda_vs_eta(neurons=15, h_layers=1, batches=512, epochs=10, func = sigmoid):
     print("MSE for different number of l2 parameters and learningrates:...")
-    epochs = 10
-    batches = 512
-    neurons = 15
     
     etas = [1e0,1e-1, 1e-2, 1e-3, 1e-4]
     n = 7
@@ -196,27 +190,28 @@ def part_c(func = sigmoid):
     
     fig, ax = plt.subplots(figsize=(10, 5))
     MSE[MSE > 10e1] = np.nan
-    test = sns.heatmap(MSE, annot=True, ax=ax, cmap="viridis", cbar_kws={'label': 'MSE'}, fmt='1.3e')
-    ax.set_xlabel("l2 parameter")
-    ax.set_ylabel("eta")
+    test = sns.heatmap(MSE, annot=True, ax=ax, cmap="viridis", cbar_kws={'label': 'MSE'}, fmt='.4f')
+    ax.set_xlabel(r"\lambda")
+    ax.set_ylabel(r"\eta")
     ax.set_xticklabels(l2s)
     ax.set_yticklabels(etas)
-    if type(func) is type:
-        ax.set_title(f"NN with {func.__name__}")
-    else: 
-        ax.set_title(f"NN with {func.__class__.__name__}")
+    # if type(func) is type:
+    #     ax.set_title(f"NN with {func.__name__}")
+    # else: 
+    #     ax.set_title(f"NN with {func.__class__.__name__}")
     test.set_facecolor('xkcd:grey')
-    plt.show()
-    print("[DONE]")
-    print("\n")
+    if save == "Y": 
+        if type(func) is type:
+            fig.savefig(f"../results/figures/Regression/NN_reg_{func.__name__}_l2_eta.pdf")
+        else: 
+            fig.savefig(f"../results/figures/Regression/NN_reg_{func.__class__.__name__}_l2_eta.pdf")
+    else:
+        plt.show()    
+    print("[DONE]\n")
 
-def part_d():
+def plot_bias(batches = 512, neurons = 15, eta = 0.1, l2=0.0):
     print("MSE for different bias inits:...")
-    batches = 512
-    neurons = 15
-    eta = 0.1
-    l2 = 0
-    
+
     epochs = range(1,12)
     
     MSE = np.zeros((3,len(epochs)))
@@ -267,21 +262,19 @@ def part_d():
     plt.xlabel("epochs")
     plt.ylabel("MSE")
     plt.legend()
-    plt.show()
-    print("[DONE]")
-    print("\n")
-
-part_a()
-part_b()
-part_c()
-part_c(relu)
-part_c(leaky_relu(hyperpar = 0.01))
-part_c(tanh)
-part_d()
+    if save == "Y": 
+        plt.savefig(f"../results/figures/Regression/NN_reg_bias.pdf")
+    else:
+        plt.show()    
+    print("[DONE]\n")
 
 
 
+plot_neurons_vs_layers(batches=32, epochs=150, eta=0.1, l2=0.0)
+plot_epochs_vs_batches(neurons=15, h_layers=1, eta=0.1, l2=0.0)
 
-
-
-
+plot_lambda_vs_eta(neurons=15, h_layers=1, batches=512, epochs=10, func = sigmoid)
+plot_lambda_vs_eta(neurons=15, h_layers=1, batches=512, epochs=10, func = relu)
+plot_lambda_vs_eta(neurons=15, h_layers=1, batches=512, epochs=10, func = leaky_relu(hyperpar = 0.01))
+plot_lambda_vs_eta(neurons=15, h_layers=1, batches=512, epochs=10, func = tanh)
+plot_bias(batches = 512, neurons = 15, eta = 0.1, l2=0.0)
