@@ -84,18 +84,18 @@ def plot_epochs(n_epoch=300):
         i+=1
 
     for i in range(len(etas)):
-        plt.plot(epochs, MSE[i,:], label = fr"GD with $\eta$ = {etas[i]}")
+        plt.plot(epochs, MSE[i,:], label = fr" GD with $\eta$ = {etas[i]}")
         plt.legend()
     # plt.tight_layout()
     plt.ylabel("MSE")
     plt.xlabel("epochs")
     if save == "Y": 
-        plt.savefig(f"../results/figures/Regression/SGD_epochs.pdf")
+        plt.savefig(f"../results/figures/Regression/GD_epochs.pdf")
     else:
         plt.show()    
     print("[DONE]\n")
     
-def plot_lambda_vs_learningrates(epochs=500):
+def plot_lambda_vs_learningrates(epochs=150):
     print("MSE for different learningrates and l2 parameters for GD:...")
         
     etas = [1e-1, 1e-2, 1e-3, 1e-4]
@@ -122,8 +122,9 @@ def plot_lambda_vs_learningrates(epochs=500):
     ax.set_ylabel(r"$\eta$")
     ax.set_xticklabels(l2s)
     ax.set_yticklabels(etas)
+    plt.tight_layout()
     if save == "Y": 
-        plt.savefig(f"../results/figures/Regression/SGD_MSE_lambda_eta.pdf")
+        plt.savefig(f"../results/figures/Regression/GD_MSE_lambda_eta.pdf") 
     else:
         plt.show()    
     print("[DONE]\n")
@@ -156,7 +157,7 @@ def plot_MSE_learningrates_GD_extra(n_epochs=200, eta=1e-1):
         beta[5,:] = sgd.adam(epochs = epoch, batches = 1, learningrate = eta).ravel() 
         
         for j in range(len(methodes)):
-            MSE[j,i] = cost_fn.func(f_test,X_test,beta[j,:].reshape(len(beta[j,:]),1))
+            MSE[j,i] = cost_fn.func(f_test, X_test,beta[j,:].reshape(len(beta[j,:]),1))
             j += 1
         i += 1
     
@@ -166,7 +167,7 @@ def plot_MSE_learningrates_GD_extra(n_epochs=200, eta=1e-1):
         j += 1
     
     plt.ylabel("MSE")
-    plt.xlabel("number of operations")
+    plt.xlabel("Number of operations") # Computational efficiency 
     plt.legend(prop={'size': 8})
     if save == "Y": 
         plt.savefig(f"../results/figures/Regression/GD_MSE_learningrates_extra.pdf")
@@ -238,11 +239,12 @@ def plot_operations_vs_batches(eta=1e-1):
         i += 1
     
     fig, ax = plt.subplots(figsize=(10, 5))
-    sns.heatmap(MSE, annot=True, ax=ax, cmap="viridis_r", cbar_kws={'label': 'MSE'}, fmt='.4f')
+    sns.heatmap(MSE, annot=True, ax=ax, cmap="viridis", cbar_kws={'label': 'MSE'}, fmt='.4f')
     ax.set_xlabel("Number of Operations")
     ax.set_ylabel("Number of Batches")
     ax.set_xticklabels(numbofit)
     ax.set_yticklabels(batches)
+    plt.tight_layout()
     if save == "Y": 
         plt.savefig(f"../results/figures/Regression/SGD_op_batch.pdf")
     else:
@@ -309,9 +311,10 @@ def plot_MSE_learningrates_SGD_extra(batches=64, eta=1e-1):
 
     print("[DONE]\n")
 
-plot_epochs(n_epoch=300)
+plot_epochs(n_epoch=500)
 plot_lambda_vs_learningrates(epochs=500)
-plot_MSE_learningrates_GD_extra(n_epochs=200, eta=1e-1)
-time_GD_vs_SGD(batches=4, epochs=200, eta=0.1)
+plot_MSE_learningrates_GD_extra(n_epochs=300, eta=1e-1)
+time_GD_vs_SGD(batches=4, epochs=500, eta=0.1)
+time_GD_vs_SGD(batches=4, epochs=500, eta=0.01)
 plot_operations_vs_batches(eta=1e-1)
-plot_MSE_learningrates_SGD_extra(batches=64, eta=1e-1)
+plot_MSE_learningrates_SGD_extra(batches=32, eta=1e-1)
