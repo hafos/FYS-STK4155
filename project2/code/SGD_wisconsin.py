@@ -25,6 +25,18 @@ To run a function comment in the call at the bottom of the script
 
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.pylab as pylab
+plt.style.use('ggplot')
+plt.rcParams.update({'font.size': 14})
+plt.rcParams.update({'axes.grid': True})
+plt.rc('legend', frameon=False)
+params = {'legend.fontsize': 25,
+			'figure.figsize': (12, 9),
+			'axes.labelsize': 25,
+			'axes.titlesize': 25,
+			'xtick.labelsize': 'x-large',
+			'ytick.labelsize': 'x-large'}
+pylab.rcParams.update(params)
 import seaborn as sns
 import time
 from sklearn.model_selection import train_test_split
@@ -93,7 +105,8 @@ def plot_gd_lambda_vs_eta(epochs=1024, batches=1):
     plt.title("Logistic regression with GD")
     heatmap.set_facecolor('xkcd:grey')
     if save == "Y": 
-        plt.savefig(f"../results/figures/Classification/GD_acc_lambda_eta.pdf")
+        plt.tight_layout()
+        plt.savefig(f"../results/figures/Classification/GD_acc_lambda_eta.pdf") 
     else:
         plt.show()    
     print("[DONE]\n")
@@ -136,6 +149,7 @@ def plot_adam_lambda_vs_eta(epochs=1024, batches=1):
     plt.title("Logistic regression with GD with adam")
     heatmap.set_facecolor('xkcd:grey')
     if save == "Y": 
+        plt.tight_layout()
         plt.savefig(f"../results/figures/Classification/adam_acc_lambda_eta.pdf")
     else:
         plt.show()    
@@ -179,6 +193,7 @@ def plot_operations_vs_batches(eta=0.0001, l2=0.0):
     ax.set_yticklabels(batches)
     heatmap.set_facecolor('xkcd:grey')
     if save == "Y": 
+        plt.tight_layout()
         plt.savefig(f"../results/figures/Classification/SGD_operations_batches_{eta}.pdf")
     else:
         plt.show()    
@@ -198,9 +213,10 @@ def part_d(max_oper = 1024):
     print("Test set accuracy with Logistic Regression:",accuracy_sl)
     print("[DONE]\n")
 
+
 plot_gd_lambda_vs_eta(epochs=1024, batches=1)
+# plot_gd_lambda_vs_eta(epochs=640, batches=1)
 plot_adam_lambda_vs_eta(epochs=1024, batches=1)
-plot_operations_vs_batches(eta=0.0001, l2=0.0)
 
 plot_operations_vs_batches(eta=0.001, l2=0.0)
 plot_operations_vs_batches(eta=0.01, l2=0.0)

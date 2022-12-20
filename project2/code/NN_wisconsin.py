@@ -28,6 +28,18 @@ To run a function comment in the call at the bottom of the script
 
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.pylab as pylab
+plt.style.use('ggplot')
+plt.rcParams.update({'font.size': 14})
+plt.rcParams.update({'axes.grid': True})
+plt.rc('legend', frameon=False)
+params = {'legend.fontsize': 25,
+			'figure.figsize': (12, 9),
+			'axes.labelsize': 25,
+			'axes.titlesize': 25,
+			'xtick.labelsize': 'x-large',
+			'ytick.labelsize': 'x-large'}
+pylab.rcParams.update(params)
 import seaborn as sns
 import time
 from sklearn.model_selection import train_test_split
@@ -126,6 +138,7 @@ def plot_neurons_vs_layers(batches=64, epochs=16, eta=0.1, l2=0.0):
     ax.set_yticklabels(layors)
     heatmap.set_facecolor('xkcd:grey')
     if save == "Y": 
+        plt.tight_layout()
         fig.savefig("../results/figures/Classification/NN_class_sigmoid_neurons_layers.pdf")
     else:
         plt.show()
@@ -168,6 +181,7 @@ def plot_epochs_vs_batches(neurons=10, h_layers=1, eta=0.1, l2=0.0):
     ax.set_yticklabels(batches)
     heatmap.set_facecolor('xkcd:grey')
     if save == "Y": 
+        plt.tight_layout()
         fig.savefig("../results/figures/Classification/NN_class_sigmoid_iterations_batches.pdf")
     else:
         plt.show()    
@@ -206,13 +220,14 @@ def plot_lambda_vs_eta(neurons=10, h_layers=1, batches=256, epochs=7, \
     fig, ax = plt.subplots(figsize=(10, 5))
     accuracy[accuracy < 1e-3] = np.nan
     heatmap = sns.heatmap(accuracy, annot=True, ax=ax, cmap="viridis_r", cbar_kws={'label': 'accuracy'}, fmt='.4f')
-    ax.set_xlabel(r"\lambda")
-    ax.set_ylabel(r"\eta")
+    ax.set_xlabel("l2 parameter")
+    ax.set_ylabel("learning rate")
     ax.set_xticklabels(l2s)
     ax.set_yticklabels(etas)
     heatmap.set_facecolor('xkcd:grey')
     if save == "Y": 
         if title is not None:
+            plt.tight_layout()
             fig.savefig(f"../results/figures/Classification/NN_class_{title}_l2_eta.pdf")
     else: 
         plt.show()
@@ -281,13 +296,14 @@ def plot_bias(batches = 7, neurons = 10, eta = 0.1, l2=0.0):
     print("[DONE]\n")
 
 
-plot_neurons_vs_layers(batches=64, epochs=16, eta=0.1, l2=0.0)
-plot_epochs_vs_batches(neurons=10, h_layers=1, eta=0.1, l2=0.0)
-plot_lambda_vs_eta(neurons=10, h_layers=1, batches=256, epochs=7, hfunc = sigmoid, ofunc = sigmoid, title = "sigmoid")
+plot_neurons_vs_layers(batches=1, epochs=640, eta=0.1, l2=0.0)
+plot_epochs_vs_batches(neurons=25, h_layers=1, eta=0.1, l2=0.0)
+plot_lambda_vs_eta(neurons=25, h_layers=1, batches=64, epochs=768, hfunc = sigmoid, ofunc = sigmoid, title = "sigmoid")
+
 """Plots the accuracy for tanh as hidden act.function and sigmoid as tanh act.func
     against different l2 and learningrate values"""
-plot_lambda_vs_eta(neurons=10, h_layers=1, batches=256, epochs=7, hfunc = tanh, ofunc = sigmoid, title = "tanh_sig")
-plot_bias(batches = 7, neurons = 10, eta = 0.1, l2=0.0)
+# plot_lambda_vs_eta(neurons=10, h_layers=1, batches=256, epochs=7, hfunc = tanh, ofunc = sigmoid, title = "tanh_sig")
+# plot_bias(batches = 7, neurons = 10, eta = 0.1, l2=0.0)
 
 """
 The following do not converge

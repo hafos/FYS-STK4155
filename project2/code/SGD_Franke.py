@@ -28,6 +28,18 @@ To run a function comment in the call at the bottom of the script
 """
 
 import matplotlib.pyplot as plt
+import matplotlib.pylab as pylab
+plt.style.use('ggplot')
+plt.rcParams.update({'font.size': 14})
+plt.rcParams.update({'axes.grid': True})
+plt.rc('legend', frameon=False)
+params = {'legend.fontsize': 25,
+			'figure.figsize': (12, 9),
+			'axes.labelsize': 25,
+			'axes.titlesize': 25,
+			'xtick.labelsize': 'x-large',
+			'ytick.labelsize': 'x-large'}
+pylab.rcParams.update(params)
 import seaborn as sns
 import numpy as np 
 import time
