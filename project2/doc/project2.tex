@@ -1,4 +1,4 @@
-\documentclass[english,notitlepage,reprint,nofootinbib]{revtex4–2}  % defines the basic parameters of the document
+\documentclass[english,notitlepage,reprint,nofootinbib]{revtex4-2}  % defines the basic parameters of the document
 % For preview: skriv i terminal: latexmk -pdf -pvc filnavn
 % If you want a single-column, remove "reprint"
 \setlength{\parindent}{0pt}
@@ -20,6 +20,7 @@
 %\usepackage{subcaption} % for subfigures, also imports caption package
 \usepackage{float}
 \usepackage{nicematrix}
+\usepackage{multirow}
 %\usepackage[section]{placeins}
 %\usepackage[left=1.5cm, right=1.5cm]{geometry}
 \usepackage{algorithm}
@@ -40,7 +41,7 @@
     urlcolor={blue!80!black}}
     
 %\bibliographystyle{unsrtnat}  
-\bibliographystyle{apsrev4–2}
+\bibliographystyle{apsrev4-2}
 \newcommand{\ditto}{%
     \tikz{
         \draw [line width=0.12ex] (-0.2ex,0) -- +(0,0.8ex)
@@ -74,7 +75,10 @@ FYS-STK4155\\
 \begin{abstract} \centering Link to Github repo: \url{https://github.com/hafos/FYS-STK4155/project2}% Remember to use short and direct formulations!
 \vspace{3mm}
 \\
-BLABEDIBLABLABLA
+In this project, our aim is to investigate classification and regression problems using a Feed-Forward Neural Network (FFNN). We will compare this method this to linear and logistic regression whilst studying two data sets: The Franke function and the Wisconsin Breast Cancer data set. 
+The goal is to study which methods are best with regards to computational time and accuracy. 
+Our results show that the neural networks code is better suited to the classification problem, achieving a higher accuracy than our logistic regression code and scikit learn's logistic regression function. Meanwhile, for the regression problem the logistic regression code performed slightly better. Various activation functions point towards the Sigmoid function producing the best results in this case, but the logistic regression code still performed better. 
+The implementation and material relevant to this project can be found at the Github repo referenced above. 
 \end{abstract}
 \maketitle
 
@@ -90,13 +94,11 @@ The method offers a simple way of analyzing large amounts of data when an exact 
 \vspace{3mm}
 \\
 % It is vital to properly communicate precisely what has been done, what the results are and their implications. The motivation for this is to make the work understood and reproducible, so that others can both check and build on your work.
-The aim of this project is to study classification and regression problems by developing our own feed-forward neural network (FFNN) in python. 
+The aim of this project is to study classification and regression problems by developing our own Feed-Forward Neural Network (FFNN) in python. 
+In order to analyze the efficiency and accuracy of each method, we compute the Mean-Squared Error (MSE) and accuracy score. 
 \vspace{3mm}
 \\
-Previously, we analyzed and developed algorithms for two linear regression methods which we will make use of in this project: The ordinary least square (OLS) method and Ridge regression. We will also include logistic regression for classification problems and write an algorithm for the FFNN for studying both regression and classification problems. % XXX: Including bootstrap and cross validation? 
-\vspace{3mm}
-\\
-In order to analyze the efficiency and accuracy of each method, we compute the mean-squared error (MSE). % XXX : My suggestion, although R2 and accuracy scores are also suggested. Which do we want to use and why? 
+Previously, we analyzed and developed algorithms for two linear regression methods which we will make use of in this project: The Ordinary Least Square (OLS) method and Ridge regression. We will also include logistic regression for classification problems and write an algorithm for the FFNN for studying both regression and classification problems. 
 \vspace{3mm}
 \\
 In section \ref{sec:methods} we provide a short summary of the linear regression methods we use, OLS and Ridge regression, as well as an overview of logistic regression and gradient descent. Additionally, we explain relevant theory behind the FFNN and present the datasets we will be working with. 
@@ -111,7 +113,7 @@ and in section~\ref{sec:conclusion} we provide a short summary and outlook.
 
 \subsection*{Linear and Logistic Regression}
 When using linear regression we approximate a function $f(\boldsymbol{x})$ by $\Tilde{\boldsymbol{y}} = \mathbf{X}\boldsymbol{\beta}$, where the matrix $\mathbf{X}$ is the design matrix and $\boldsymbol{\beta}$ are the unknown parameters we want to determine. 
-The model is fitted by finding the values of $\boldsymbol{\beta}$ which minimize the cost function $C(\mathbf{X}, \boldsymbol{\beta}$, where the cost function is a function which allows us to judge how well the model $\boldsymbol{\beta}$ fits the matrix $\mathbf{X}$. The minimum is usually found using numerical methods, as analytical methods are generally not possible. 
+The model is fitted by finding the values of $\boldsymbol{\beta}$ which minimize the cost function $C(\mathbf{X}, \boldsymbol{\beta}$) where the cost function is a function which allows us to judge how well the model $\boldsymbol{\beta}$ fits the matrix $\mathbf{X}$. The minimum is usually found using numerical methods, as analytical methods are generally not possible. 
 \vspace{3mm}
 \\
 A common linear regression model is the ordinary least squared (OLS), where we assume a cost function 
@@ -127,11 +129,11 @@ Another common model is Ridge regression, where we include a regularization para
 \end{align}
 For the linear regression analysis our main interest was around leading the coefficients of a functional fit in order to be able to predict the response of a continuous variable on some unseen data. 
 % The fit to the continuous variable y_i is based on some independent variables x_i. 
-Linear regression resulted in analytical expressions for standard ordinary least squares (OLS) or Ridge regression for several quantities, ranging from the variance and thereby the confidence intervals of the parameters $\beta$ to the mean squared error (MSE)~\cite{lecture_notes}. By inverting the product of the design matrices we could fit our data. 
+Linear regression resulted in analytical expressions for standard OLS or Ridge regression for several quantities, ranging from the variance and thereby the confidence intervals of the parameters $\beta$ to the mean squared error (MSE)~\cite{lecture_notes}. By inverting the product of the design matrices we could fit our data. 
 \vspace{3mm}
 \\
 Classification problems, on the other hand, are concerned with outcomes which take the form of discrete variables. 
-Obtaining such a discrete output can be done by using the perceptron model, which is a "hard classification" model where each data point is deterministic ally assigned to a category. In many cases, however, it is favorable to use a "soft classifier" that outputs the probability of a given category rather than a single value, which is where we apply logistic regression. 
+Obtaining such a discrete output can be done by using the perceptron model, which is a "hard classification" model where each data point is deterministically assigned to a category. In many cases, however, it is favorable to use a "soft classifier" that outputs the probability of a given category rather than a single value, which is where we apply logistic regression. 
 \vspace{3mm}
 \\
 When we apply logistic regression the most common situation is having two possible outcomes, normally denoted as a binary outcome~\cite{lecture_notes}. % XXX repeating myself a bit here, rewrite 
@@ -196,7 +198,7 @@ where $I$ is the indicator function, $1$ if $t_i = y_i$ and $0$ otherwise for a 
 \\ 
 When performing the linear regression analysis we solved for the best value for $\boldsymbol{\beta}$ by taking the inverse. However, this is not always possible, and in such cases we can apply a method which takes advantage of numerical optimization, called gradient descent. 
 
-\subsection*{Gradient Descent}
+\subsection*{Gradient Methods}
 % a) We replace the matrix inversion algorithm in the OLS and Ridge regression with a gradient descent (GD) and SGD codes. 
 Previously, we have solved OLS and Ridge regression using an algorithm for matrix inversion. 
 We now study another method for minimizing a function $\boldsymbol{f}(\boldsymbol{x})$. 
@@ -209,13 +211,13 @@ For a certain amount of iterative steps towards the direction of the minima, we 
 \begin{align}
     \boldsymbol{x}_{k+1} = \boldsymbol{x}_k - \gamma_k \Delta\boldsymbol{f}(\boldsymbol{x}_k), \nonumber 
 \end{align}
-where the step length/learning rate $\gamma_k > 0$. If $\gamma_k$ is sufficiently small we are always moving towards smaller function values, $\boldsymbol{f}(\boldsymbol{x}_{k+1} \leq \boldsymbol{f}(\boldsymbol{x}_k$. 
+where the step length/learning rate $\gamma_k > 0$. If $\gamma_k$ is sufficiently small we are always moving towards smaller function values, $\boldsymbol{f}(\boldsymbol{x}_{k+1} \leq \boldsymbol{f}(\boldsymbol{x}_k))$. 
 
 Ideally the sequence $\{\boldsymbol{x}_k\}_{k=0}$ converges towards a global minimum of the function $\boldsymbol{f}$, and this is always the case when $\boldsymbol{f}$ is a convex function, as all local minima are also global minima. While this scheme is simple and straightforward to implement, it has several limitations such as being sensitive to the chosen initial condition and being expensive to compute numerically.
 
 The gradient descent method is sensitive to the choice of learning rate $\gamma_k$, due to the fact that we require a sufficiently small $\gamma_k$ to reach the minima. Choosing a learning rate that is too small leads to the method taking a long time to converge, while choosing a too large learning rate can lead to erratic behaviour. 
 
-\subsubsection{Stochastic Gradient Descent}%__________________________________________
+\subsubsection*{Stochastic Gradient Descent}%__________________________________________
 Many of these shortcomings can be alleviated by introducing randomness. One such method is that of Stochastic Gradient Descent (SGD). 
 \vspace{3mm}
 \\ 
@@ -255,17 +257,17 @@ By iterating over the gradients and weighting them with the learning rate $\gamm
 \end{align}
 The algorithm iterates through the training set, updating $\beta$ until it begins converging, where the convergence is calculated from the cost function. 
 
-\subsubsection{Momentum based Gradient Descent}%_______________________________________
-The SGD is usually used with a momentum term that served as a memory of the direction we are moving in parameter space. This algorithm is called gradient descent with momentum (GDM), and is presented in algorithm~\ref{algo:GDM}. 
+\subsubsection*{Momentum based Gradient Descent}%_______________________________________
+The SGD is usually used with a momentum term that served as a memory of the direction we are moving in parameter space. This algorithm is called Gradient Descent with Momentum (GDM), and is presented in algorithm~\ref{algo:GDM}. 
 
-% Algorithm for Gradient Descent with Momentum XXX
+% Algorithm for Gradient Descent with Momentum 
 \begin{algorithm}[H]
     \caption{Gradient Descent with Momentum}\label{algo:GDM}
     \begin{algorithmic}
         \State $k_1 \leftarrow hf(t_i,y_i)$ \Comment{Define a variable $k_1$} 
         \While{in epochs} \Comment{Iterate through epochs}
-        
-        \State For every epoch, iterate through the mini-batches 
+        \While{in mini-batches} \Comment{Iterate through the}%\Comment{Batches are random intervals}
+        \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ mini-batches
         % COMPUTE on the current mini-batch 
         % the gradient is to be taken over a different mini-batch at each step. 
         \State $\Delta \boldsymbol{\theta}_{t+1} \leftarrow 
@@ -277,105 +279,48 @@ The SGD is usually used with a momentum term that served as a memory of the dire
 From the GDM algorithm we see that we have introduced a momentum parameter $\gamma$, with $0\leq\gamma\leq 1$, for which we have that when $\gamma = 0$ this reduces to the ordinary SGD. 
 \vspace{3mm}
 \\ 
-In SGD, both with and without momentum, we have to specify a schedule for tuning the learning rater $\eta_t$ as a function of time. However, the learning rate is limited by the steepest direction which might change. We therefore keep track of curvature, taking large steps in flat directions and small steps in steep directions. 
-The common method for achieving this, where we approximate the Hessian and normalize the learning rate by curvature, this can be computationally expensive for large models. Therefore, it is often preferable to use one of the several methods introduced that adaptively changes the step size to match the landscape without paying the steep computational price of calculating or approximating Hessians.
-
-\subsubsection{Adagrad} %_______________________________________________________________
-
-% Algorithm for Adagrad XXX no idea what this looks like 
-\begin{algorithm}[H]
-    \caption{Adagrad}\label{algo: Adagrad}
-    \begin{algorithmic}
-        \State Iterate through the epochs 
-        \State For every epoch, iterate through the mini-batches \Comment{Batches are random intervals}
-        \State $\mathbf{g}_t =\nabla_\theta \mathcal{C}(\boldsymbol{\theta})$
-        \State $\theta_{t+1} = \mathbf{g}_t \eta \frac{1}{\sqrt{\delta+ \sum^t(\mathbf{g}_t)^2}}$
-    \end{algorithmic}
-\end{algorithm}
-
-\subsubsection{Root Mean Squared Propagation}
-Root Mean Squared Propagation (RMSprop) provides an exponentially decaying average rather than the sum of the gradients. The decaying average is realized by combining the momentum algorithm and the Adagrad algorithm with a new term. The RMSprop method is restricted to the sum of the past gradients, in addition to the gradients for the recent time steps, meaning that it changes the learning rate slowly while converging relatively fast. 
-
-% Algorithm for RMSprop XXX no idea what this looks like 
-\begin{algorithm}[H]
-    \caption{RMSprop}\label{algo: RMSprop}
-    \begin{algorithmic}
-        \State Iterate through the epochs 
-        giter = 0 
-        \State For every epoch, iterate through the mini-batches \Comment{Batches are random intervals}
-        \State $\mathbf{g}_t =\nabla_\theta \mathcal{C}(\boldsymbol{\theta})$
-        \State $Giter = (\rho*Giter+(1-\rho)*\mathbf{g}_t*\mathbf{g}_t)$
-        \Comment{Scaling with $\rho$}
-        \State $\theta_{t+1} = \mathbf{g}_t \eta \frac{1}{\sqrt{\delta + giter}}$
-        \Comment{Taking the diagonal only and inverting}
-    \end{algorithmic}
-\end{algorithm}
-
-\subsubsection{ADAM} %_______________________________________________________________
-Another related algorithm is the ADAM optimizer, which is efficient when working with large problems involving a lot of data and/or parameters. 
-The algorithm~\ref{algo: ADAM} keeps a running average of both the first and second moment of the gradient and uses this information to adaptively change the learning rate for different parameters. 
-
-% Is gt the cost function ???? XXX 
-% Algorithm for ADAM 
-\begin{algorithm}[H]
-    \caption{ADAM}\label{algo: ADAM}
-    \begin{algorithmic}
-        \State m_0 \leftarrow 0.0 \Comment{Initialize first moment}
-        \State s_0 \leftarrow 0.0 \Comment{Initialize second moment}
-        \State \boldsymbol{Iterate} for epoch in epochs 
-        \State \boldsymbol{Iterate} through mini-batches 
-        \Comment{Batches are random intervals}
-        \State $t \leftarrow t + 1$
-        \State $\mathbf{g}_t \leftarrow \nabla_\theta \mathcal{C}(\boldsymbol{\theta_})$
-        \Comment{Get gradients at timestep $t$}
-        \State $\mathbf{m}_t \leftarrow \beta_1 \mathbf{m}_{t-1} + (1-\beta_1) \mathbf{g}_t$
-        \Comment{Update biased 1st moment}
-        \State $\boldsymbol{\mathbf{m}}_t \leftarrow {\mathbf{m}_t \over 1-\beta_1^t}$
-        \Comment{Compute bias-corrected 1st moment}
-        \State $\mathbf{s}_t \leftarrow \beta_2 \mathbf{s}_{t-1} +(1-\beta_2)\mathbf{g}_t^2$ 
-        \Comment{Update biased 2nd moment}
-        \State $\boldsymbol{\mathbf{s}}_t \leftarrow {\mathbf{s}_t \over1-\beta_2^t}$
-        \Comment{Compute bias-corrected 2nd moment}
-        \State $\boldsymbol{\theta}_{t+1} \leftarrow \boldsymbol{\theta}_t - \eta_t {         \boldsymbol{\mathbf{m}}_t \over \sqrt{\boldsymbol{\mathbf{s}}_t} +\epsilon}$
-        \Comment{Update parameters}
-    \end{algorithmic}
-\end{algorithm}
-The parameters $\beta_1$ and $\beta_2$ set the memory lifetime of the first and second moment and are typically taken to be $0.9$ and $0.99$ respectively, and $\eta$ is the learning rate typically chosen as $10^{-3}$, and $\epsilon$ is a small regularization constant to prevent divergences. 
+In SGD, both with and without momentum, we have to specify a schedule for tuning the learning rate $\eta_t$ as a function of time. 
+If the learning parameter is too small, the computations will be slow, and if it is too high we will never achieve acceptable loss. 
+The learning rate is limited by the steepest direction which might change. We therefore keep track of curvature, taking large steps in flat directions and small steps in steep directions. 
+The common method for achieving this, where we approximate the Hessian and normalize the learning rate by curvature, this can be computationally expensive for large models. Therefore, it is often preferable to use one of the several methods introduced that adaptively changes the step size to match the landscape without paying the steep computational price of calculating or approximating Hessians. Common methods used to do this for neural networks are the AdaGrad algoritm, Root Mean Squared Propagation (RMSprop), and Adam, summarized in the algorithms~\ref{algo: Adagrad},~\ref{algo: RMSprop}, and~\ref{algo: ADAM} in appendix~\ref{app: algos}, respectively. 
 
 
+\subsection*{Neural Networks}%_____________________________________________________________________________
+Artificial Neural Networks (ANN) are computational systems which learn to perform tasks based on examples, generally without being programmed with any task-specific rules. 
+The aim is to mimic a biological system, wherein interconnected neurons send signals in the form of mathematical functions between layers, where each layer contains and arbitrary number of neurons and each connection is represented by a weight variable. An example of a simple neural network is the single perceptron model, which consists of one node with two inputs and one output, visualized in figure~\ref{fig: Single Perceptron Model}. 
 
+\begin{figure}[h!]
+    \centering %Centers the figure
+    \includegraphics[width=1.0\linewidth]{Project 2/figures/single_perceptron_model .png} 
+    \caption{Illustration of the single perceptron model. The image is from the lecture notes.}
+    \label{fig: Single Perceptron Model}
+\end{figure}
 
-
-
-
-
-
-% We test the function on a simple f(x) = a_0 + a_1x + a_2x^2 (1D poly) 
-
-\subsection*{Neural Networks} % FFNN? 
-Artificial neural networks (ANN) are computational systems that can learn to perform tasks based on examples, generally without being programmed with any task-specific rules. 
-The aim is to mimic a biological system, wherein interconnected neurons send signals in the form of mathematical functions between layers, where each layer contains and arbitrary number of neurons and each connection is represented by a weight variable. Each neuron accumulates its incoming signals, which must exceed an activation threshold to yield an output. 
-The output of the neuron can be described by the value of its activation function, which takes a weighted sum of signals $x_i,...,x_n$ received by $n$ other neurons: 
+Each node accumulates its incoming signals, which must exceed an activation threshold to yield an output. The input has a weight associated with it, $W_x$ and $W_y$, and each node has a bias $b$ and an activation function $\sigma(z)$. 
+The output of the node is determined by the activation function, which takes a weighted sum of signals $x_i,...,x_n$ received by $n$ other neurons: 
 \begin{align}
     y = f\left(\sum\limits_{i=1}^n w_i x_i\right) = f(u), 
 \end{align}
 where the output $y$ of the neuron is the value of its activation function, which will be discussed in further detail later~\cite{lecture_notes}. % input for activation function is a weighted sum of signals x_i, ..., x_n revieved by $n$ other neurons 
 
-
-\subsubsection{Feed-Forward Neural Network}
-For this project we will focus on the first and simplest type of ANNs, called the feed-forward neural network (FFNN), where the information only moves forward through the layers. % 1 direction 
-For this type of network, nodes are arranged in an input layer, an output layer and hidden layers, where each layer can contain an arbitrary number of nodes, and each connection between two nodes is associated with a weight variable. 
-Each node,  defined by a model function, passes information to the nodes ahead if it, causing input information to move without backtracking through the network from the input layer, through the hidden layers in between, and out to the output layer. 
-\vspace{3mm}
-\\ 
+We allow one node to take $n$ inputs, enabling us to solve a linear regression problem of degree $n$, by viewing each input $i$ as $x_i$, and each weight as a coefficient in the linear expression. By scaling the output and interpreting this as a probability, we may solve binary classification problems. 
 
 
+\subsubsection*{Feed-Forward Neural Network}
+If we add an additional layer between the input and output layer, we build a multi-layer perceptron model, visualized in figure~\ref{fig: Multi Layer Perceptron Model}. This method, FFNN, is a simple type of ANN which enables us to solve more complex models. In this case, the information only moves forward through the layers. % 1 direction 
+
+\begin{figure}[h!]
+    \centering %Centers the figure
+    \includegraphics[width=1.0\linewidth]{Project 2/figures/network2.png} 
+    \caption{Illustration of the multi-layer perceptron model.}
+    \label{fig: Multi Layer Perceptron Model}
+\end{figure}
+
+For this type of network, nodes $n_l$ are arranged in an input layer, an output layer $L$ and hidden layers $1,L-1$, where each layer can contain an arbitrary number of nodes, and each connection between two nodes is associated with a weight variable $W_l$. 
+Each node, defined by a model function, passes information to the nodes ahead if it, causing input information to move without backtracking through the network from the input layer, through the hidden layers in between, and out to the output layer. 
 %Nodes: We observe that each node in a layer is connected to all nodes in the subsequent layer, making this a so-called fully-connected FFNN. 
 
-\vspace{3mm}
-\\ 
-
-\subsubsection{Activation Functions}%_______________________________________________
+\subsubsection*{Activation Functions}%_______________________________________________
 The output of the neural networks will be a linear function of the inputs, and we therefore introduce the activation function to add some kind of non-linearity to the the neural network in order to fit non-linear functions. 
 There are several typical choices for activation functions, of which we will use the sigmoid function, the Rectified Linear Unit (ReLU), and the Leaky ReLU. 
 \vspace{3mm}
@@ -392,7 +337,8 @@ Another common activation function is the ReLU,
 \begin{align}
     f(x)_\text{ReLU} = \text{max}(0, x), 
 \end{align}
-which has output in $[0,\infty]$. It is fast and does not saturate for positive values, however, it suffers from a problem known as the dying ReLUs, where some neurons effectively die during training. In such cases, the neurons stop outputting anything other than 0~\cite{lecture_notes}. There have been several attempts to solve this issue, one of which is known as the Leaky ReLU, 
+which has output in $[0,\infty]$. 
+While the function is efficnent and does not saturate for positive values, it suffers from a problem known as the dying ReLUs, where some neurons effectively die during training. In such cases, the neurons stop outputting anything other than 0~\cite{lecture_notes}. There have been several attempts to solve this issue, one of which is known as the Leaky ReLU, 
 \begin{align}
     f(x)_\text{Leaky ReLU} = \bigg\{ 
     \begin{matrix}
@@ -401,8 +347,363 @@ which has output in $[0,\infty]$. It is fast and does not saturate for positive 
     \end{matrix}, 
 \end{align}
 where $\alpha=0.01$ is a parameter that increases the range of the function such that it becomes $[-\infty, \infty]$. 
+\vspace{3mm}
+\\ 
+The weights and biases in a network can be initialized randomly, however this makes them unlikely to produce an accurate prediction. We therefore adjust the weights and biases by training them, where we have to use gradient methods in order to find the minimum of the model's cost function. In order to compute the gradients of the cost function with respect to every weight and bias in the network, we use an algorithm called backpropagation, presented in appendix~\ref{app: backprop}. 
 
-\subsubsection{Back Propagation} %_________________________________________________
+
+
+
+
+
+
+% We test the function on a simple f(x) = a_0 + a_1x + a_2x^2 (1D poly) 
+\subsection*{Datasets} % _______________________________________________________
+In order to test the optimization methods discussed in this project, we test the models on two datasets. For the regression model we use the Franke function, while for the classification model we use the Wisconsin Breast Cancer Data~\cite{BreastCancerData}. 
+For both datasets we split the data into a train and test set, where $80\%$ of the data will be used to train the set. 
+
+\subsubsection*{Franke Function}
+% Franke function 
+The dataset we use to analyze the regression models is the 2 dimensional Franke function, which is a weighted sum of four exponentials given as, 
+\begin{align}\label{eq: frankie}
+    f(x,y) = \frac{3}{4} \exp\left(
+             -\frac{{\left( 9x-2\right)}^2}{4}
+             -\frac{{\left( 9y-2\right)}^2}{4}
+             \right) 
+             \\ 
+            +\frac{3}{4} \exp\left(
+             -\frac{{\left( 9x+1\right)}^2}{49}
+             -\frac{{\left( 9y+1\right)}}{10}
+             \right) \nonumber
+             \\ 
+            +\frac{1}{2} \exp\left(
+             -\frac{{\left( 9x-7\right)}^2}{4}
+             -\frac{{\left( 9y-3\right)}^2}{4}
+             \right) \nonumber
+             \\ 
+            -\frac{1}{5} \exp\left(
+            -{\left(9x-4\right)}^2 - {\left(9y-7\right)}^2
+             \right), \nonumber
+\end{align}
+defined for $x,y\in [0,1]$. 
+This function is common to use in order to evaluate different surface interpolation techniques. 
+We sample the function at $100$ uniformly distributed data points, including stochastic noise $\epsilon$, 
+\begin{align*}
+    z = f(x,y) + \epsilon, 
+\end{align*}
+where $f$ is the Franke function and the noise is generated from a normal distribution $\epsilon\sim N(0,\sigma=0.25)$. 
+The data is fitted to a polynomial of degree $6$. 
+
+\subsubsection*{Breast Cancer data}
+The second dataset we study is the Wisconsin Breast Cancer data set, which is a typical binary classification problem with one single output, making it useful for testing machine learning algorithms. The set was created in 1995 consists of images representing various features of tumors. The number of instances is 569, and of these 212 are malignant, $0$, and 357 are benign, $1$. The data is collected from the University of California Irvine (UCI) Machine Learning Repository~\cite{BreastCancerData}. 
+\vspace{3mm}
+\\ 
+In order to study the Wisconsin Breast Cancer data set, we change the cost function for the neural network code such that it can perform a classification analysis. We also want to compare the FFNN code to Logistic regression, and therefore define the cost function and the design matrix before writing a Logistic regression code using the SGD algorithm. 
+\vspace{3mm}
+\\ 
+To measure the performance of the classification problem we use the accuracy score, which is the number of correctly guessed targets $t_i$ divided by the total number of targets, 
+\begin{align*}
+    \text{Accuracy} = \frac{\sum^n_{i=1} I(t_i=y_i)}{n}, 
+\end{align*}
+where $I$ is the indicator function, $1$ if $t_i=y_i$ and $0$ otherwise for a binary classification problem. Here, $t_i$ represents the target and $y_i$ the output of the FFNN code, while $n$ is simply the number of targets $t_i$. 
+
+
+
+
+%_____________________________________RESULTS____________________________________
+\section{Results and Discussion}\label{sec:results}
+
+
+\subsection*{Regression Analysis}
+
+
+
+
+Problem with argument: SDG takes longer. Need number of iterations to be equal to epoch times batches, because then 
+If we take the same time, 1000 iterations, 100 epochs 
+\vspace{3mm}
+\\
+% a2) 
+SGD should approach GD when we only have 1 batch (how we check that we ar right
+At a certain point the MSE is no better for greater batch size, batch size 10, 100 epochs 
+\vspace{3mm}
+\\ 
+% a3) MAP 
+\item SGD with mini-batches and a given number of epochs (tunable learning rate) 
+3) batch size against learning rate
+If the learning rate is too high, it does not converge 
+Higher batch size, lower error 
+Time vs benefit 
+% Discuss as functions of various parameters 
+\vspace{3mm}
+\\ 
+% a4) MAP 
+Ridge: Same result as for linreg probably. Error is lower for ridge -> 0 
+finally compare with what we did last time 
+
+
+
+
+
+
+
+% Part a) Stochastic Gradient Descent code 
+We began by analyzing a regression problem using gradient descent and stochastic gradient descent, which replaced the matrix inversion algorithm previously tested in project 1. 
+The models were first tested on the Franke function. 
+As we previously found that the linear regression codes with matrix inversion worked well for an order 6, we continue to use this throughout this report. 
+\vspace{3mm}
+\\ 
+In figure~\ref{fig: a1} we study how the MSE of the GD method varies with epochs, for three fixed learning rates; $\eta=0.1$, $\eta=0.01$ and $\eta=0.001$. The MSE decreases earlier and more rapidly for a higher learningrate. If the learningrate is made too high, the method would be unable to converge due to overflow, while for lower learningrates the model becomes less accurate. 
+\begin{figure}[h!]
+    \centering %Centers the figure
+    \includegraphics[width=1.0\linewidth]{Project 2/figures/reg/GD_epochs.pdf} 
+    \caption{How the MSE for Franke's function varies with epochs for the GD method, for fixed learning rates $\eta=0.1$, $0.01$ and $0.001$. }
+    \label{fig: a1}
+\end{figure}
+This is further supported by figure~\ref{fig: a2}, where we visualize the MSE as a function of both the l2 parameter and the learningrate. The number of epochs is set to 300, and the number of batches is set to 64. The batches and number of operations have been plotted as a colormap where we see the MSE in figure~\ref{fig: a3} in the appendix. A greater number of batches mean that the convergence rate increases, and we spend less time on each operation. From figure~\ref{fig: a2}, we see that we obtain an MSE of 0.06854 for $\eta=0.1$, and the lowest l2 parameter. 
+\begin{figure}[h!]
+    \centering %Centers the figure
+    \includegraphics[width=1.0\linewidth]{Project 2/figures/reg/GD_MSE_lambda_eta.pdf} 
+    \caption{The MSE for Franke's function for the SGD method as a function of $\eta$ and the l2 parameter, where the number of epochs is 500 and the number of batches is 64.}
+    \label{fig: a2}
+\end{figure}
+\vspace{3mm}
+\\ 
+We implemented several methods for tuning the learning rate, presented in figure~\ref{fig: extra1} in the appendix. 
+All new methods converge faster than the GD method does, with the RMSprop method being the fastest and most stable method. Both the Adagrad with and without momentum also perform well. 
+However, after a certain number of operations the MSE is low for all methods, which can also be seen in table~\ref{table: app1}. 
+\vspace{3mm}
+\\ 
+%As we increase the number of batches, the function converges more rapidly, as can be seen in figure~\ref{fig: a2.5}. The convergence rate of SGD approaches the convergence rate of GD as the batch size decreases, and for 1 batch, we have the GD method. 
+%\begin{figure}[h!]
+%    \centering %Centers the figure
+%    \includegraphics[width=1.0\linewidth]{Project 2/figures/MSE_SG_SGD_batch_sizes.pdf} 
+%    \caption{How the MSE for Franke's function varies with epochs for the SGD method, for varying batch sizes, with %a fixed learning rate $\eta=0.01$.}
+%    \label{fig: a2.5}
+%\end{figure}
+%\vspace{3mm}
+%\\
+In table~\ref{table: a1} we have studied the speed of the GD and SGD in further detail, by calculating the speed per epoch and speed of each operation for $\eta=0.1$ and $\eta=0.01$. While the SGD is slower per epochs, it is much faster per step, as gradients are computed from 5 poins at a time, rather than 1000 (N/M) ? 
+Due to the randomness of SGD, it is possible for a local minima to be overcome as there is no confinement. Overall, the SGD method seems to overall be an improvement to the GD method, achieving the same MSE as GD in a shorter amount of time. 
+\begin{table}[]
+\begin{tabular}{|l|ll|ll|}
+\hline
+\multicolumn{1}{|c|}{\textbf{Method}} & \multicolumn{2}{c|}{GD}     & \multicolumn{2}{c|}{SGD}                       \\ \hline
+$\eta$                                & \multicolumn{1}{l|}{0.1}    & 0.01   & \multicolumn{1}{l|}{0.1}     & 0.01   \\ \hline
+Time per epochs [ms]                  & \multicolumn{1}{l|}{0.1224} & 0.1097 & \multicolumn{1}{l|}{0.2733}  & 0.2616 \\ \hline
+Time per operation [ms]               & \multicolumn{1}{l|}{0.1224} & 0.1097 & \multicolumn{1}{l|}{0.0683}  & 0.0554 \\ \hline
+\end{tabular}
+\caption{Speed per epochs of GD and SGD, for $\eta=0.1$ and $\eta=0.01$. The number of epochs was set to 500 and the            number of batches to 4. }
+\label{table: a1}
+\end{table}
+\vspace{3mm}
+\\ 
+% Part b) Writing your own Neural Network code 
+We analyze the same regression problem for the Franke function using the FFNN implementation. We begin by using the Sigmoid function as an activation function for the hidden layers, initializing the weights using a normal distribution. 
+\vspace{3mm}
+\\ 
+The method will be affected by the number of hidden layers, nodes, batches, epochs and the learning parameters. We began by analyzing the number of hidden layers and nodes, using the values based on what we found for SGD in the previous analysis for the remaining parameters. The grid search for the optimal MSE depending on hidden layers and nodes is presented in figure~\ref{fig: b_sigmoid_1}, in the appendix. 
+The best results are obtained for 3 hidden layers and 30 neurons, and we use these values when investigating the choices for the batches and epochs, presented in figure~\ref{fig: b_sigmoid_2} in the appendix. Based on this analysis, we see how we need fewer iterations if the number of batches is high enough. Using a high number of batches spends more computational time, but it can also save time for the right number of iterations. Compromising between minimizing the MSE and keeping the computational time satisfactory, we set the batches to 32. 
+\vspace{3mm}
+\\ 
+% Part c) Testing different activation functions 
+Now we may perform the grid search for the learning rate $\eta$ and optimization parameter $\lambda$, presented in figure~\ref{fig: b_sigmoid_3}. We see how, for higher values for the learning parameter, the accuracy increases. However, for too high values of $\eta$ we see that no convergence happens, represented by the gray areas. Similar to what we saw for the logistic regression analysis, the optimization parameter has the lowest MSE for $\lambda = 0.00001$, and the lowest MSE overall is where $\eta=0.1$. (Ridge is no improvement then?) 
+\begin{figure}[h!]
+    \centering %Centers the figure
+    \includegraphics[width=1.0\linewidth]{Project 2/figures/reg/NN_reg_sigmoid_l2_eta.pdf} 
+    \caption{How the MSE for Franke's function varies with $\eta$ and $\lambda$, using the Sigmoid function as an activation function. 
+    Hidden layers = 3, Neurons = 30, number of batches = 32, epochs = 300.}
+    \label{fig: b_sigmoid_3}
+\end{figure}
+\begin{figure}[h!]
+    \centering %Centers the figure
+    \includegraphics[width=1.0\linewidth]{Project 2/figures/reg/NN_reg_relu_l2_eta.pdf} 
+    \caption{How the MSE for Franke's function varies with $\eta$ and $\lambda$, using the ReLu as an activation function. 
+    Hidden layers = 3, Neurons = 30, number of batches = 32, epochs = 300.}
+    \label{fig: b_relu}
+\end{figure}
+\begin{figure}[h!]
+    \centering %Centers the figure
+    \includegraphics[width=1.0\linewidth]{Project 2/figures/reg/NN_reg_leaky_relu_l2_eta.pdf} 
+    \caption{How the MSE for Franke's function varies with $\eta$ and $\lambda$, using the Leaky ReLu as an activation function. 
+    Hidden layers = 3, Neurons = 30, number of batches = 32, epochs = 300.}
+    \label{fig: b_lrelu}
+\end{figure}
+Next, we test how different activation functions affect these results, for the same parameters. 
+There is some improvement to the MSE when using the ReLu as an activation function, seen in figure~\ref{fig: b_relu}, while the Leaky ReLu activation function shows no improvement to the MSE, seen in figure~\ref{fig: b_lrelu}. 
+The lowest MSE=0.0691 is obtained when using ReLu is not much of an improvement on the Ridge regression code from the previous project where we had MSE=0.0112 when using cross-validation as the resampling technique. However, both the SGD and NN are better than the OLS and Ridge regression codes when not using cross validation. 
+%\vspace{3mm}
+%\\ 
+%Im not sure what this is? 
+%\begin{figure}[h!]
+%    \centering %Centers the figure
+%    \includegraphics[width=1.0\linewidth]{Project 2/figures/reg/NN_reg_bias.pdf} 
+%    \caption{How the MSE for Franke's funciton varies with epochs, depending on the initialized bias. A random initialization gives a better result.}
+%    \label{fig: b_bias}
+%\end{figure}
+
+
+
+
+
+\subsection*{Classification Analysis}%__________________________________________________________________
+% Part d) Classification analysis using neural networks 
+When we study the Wisconsin Breast Cancer data set, we change the cost function for the neural network code in order to perform a classification analysis. The performance is measured with the accuracy score. 
+\vspace{3mm}
+\\ 
+We begin by finding suitable parameters for the number of hidden layers and neurons, seen in the heatmap in figure~\ref{fig: nn_neuron_layer}, and then the number of batches and epochs, presented in figure~\ref{fig: nn_iter_batch}, both in the appendix. 
+The resulting lowest MSE for the neural network code is 0.9825, for $\eta$ = 0.1 and an l2 parameter of 0.00001. 
+
+\begin{figure}[h!]
+    \centering %Centers the figure
+    \includegraphics[width=1.0\linewidth]{Project 2/figures/class/NN_class_sigmoid_l2_eta.pdf} 
+    \caption{How the MSE for the Wisconsin Breast Cancer data varies with $\eta$ and $\lambda$, using the Sigmoid function as an activation function. Hidden layers = 1, neurons = 25, number of batches = 64, epochs = 768
+    }
+    \label{fig: nn_l2_eta}
+\end{figure}
+
+
+
+% Part e) Logistic Regression code 
+Finally, we want to compare the neural network classification results with the results we are able to obtain using another method, in this case the results we obtain from the logistic regression code using the SGD algorithm. 
+\vspace{3mm}
+\\ 
+We begin by looking at the accuracy for SGD for different l2 parameters and different learningrates, comparing the GD algorithm, seen in figure~\ref{fig: gd_lambda_eta} with ADAM seen in figure~\ref{fig: adam_lambda_eta}. The accuracy when using ADAM are somewhat higher than the results with SGD, with a difference of around 0.01 between the highest accuracy scores for both. The best scores with SGD are for a low learningparameter, while the best scores with ADAM are for a slightly higher learningparameter, at $0.0001$. 
+\begin{figure}[h!]
+    \centering %Centers the figure
+    \includegraphics[width=1.0\linewidth]{Project 2/figures/class/GD_acc_lambda_eta.pdf} 
+    \caption{Accuracy score for SGD as a function of the learningparameter $\eta$ and the l2 parameter $\lambda$, for epochs = 1024 and batches = 1.}
+    \label{fig: gd_lambda_eta}
+\end{figure}
+\begin{figure}[h!]
+    \centering %Centers the figure
+    \includegraphics[width=1.0\linewidth]{Project 2/figures/class/adam_acc_lambda_eta.pdf} 
+    \caption{Accuracy score for ADAM as a function of the learningparameter $\eta$ and the l2 parameter $\lambda$, for epochs = 1024 and batches = 1.}
+    \label{fig: adam_lambda_eta}
+\end{figure}
+\vspace{3mm}
+\\ 
+Next, we study the accuracy for SGD with ADAM for a different number of batches and number of operations, seen in figure~\ref{fig: op_batch}. 
+\begin{figure}[h!]
+    \centering %Centers the figure
+    \includegraphics[width=1.0\linewidth]{Project 2/figures/class/SGD_operations_batches_0.1.pdf} 
+    \caption{Accuracy score using logistic regression as a function of the number of batches and the number of operations, for epochs = 1024, batches = 1, eta=0.001, and l2=0.0}
+    \label{fig: op_batch}
+\end{figure}
+\vspace{3mm}
+\\ 
+Finally, we can compare our results with the accuracy we obtain when using scikit learn's logistic regression function, for which we obtain a test set accuracy of 0.9474. This is higher than what we obtained using our own logistic regression code, where we obtain an accuracy of 0.9386 when using ADAM. It is still lower than the score we got for the neural networks code, where we obtained an accuracy score of 0.9825. 
+    
+
+
+
+
+
+
+
+
+
+%___________________________DISCUSSION___________________________________
+%\section{Results and Discussion}\label{sec:discussion}
+% Regression analysis for the Franke function 
+%___________________________CONCLUSION______________________________________
+\section{Conclusion}\label{sec:conclusion}
+% Present results and error margin 
+
+
+% We could have obtained even more precise results if we had ...
+
+% Further studies may try ...
+When studying the regression problem for the Franke function with the FFNN implementation, we have used a fixed number of hidden layers and nodes. Therefore, we are limited by the layers and nodes we set based on the grid search where we search for the best combination of these two parameters. As the parameters are selected based on values for the number of batches, epochs, and learning parameter that might not be the most optimal for the model, this somewhat limits the accuracy of the analysis, and it is possible that even better paramaters could be found for the FFNN implementation. While the MSE values were satisfactory and the models can still be considered accurate, further studies could attempt to implement these in a manner that allows us to study the effect of every parameter in further detail. 
+
+% All in all ... 
+
+
+%^ acknowledgements (optional)
+%\begin{acknowledgments} 
+%I would like thank myself for writing this beautiful document.
+%\end{acknowledgments}
+
+% _________________________________REFERENCES______________________________________
+\newpage 
+\section*{References}
+\printbibliography[heading=none]
+
+\appendix
+\section{Algorithms}\label{app: algos}
+\subsubsection*{Adagrad} %_______________________________________________________________
+The AdaGrad algorithm adaptively scales the learning rate for each dimension. We implement it by iterating over the epochs, and then for every epoch we iterate through the mini-batches, as explained in algorithm~\ref{algo: Adagrad}. %Batches are random intervals. 
+
+% Algorithm for Adagrad
+\begin{algorithm}[H]
+    \caption{Adagrad}\label{algo: Adagrad}
+    \begin{algorithmic}
+        \While{in epochs} \Comment{Iterate through epochs}
+        \While{in mini-batches} \Comment{Iterate through the}%\Comment{Batches are random intervals}
+        \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ mini-batches
+        \State $\mathbf{g}_t \leftarrow \nabla_\theta \mathcal{C}(\boldsymbol{\theta})$ 
+        \State $\theta_{t+1} \leftarrow \mathbf{g}_t \eta \frac{1}{\sqrt{\delta+ \sum^t(\mathbf{g}_t)^2}}$
+    \end{algorithmic}
+\end{algorithm}
+
+\subsubsection*{Root Mean Squared Propagation}
+RMSprop provides an exponentially decaying average rather than the sum of the gradients. The decaying average is realized by combining the momentum algorithm and the Adagrad algorithm with a new term. The RMSprop method is restricted to the sum of the past gradients, in addition to the gradients for the recent time steps, meaning that it changes the learning rate slowly while converging relatively fast~\cite{lecture_notes}. 
+
+% Algorithm for RMSprop
+\begin{algorithm}[H]
+    \caption{RMSprop}\label{algo: RMSprop}
+    \begin{algorithmic}
+        \While{in epochs} \Comment{Iterate through epochs}
+        \State $k \leftarrow 0$
+        \While{in mini-batches} \Comment{Iterate through the}%\Comment{Batches are random intervals}
+        \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ mini-batches
+        \State $\mathbf{g}_t \leftarrow \nabla_\theta \mathcal{C}(\boldsymbol{\theta})$
+        \State $k \leftarrow (\rho k + (1 - \rho)\mathbf{g}_t \mathbf{g}_t)$
+        \Comment{Scaling with $\rho$}
+        \State $\theta_{t+1} \leftarrow \mathbf{g}_t \eta \frac{1}{\sqrt{\delta + k}}$
+        \Comment{Inverting the diagonal}
+    \end{algorithmic}
+\end{algorithm}
+
+\subsubsection*{Adam} %_______________________________________________________________
+Another related algorithm is the Adam optimizer, which is efficient when working with large problems involving a lot of data and parameters. 
+The algorithm~\ref{algo: ADAM} keeps a running average of both the first and second moment of the gradient and uses this information to adaptively change the learning rate for different parameters. 
+
+% Algorithm for ADAM 
+\begin{algorithm}[H]
+    \caption{ADAM}\label{algo: ADAM}
+    \begin{algorithmic}
+        \State m_0 \leftarrow 0.0 \Comment{Initialize first moment}
+        \State s_0 \leftarrow 0.0 \Comment{Initialize second moment}
+        \While{in epochs} \Comment{Iterate through epochs}
+        \While{in mini-batches} \Comment{Iterate through the}%\Comment{Batches are random intervals}
+        \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ mini-batches
+        %\State $t \leftarrow t + 1$
+        \State $\mathbf{g}_t \leftarrow \nabla_\theta \mathcal{C}(\boldsymbol{\theta_})$
+        \Comment{Get gradients}
+        \State $\mathbf{m}_t \leftarrow \beta_1 \mathbf{m}_{t-1} + (1-\beta_1) \mathbf{g}_t$
+        \Comment{Update biased 1st}
+        \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ moment
+        \State $\boldsymbol{\mathbf{\hat{m}}}_t \leftarrow {\mathbf{m}_t \over 1-\beta_1^t}$
+        \Comment{Compute bias-corrected 1st}
+        \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ moment
+        \State $\mathbf{s}_t \leftarrow \beta_2 \mathbf{s}_{t-1} +(1-\beta_2)\mathbf{g}_t^2$ 
+        \Comment{Update biased 2nd}
+        \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ moment
+        \State $\boldsymbol{\mathbf{\hat{s}}}_t \leftarrow {\mathbf{s}_t \over1-\beta_2^t}$
+        \Comment{Compute bias-corrected 2nd}
+        \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ moment
+        \State $\boldsymbol{\theta}_{t+1} \leftarrow \boldsymbol{\theta}_t - \eta_t {         \boldsymbol{\mathbf{m}}_t \over \sqrt{\boldsymbol{\mathbf{s}}_t} +\epsilon}$
+        \Comment{Update parameters}
+    \end{algorithmic}
+\end{algorithm}
+The parameters $\beta_1$ and $\beta_2$ set the memory lifetime of the first and second moment and are typically taken to be $0.9$ and $0.99$ respectively, and $\eta$ is the learning rate typically chosen as $10^{-3}$, and $\epsilon$ is a small regularization constant to prevent divergences. 
+
+
+
+
+\section{Back Propagation} %_________________________________________________
+
 Train data based on the cost function (compare network output with training data) 
 minimize the cost output (method of adjusting weights and biases by estimating the gradient of the cost function, back propagation) 
 
@@ -413,6 +714,12 @@ k is class or entry
 L is layer 
 w and b are the weights and biases 
 
+weight and biase in teh network are typically initialized randomly -> highly unlikely to find good predictions 
+Need to iteratively adjust the weights and biases until the predictions are satisfactory 
+Called training: We use gradient methods to find the minimum of the models cost functions. Now need to compute the gradients of the cost function with respect to all the weights and biases in the network, which has potentially many weights and biases all dependent on one another, and can become coputationaly heavy 
+We therefore make use of the algorithm backpropagation 
+
+Initializing the weights and biases. to get fat covergence or non convergence of the gradient method. Initialize the biases to some small value eprioon (can experiment to find it) and the weights with iniform distribution between -1 and 1 . 
 
 The four equations provide us with a way of computing the gradient of the cost function, for which the method we use is presented in the algorithm~\ref{algo:FFNN_BP} for back propagation, where the parameter $\eta$ is the learning parameter discussed in connection with the gradient descent methods. 
 XXX: Here it is convenient to use stochastic gradient descent (see the examples below) with mini-batches with an outer loop that steps through multiple epochs of training. 
@@ -438,166 +745,90 @@ XXX: Here it is convenient to use stochastic gradient descent (see the examples 
 \end{algorithm}
 \vspace{3mm}
 \\
+When all weights and biases throughout the network have been updated a number epoch times, the cost function preferably decreases. 
+
+The lambda is to prevent overfitting. 
+Preventing overditting. Introduce a regularization term (lambda) 
 
 
 
 
 
 
+\section{Other Figures}
 
-
-
-\subsection*{Datasets}
-Data will be split into train and test set (80 20 ?) 
-The data is normalized by removing the mean and dividing by the standard deviation of the feature in the train data set, for each feature in the train and test dataset. 
-
-\subsubsection{Franke Function}
-% Franke function 
-The first dataset we will use is called the Franke function, which is a weighted sum of four exponentials given as, 
-\begin{align}\label{eq: frankie}
-    f(x,y) = \frac{3}{4} \exp\left(
-             -\frac{{\left( 9x-2\right)}^2}{4}
-             -\frac{{\left( 9y-2\right)}^2}{4}
-             \right) 
-             \\ 
-            +\frac{3}{4} \exp\left(
-             -\frac{{\left( 9x+1\right)}^2}{49}
-             -\frac{{\left( 9y+1\right)}}{10}
-             \right) \nonumber
-             \\ 
-            +\frac{1}{2} \exp\left(
-             -\frac{{\left( 9x-7\right)}^2}{4}
-             -\frac{{\left( 9y-3\right)}^2}{4}
-             \right) \nonumber
-             \\ 
-            -\frac{1}{5} \exp\left(
-            -{\left(9x-4\right)}^2 - {\left(9y-7\right)}^2
-             \right), \nonumber
-\end{align}
-defined for $x,y\in [0,1]$. 
-This function is common to use in order to evaluate different surface interpolation techniques. 
-We sample the function at $XXX$ uniformly distributed data points, including stochastic noise $\epsilon$ which we generate from a normal distribution with a mean $\sigma = XXX$ and variance $\ = XXX$. 
-
-The data is fitted to a polynomial of degree $XXX$. 
-Normalize by subtracting the mean of the train sample. 
-
-
-\subsubsection{Breast Cancer data}
-The second dataset we study is the Wisconsin Breast Cancer data set, which is a typical binary classification problem with one single output, making it useful for testing machine learning algorithms. The set was created in 1995 consists of images representing various features of tumors. The number of instances is 569, and of these 212 are malignant, $0$, and 357 are benign, $1$. The data is collected from the University of California Irvine (UCI) Machine Learning Repository~\cite{BreastCancerData}. 
-
-
-
-
-
-%_____________________________________RESULTS____________________________________
-\section{Results}\label{sec:results}
-
-% Part a) Stochastic Gradient Descent code 
 \begin{figure}[h!]
     \centering %Centers the figure
-    \includegraphics[width=1.0\linewidth]{TEMP.jpg} %Imports the figure.
-    \caption{Plain gradient descent with a fixed learning rate}
-    \label{fig: TEMP}
+    \includegraphics[width=1.0\linewidth]{Project 2/figures/reg/SGD_op_batch.pdf} 
+    \caption{How the MSE for Franke's function varies with the batch size and number of operations, for $\eta=0.1$. }
+    \label{fig: a3}
+\end{figure}
+\begin{figure}[h!]
+    \centering %Centers the figure
+    \includegraphics[width=1.0\linewidth]{Project 2/figures/reg/GD_MSE_learningrates_extra.pdf} 
+    \caption{How the MSE for Franke's function varies with epochs for the GD method, for $\eta=0.01$.}
+    \label{fig: extra1}
+\end{figure}
+\begin{table}[]
+\begin{tabular}{|l|ll|}
+\hline
+\multirow{2}{*}{Method} & \multicolumn{2}{l|}{Time {[}s{]}}                     \\ \cline{2-3} 
+                        & \multicolumn{1}{l|}{299 iterations} & 1025 iterations \\ \hline
+GD                      & \multicolumn{1}{l|}{0.0922}         & 0.0731          \\ \hline
+GD w/ momentum          & \multicolumn{1}{l|}{0.0841}         & 0.0717          \\ \hline
+Adagrad                 & \multicolumn{1}{l|}{0.0875}         & 0.0722          \\ \hline
+Adagrad w/momentum      & \multicolumn{1}{l|}{0.0796}         & 0.0705          \\ \hline
+RMSprop                 & \multicolumn{1}{l|}{0.0710}         & 0.0691          \\ \hline
+ADAM                    & \multicolumn{1}{l|}{0.0689}         & 0.0670          \\ \hline
+\end{tabular}
+\caption{
+        }
+\label{table: app1}
+\end{table}
+
+
+
+
+
+\begin{figure}[h!]
+    \centering %Centers the figure
+    \includegraphics[width=1.0\linewidth]{Project 2/figures/reg/NN_reg_sigmoid_neurons_layers.pdf} 
+    \caption{How the MSE for Franke's function varies with the number of hidden layers and neurons, using the Sigmoid function as an activation function. 
+    Number of batches = 64, epochs = 300,  $\eta=0.1$.
+    }
+    \label{fig: b_sigmoid_1}
+\end{figure}
+\begin{figure}[h!]
+    \centering %Centers the figure
+    \includegraphics[width=1.0\linewidth]{Project 2/figures/reg/NN_reg_sigmoid_iterations_batches.pdf} 
+    \caption{How the MSE for Franke's function varies with the batches and epochs, using the Sigmoid function as an activation function. 
+    Hidden layers = 3, Neurons = 30, $\eta=0.1$, and l2 = 0.00001}
+    \label{fig: b_sigmoid_2}
 \end{figure}
 
-\item GD with momentum -> Compare convergence with fixed learning rate 
-\item SGD with mini-batches and a given number of epochs (tunable learning rate) 
-\item SGD with momentum -> Compare convergence with fixed learning rate 
-% Discuss as functions of various parameters 
-\item Implement Adagrad method in order to tune the learning rate (with and without momentum for GD and SGD) 
-\item Add RMSprop and Adam for tuning the learning rate 
-
-% Part b) Writing your own Neural Netrowk code 
-\item Regression problem: With flexible number of hidden layers and nodes using the Sigmoid function as an activation function for the hidden layers. Initialize the weights using a normal distribusion. 
-\item Compare with the OLS and Ridge regression codes 
-
-Goal: Find the optimal MSE and R2 scores based on the regularization parameters and learning rates .
-
-% Part c) Testing different activation functions 
-% Part d) Classification analysis using neural networks 
-Change the cost function to the breast cancer data 
-measure performance with accuracy score 
-% Part e) Logistic Regression code 
-Compare FFNN with Logistic regression using the SGD algorith 
-
-# Note! maybe plot franke functin for the appendix, showing the difference between GD and SGD 
-
-1) 
-Faster per step 
-
-2) How the learning rates evolve 
-How many batches we have/number of batches/batch size 
-Look at the MSE for two different learning rates 
-200 epochs -> Converges, no need to overuse the computational power 
-Chose SGD because the error is lower 
-epochs: 100 
-Learning rate -> 0.1 
-Problem with argument: SDG takes longer. Need number of iterations to be equal to epoch times batches, because then 
-If we take the same time, 1000 iterations, 100 epochs 
-
-3) batch size 
-SGD should approach GD when we only have 1 batch (how we check that we ar right
-At a certain point the MSE is no better for greater batch size, batch size 10, 100 epochs 
-
-3) batch size against learning rate
-If the learning rate is too high, it does not converge 
-Higher batch size, lower error 
-Time vs benefit 
-
-4) Note: Momentum -> does not help, ignore 
-Lowest MSE for each of the methods (adagrad, rms, adam) 
-We should see no real advantage 
-
-Ridge: Same result as for linreg probably. Error is lower for ridge -> 0 
-Rescaling -> yes or no (check last project) 
-We chose a polynomial of 6 
-
-Finally compare to what we did the last time 
-
-b) Neural networks 
 
 
 
 
+\begin{figure}[h!]
+    \centering %Centers the figure
+    \includegraphics[width=1.0\linewidth]{Project 2/figures/class/NN_class_sigmoid_neurons_layers.pdf} 
+    \caption{How the MSE for the MSE for the Wisconsin Breast Cancer data varies with the batches and epochs, using the Sigmoid function as an activation function. Batches = 1, epochs = 640, $\eta$ = 0.1, l2=0.0
+    }
+    \label{fig: nn_neuron_layer}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering %Centers the figure
+    \includegraphics[width=1.0\linewidth]{Project 2/figures/class/NN_class_sigmoid_iterations_batches.pdf} 
+    \caption{How the MSE for the MSE for the Wisconsin Breast Cancer data varies with the batches and epochs, using the Sigmoid function as an activation function. Hidden layers = 1, neurons = 25, $\eta$ = 0.1, l2=0.0. 
+    }
+    \label{fig: nn_iter_batch}
+\end{figure}
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-\section{Discussion}\label{sec:discussion}
-
-
-
-%___________________________DISCUSSION___________________________________
-%\section{Results and Discussion}\label{sec:discussion}
-% Regression analysis for the Franke function 
-%___________________________CONCLUSION______________________________________
-\section{Conclusion}\label{sec:conclusion}
-% Present results and error margin 
-% We could have obtained even more precise results if we had bla bla bla 
-
-% Further studies may try bla bla bla 
-%^ acknowledgements (optional)
-%\begin{acknowledgments} 
-%I would like thank myself for writing this beautiful document.
-%\end{acknowledgments}
-
-% _________________________________REFERENCES______________________________________
-\newpage 
-\section*{References}
-\printbibliography[heading=none]
 
 
 \onecolumngrid
