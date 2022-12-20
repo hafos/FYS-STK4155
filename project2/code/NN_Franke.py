@@ -61,13 +61,12 @@ X_train, X_test, f_train, f_test = train_test_split(data, funcval, test_size=0.2
 def plot_neurons_vs_layers(batches=32, epochs=150, eta=0.1, l2=0.0):
     print("MSE for different number of hidden layers and neurons:...")
     
-    layors = np.arange(1,4)
-    neurons = np.arange(0,40,5)
+    layors = np.arange(1, 4)
+    neurons = np.arange(0, 35, 5)
     neurons[0] = 1
     
     MSE = np.zeros((len(layors),len(neurons)))
 
-    
     i = 0
     for nr in neurons:
         #One hidden layor
@@ -113,6 +112,7 @@ def plot_neurons_vs_layers(batches=32, epochs=150, eta=0.1, l2=0.0):
     ax.set_xticklabels(neurons)
     ax.set_yticklabels(layors)
     heatmap.set_facecolor('xkcd:grey')
+    plt.tight_layout()
     if save == "Y": 
         fig.savefig("../results/figures/Regression/NN_reg_sigmoid_neurons_layers.pdf")
     else:
@@ -191,8 +191,8 @@ def plot_lambda_vs_eta(neurons=15, h_layers=1, batches=512, epochs=10, func = si
     fig, ax = plt.subplots(figsize=(10, 5))
     MSE[MSE > 10e1] = np.nan
     test = sns.heatmap(MSE, annot=True, ax=ax, cmap="viridis", cbar_kws={'label': 'MSE'}, fmt='.4f')
-    ax.set_xlabel(r"\lambda")
-    ax.set_ylabel(r"\eta")
+    ax.set_xlabel("l2 parameter")
+    ax.set_ylabel("learningrate")
     ax.set_xticklabels(l2s)
     ax.set_yticklabels(etas)
     # if type(func) is type:
@@ -206,13 +206,13 @@ def plot_lambda_vs_eta(neurons=15, h_layers=1, batches=512, epochs=10, func = si
         else: 
             fig.savefig(f"../results/figures/Regression/NN_reg_{func.__class__.__name__}_l2_eta.pdf")
     else:
-        plt.show()    
+        plt.show()
     print("[DONE]\n")
 
-def plot_bias(batches = 512, neurons = 15, eta = 0.1, l2=0.0):
+def plot_bias(batches = 512, neurons = 15, eta = 0.1, l2=0.0, n_epochs=12):
     print("MSE for different bias inits:...")
 
-    epochs = range(1,12)
+    epochs = range(1, n_epochs, 20)
     
     MSE = np.zeros((3,len(epochs)))
     
@@ -269,12 +269,14 @@ def plot_bias(batches = 512, neurons = 15, eta = 0.1, l2=0.0):
     print("[DONE]\n")
 
 
+# Initializations from SGD analysis 
+plot_neurons_vs_layers(batches=64, epochs=300, eta=0.1, l2=0.0000)
+plot_epochs_vs_batches(neurons=30, h_layers=3, eta=0.1, l2=0.0000)
+plot_lambda_vs_eta(neurons=30, h_layers=3, batches=64, epochs=300, func = sigmoid)
+plot_lambda_vs_eta(neurons=30, h_layers=3, batches=64, epochs=300, func = relu)
+plot_lambda_vs_eta(neurons=30, h_layers=3, batches=64, epochs=300, func = leaky_relu(hyperpar = 0.01))
+# plot_lambda_vs_eta(neurons=15, h_layers=1, batches=512, epochs=10, func = tanh)
+plot_bias(batches = 64, neurons = 30, eta = 0.1, l2=0.0, n_epochs=300)
 
-plot_neurons_vs_layers(batches=32, epochs=150, eta=0.1, l2=0.0)
-plot_epochs_vs_batches(neurons=15, h_layers=1, eta=0.1, l2=0.0)
 
-plot_lambda_vs_eta(neurons=15, h_layers=1, batches=512, epochs=10, func = sigmoid)
-plot_lambda_vs_eta(neurons=15, h_layers=1, batches=512, epochs=10, func = relu)
-plot_lambda_vs_eta(neurons=15, h_layers=1, batches=512, epochs=10, func = leaky_relu(hyperpar = 0.01))
-plot_lambda_vs_eta(neurons=15, h_layers=1, batches=512, epochs=10, func = tanh)
-plot_bias(batches = 512, neurons = 15, eta = 0.1, l2=0.0)
+#Tracking Code: 8 6 7 9 2 9 0 1 9 6

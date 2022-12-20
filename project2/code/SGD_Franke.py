@@ -95,7 +95,7 @@ def plot_epochs(n_epoch=300):
         plt.show()    
     print("[DONE]\n")
     
-def plot_lambda_vs_learningrates(epochs=150):
+def plot_lambda_vs_learningrates(epochs=150, batches=64):
     print("MSE for different learningrates and l2 parameters for GD:...")
         
     etas = [1e-1, 1e-2, 1e-3, 1e-4]
@@ -111,7 +111,7 @@ def plot_lambda_vs_learningrates(epochs=150):
         for l2 in l2s:
             cost_fn = CostOLS(hyperpar=l2)
             sgd = StochGradDecent(X_train, f_train, cost_fn = cost_fn)
-            beta = sgd.const(epochs = epochs, batches = 1, learningrate = eta)
+            beta = sgd.const(epochs = epochs, batches = batches, learningrate = eta)
             MSE[i,j] = cost_fn.func(f_test, X_test, beta)
             j += 1
         i += 1
@@ -312,7 +312,7 @@ def plot_MSE_learningrates_SGD_extra(batches=64, eta=1e-1):
     print("[DONE]\n")
 
 plot_epochs(n_epoch=500)
-plot_lambda_vs_learningrates(epochs=500)
+plot_lambda_vs_learningrates(epochs=300, batches=64)
 plot_MSE_learningrates_GD_extra(n_epochs=300, eta=1e-1)
 time_GD_vs_SGD(batches=4, epochs=500, eta=0.1)
 time_GD_vs_SGD(batches=4, epochs=500, eta=0.01)
