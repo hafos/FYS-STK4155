@@ -114,6 +114,7 @@ def plot_neurons_vs_layers(batches=32, epochs=150, eta=0.1, l2=0.0):
     heatmap.set_facecolor('xkcd:grey')
     plt.tight_layout()
     if save == "Y": 
+        plt.tight_layout()
         fig.savefig("../results/figures/Regression/NN_reg_sigmoid_neurons_layers.pdf")
     else:
         plt.show()
@@ -155,6 +156,7 @@ def plot_epochs_vs_batches(neurons=15, h_layers=1, eta=0.1, l2=0.0):
     ax.set_yticklabels(batches)
     heatmap.set_facecolor('xkcd:grey')
     if save == "Y": 
+        plt.tight_layout()
         fig.savefig("../results/figures/Regression/NN_reg_sigmoid_iterations_batches.pdf")
     else:
         plt.show()    
@@ -201,6 +203,7 @@ def plot_lambda_vs_eta(neurons=15, h_layers=1, batches=512, epochs=10, func = si
     #     ax.set_title(f"NN with {func.__class__.__name__}")
     test.set_facecolor('xkcd:grey')
     if save == "Y": 
+        plt.tight_layout()
         if type(func) is type:
             fig.savefig(f"../results/figures/Regression/NN_reg_{func.__name__}_l2_eta.pdf")
         else: 
