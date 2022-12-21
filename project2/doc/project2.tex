@@ -78,6 +78,7 @@ FYS-STK4155\\
 In this project, our aim is to investigate classification and regression problems using a Feed-Forward Neural Network (FFNN). We will compare this method this to linear and logistic regression whilst studying two data sets: The Franke function and the Wisconsin Breast Cancer data set. 
 The goal is to study which methods are best with regards to computational time and accuracy. 
 Our results show that the neural networks code is better suited to the classification problem, achieving a higher accuracy than our logistic regression code and scikit learn's logistic regression function. Meanwhile, for the regression problem the logistic regression code performed slightly better. Various activation functions point towards the Sigmoid function producing the best results in this case, but the logistic regression code still performed better. 
+
 The implementation and material relevant to this project can be found at the Github repo referenced above. 
 \end{abstract}
 \maketitle
@@ -136,13 +137,12 @@ Classification problems, on the other hand, are concerned with outcomes which ta
 Obtaining such a discrete output can be done by using the perceptron model, which is a "hard classification" model where each data point is deterministically assigned to a category. In many cases, however, it is favorable to use a "soft classifier" that outputs the probability of a given category rather than a single value, which is where we apply logistic regression. 
 \vspace{3mm}
 \\
-When we apply logistic regression the most common situation is having two possible outcomes, normally denoted as a binary outcome~\cite{lecture_notes}. % XXX repeating myself a bit here, rewrite 
+When we apply logistic regression the most common situation is having two possible outcomes, normally denoted as a binary outcome~\cite{lecture_notes}. 
 The probability that a data point $x_i$ belongs to a category $y_i = \{0,1\}$ is given by the logistic function, also known as the Sigmoid function, 
 \begin{align}\label{eq: logistic_function} % sigmoid function
     p(t) = \frac{1}{1+\exp -t} = \frac{\exp t}{1+\exp t}, 
 \end{align}
 which is meant to represent the likelihood of a given event~\cite{lecture_notes}. 
-%XXX: Unsure of weather I should use beta or theta (both are used in the lecture notes?) easy fix 
 Assuming that we have two categories with $y_i\in\{0,1\}$ and that we only have two parameters $\beta$ in the fit of the Sigmoid function, we define the probabilities 
 \begin{align}
     p(y_i=1 | x_i,\boldsymbol{\beta}) &= 
@@ -286,7 +286,7 @@ The common method for achieving this, where we approximate the Hessian and norma
 
 
 \subsection*{Neural Networks}%_____________________________________________________________________________
-Artificial Neural Networks (ANN) are computational systems which learn to perform tasks based on examples, generally without being programmed with any task-specific rules. 
+Artificial Neural Networks (ANN) are computational systems which learn to perform tasks based on examples, generally without being programmed with any task-specific rules~\cite{friedman}. 
 The aim is to mimic a biological system, wherein interconnected neurons send signals in the form of mathematical functions between layers, where each layer contains and arbitrary number of neurons and each connection is represented by a weight variable. An example of a simple neural network is the single perceptron model, which consists of one node with two inputs and one output, visualized in figure~\ref{fig: Single Perceptron Model}. 
 
 \begin{figure}[h!]
@@ -317,7 +317,7 @@ If we add an additional layer between the input and output layer, we build a mul
 \end{figure}
 
 For this type of network, nodes $n_l$ are arranged in an input layer, an output layer $L$ and hidden layers $1,L-1$, where each layer can contain an arbitrary number of nodes, and each connection between two nodes is associated with a weight variable $W_l$. 
-Each node, defined by a model function, passes information to the nodes ahead if it, causing input information to move without backtracking through the network from the input layer, through the hidden layers in between, and out to the output layer. 
+Each node, defined by a model function, passes information to the nodes ahead if it, causing input information to move without backtracking through the network from the input layer, through the hidden layers in between, and out to the output layer~\cite{friedman}. 
 %Nodes: We observe that each node in a layer is connected to all nodes in the subsequent layer, making this a so-called fully-connected FFNN. 
 
 \subsubsection*{Activation Functions}%_______________________________________________
@@ -415,38 +415,6 @@ where $I$ is the indicator function, $1$ if $t_i=y_i$ and $0$ otherwise for a bi
 
 
 \subsection*{Regression Analysis}
-
-
-
-
-Problem with argument: SDG takes longer. Need number of iterations to be equal to epoch times batches, because then 
-If we take the same time, 1000 iterations, 100 epochs 
-\vspace{3mm}
-\\
-% a2) 
-SGD should approach GD when we only have 1 batch (how we check that we ar right
-At a certain point the MSE is no better for greater batch size, batch size 10, 100 epochs 
-\vspace{3mm}
-\\ 
-% a3) MAP 
-\item SGD with mini-batches and a given number of epochs (tunable learning rate) 
-3) batch size against learning rate
-If the learning rate is too high, it does not converge 
-Higher batch size, lower error 
-Time vs benefit 
-% Discuss as functions of various parameters 
-\vspace{3mm}
-\\ 
-% a4) MAP 
-Ridge: Same result as for linreg probably. Error is lower for ridge -> 0 
-finally compare with what we did last time 
-
-
-
-
-
-
-
 % Part a) Stochastic Gradient Descent code 
 We began by analyzing a regression problem using gradient descent and stochastic gradient descent, which replaced the matrix inversion algorithm previously tested in project 1. 
 The models were first tested on the Franke function. 
@@ -460,7 +428,11 @@ In figure~\ref{fig: a1} we study how the MSE of the GD method varies with epochs
     \caption{How the MSE for Franke's function varies with epochs for the GD method, for fixed learning rates $\eta=0.1$, $0.01$ and $0.001$. }
     \label{fig: a1}
 \end{figure}
-This is further supported by figure~\ref{fig: a2}, where we visualize the MSE as a function of both the l2 parameter and the learningrate. The number of epochs is set to 300, and the number of batches is set to 64. The batches and number of operations have been plotted as a colormap where we see the MSE in figure~\ref{fig: a3} in the appendix. A greater number of batches mean that the convergence rate increases, and we spend less time on each operation. From figure~\ref{fig: a2}, we see that we obtain an MSE of 0.06854 for $\eta=0.1$, and the lowest l2 parameter. 
+This is further supported by figure~\ref{fig: a2}, where we visualize the MSE as a function of both the l2 parameter and the learningrate. The number of epochs is set to 300, and the number of batches is set to 64. The batches and number of operations have been plotted as a colormap where we see the MSE in figure 12
+%~\ref{fig: a3}
+in the appendix, where we note that the SGD approaches GD when we only have 1 batch. 
+%A greater number of batches mean that the convergence rate increases, and we spend less time on each operation. 
+From figure~\ref{fig: a2}, we see that we obtain an MSE of 0.06854 for $\eta=0.1$ and the lowest l2 parameter. This is an improvement compared to the MSE obtained for the OLS method and the Ridge method with bootstraps, which we implemented in project 1~\cite{proj1}. 
 \begin{figure}[h!]
     \centering %Centers the figure
     \includegraphics[width=1.0\linewidth]{Project 2/figures/reg/GD_MSE_lambda_eta.pdf} 
@@ -469,9 +441,26 @@ This is further supported by figure~\ref{fig: a2}, where we visualize the MSE as
 \end{figure}
 \vspace{3mm}
 \\ 
-We implemented several methods for tuning the learning rate, presented in figure~\ref{fig: extra1} in the appendix. 
+We implemented several methods for tuning the learning rate, presented in figure 13
+%~\ref{fig: extra1} 
+ in appendix~\ref{app: figures}. 
 All new methods converge faster than the GD method does, with the RMSprop method being the fastest and most stable method. Both the Adagrad with and without momentum also perform well. 
-However, after a certain number of operations the MSE is low for all methods, which can also be seen in table~\ref{table: app1}. 
+However, after a certain number of operations the MSE is low for all methods, which can also be seen in table~\ref{table: tab2}. 
+\begin{table}[]
+\begin{tabular}{|l|ll|}
+\hline
+\multirow{2}{*}{Method} & \multicolumn{2}{l|}{Time {[}s{]}}                     \\ \cline{2-3} 
+                        & \multicolumn{1}{l|}{299 iterations} & 1025 iterations \\ \hline
+GD                      & \multicolumn{1}{l|}{0.0922}         & 0.0731          \\ \hline
+GD w/ momentum          & \multicolumn{1}{l|}{0.0841}         & 0.0717          \\ \hline
+Adagrad                 & \multicolumn{1}{l|}{0.0875}         & 0.0722          \\ \hline
+Adagrad w/momentum      & \multicolumn{1}{l|}{0.0796}         & 0.0705          \\ \hline
+RMSprop                 & \multicolumn{1}{l|}{0.0710}         & 0.0691          \\ \hline
+ADAM                    & \multicolumn{1}{l|}{0.0689}         & 0.0670          \\ \hline
+\end{tabular}
+\caption{MSE for various methods for two different iterations, for the GD algorithm on the Franke function. After a certain number of operations the MSE is relatively low for all methods. }
+\label{table: tab2}
+\end{table}
 \vspace{3mm}
 \\ 
 %As we increase the number of batches, the function converges more rapidly, as can be seen in figure~\ref{fig: a2.5}. The convergence rate of SGD approaches the convergence rate of GD as the batch size decreases, and for 1 batch, we have the GD method. 
@@ -483,7 +472,10 @@ However, after a certain number of operations the MSE is low for all methods, wh
 %\end{figure}
 %\vspace{3mm}
 %\\
-In table~\ref{table: a1} we have studied the speed of the GD and SGD in further detail, by calculating the speed per epoch and speed of each operation for $\eta=0.1$ and $\eta=0.01$. While the SGD is slower per epochs, it is much faster per step, as gradients are computed from 5 poins at a time, rather than 1000 (N/M) ? 
+In table~\ref{table: a1} we have studied the speed of the GD and SGD in further detail, by calculating the speed per epoch and speed of each operation for $\eta=0.1$ and $\eta=0.01$. While the SGD is slower per epochs, it is much faster per step. 
+%as gradients are computed from 5 points at a time, rather than 1000 (N/M) ? 
+%If we take the same time, 1000 iterations, 100 epochs * 10 batches 
+%We need the number of iterations to be equal to the number of epochs times batches, because if this is the case it will take the same amount of time. 
 Due to the randomness of SGD, it is possible for a local minima to be overcome as there is no confinement. Overall, the SGD method seems to overall be an improvement to the GD method, achieving the same MSE as GD in a shorter amount of time. 
 \begin{table}[]
 \begin{tabular}{|l|ll|ll|}
@@ -502,12 +494,16 @@ Time per operation [ms]               & \multicolumn{1}{l|}{0.1224} & 0.1097 & \
 We analyze the same regression problem for the Franke function using the FFNN implementation. We begin by using the Sigmoid function as an activation function for the hidden layers, initializing the weights using a normal distribution. 
 \vspace{3mm}
 \\ 
-The method will be affected by the number of hidden layers, nodes, batches, epochs and the learning parameters. We began by analyzing the number of hidden layers and nodes, using the values based on what we found for SGD in the previous analysis for the remaining parameters. The grid search for the optimal MSE depending on hidden layers and nodes is presented in figure~\ref{fig: b_sigmoid_1}, in the appendix. 
-The best results are obtained for 3 hidden layers and 30 neurons, and we use these values when investigating the choices for the batches and epochs, presented in figure~\ref{fig: b_sigmoid_2} in the appendix. Based on this analysis, we see how we need fewer iterations if the number of batches is high enough. Using a high number of batches spends more computational time, but it can also save time for the right number of iterations. Compromising between minimizing the MSE and keeping the computational time satisfactory, we set the batches to 32. 
+The method will be affected by the number of hidden layers, nodes, batches, epochs and the learning parameters. We began by analyzing the number of hidden layers and nodes, using the values based on what we found for SGD in the previous analysis for the remaining parameters. The grid search for the optimal MSE depending on hidden layers and nodes is presented in figure 14
+%~\ref{fig: b_sigmoid_1}
+, in the appendix. 
+The best results are obtained for 3 hidden layers and 30 neurons, and we use these values when investigating the choices for the batches and epochs, presented in figure 15
+%~\ref{fig: b_sigmoid_2}
+in the appendix. Based on this analysis, we see how we need fewer iterations if the number of batches is high enough. Using a high number of batches spends more computational time, but it can also save time for the right number of iterations. Compromising between minimizing the MSE and keeping the computational time satisfactory, we set the batches to 32. 
 \vspace{3mm}
 \\ 
 % Part c) Testing different activation functions 
-Now we may perform the grid search for the learning rate $\eta$ and optimization parameter $\lambda$, presented in figure~\ref{fig: b_sigmoid_3}. We see how, for higher values for the learning parameter, the accuracy increases. However, for too high values of $\eta$ we see that no convergence happens, represented by the gray areas. Similar to what we saw for the logistic regression analysis, the optimization parameter has the lowest MSE for $\lambda = 0.00001$, and the lowest MSE overall is where $\eta=0.1$. (Ridge is no improvement then?) 
+Now we may perform the grid search for the learning rate $\eta$ and optimization parameter $\lambda$, presented in figure~\ref{fig: b_sigmoid_3}. We see how, for higher values for the learning parameter, the accuracy increases. However, for too high values of $\eta$ we see that no convergence happens, represented by the gray areas. Similar to what we saw for the logistic regression analysis, the optimization parameter has the lowest MSE for $\lambda = 0.00001$, and the lowest MSE overall is where $\eta=0.1$. 
 \begin{figure}[h!]
     \centering %Centers the figure
     \includegraphics[width=1.0\linewidth]{Project 2/figures/reg/NN_reg_sigmoid_l2_eta.pdf} 
@@ -530,8 +526,9 @@ Now we may perform the grid search for the learning rate $\eta$ and optimization
     \label{fig: b_lrelu}
 \end{figure}
 Next, we test how different activation functions affect these results, for the same parameters. 
-There is some improvement to the MSE when using the ReLu as an activation function, seen in figure~\ref{fig: b_relu}, while the Leaky ReLu activation function shows no improvement to the MSE, seen in figure~\ref{fig: b_lrelu}. 
-The lowest MSE=0.0691 is obtained when using ReLu is not much of an improvement on the Ridge regression code from the previous project where we had MSE=0.0112 when using cross-validation as the resampling technique. However, both the SGD and NN are better than the OLS and Ridge regression codes when not using cross validation. 
+We do not see any improvement for the MSE when using the ReLu as an activation function, seen in figure~\ref{fig: b_relu}, and the Leaky ReLu activation function is significantly worse in this case, seen in figure~\ref{fig: b_lrelu}. 
+The lowest MSE=0.0675 is obtained when using Sigmoid. This is quite an improvement compared to the Ridge regression code from the previous project where we had an MSE around 0.1200 when using bootstrapping as the resampling tehnique. However, when we used cross-validation as the resampling technique, we got a lower MSE for Ridge, around 0.0112. 
+Generally, both the SGD and NN presented here give a lower MSE than the OLS and Ridge regression codes when not using cross validation~\cite{proj1}. 
 %\vspace{3mm}
 %\\ 
 %Im not sure what this is? 
@@ -551,7 +548,11 @@ The lowest MSE=0.0691 is obtained when using ReLu is not much of an improvement 
 When we study the Wisconsin Breast Cancer data set, we change the cost function for the neural network code in order to perform a classification analysis. The performance is measured with the accuracy score. 
 \vspace{3mm}
 \\ 
-We begin by finding suitable parameters for the number of hidden layers and neurons, seen in the heatmap in figure~\ref{fig: nn_neuron_layer}, and then the number of batches and epochs, presented in figure~\ref{fig: nn_iter_batch}, both in the appendix. 
+We begin by finding suitable parameters for the number of hidden layers and neurons, seen in the heatmap in figure 16
+%~\ref{fig: nn_neuron_layer}
+, and then the number of batches and epochs, presented in figure 17
+%~\ref{fig: nn_iter_batch}
+, both in the appendix. 
 The resulting lowest MSE for the neural network code is 0.9825, for $\eta$ = 0.1 and an l2 parameter of 0.00001. 
 
 \begin{figure}[h!]
@@ -609,15 +610,15 @@ Finally, we can compare our results with the accuracy we obtain when using sciki
 %___________________________CONCLUSION______________________________________
 \section{Conclusion}\label{sec:conclusion}
 % Present results and error margin 
-
-
+In this report we have studied various methods while investigating classification and regression problems. 
+We found that while all methods provide us with a descent accuracy, the neural network is better suited for classification problems, where we achieved a higher accuracy score than both our own logistic regression code and the accuracy score obtained from scikit learn's algorithm. Meanwhile, for the regression analysis we saw that surprisingly the Sigmoid function achieved the best results, although by a very small margin compared to the ReLu. The neural network code did not achieve a better accuracy score in this case, however the difference in accuracies between the logistic regression code and the neural network code were lower for the regression problem than it was for the classification problem. 
+\vspace{3mm}
+\\ 
 % We could have obtained even more precise results if we had ...
-
+It is likely that we could have obtained even more precise results if we had spent even more time testing the various parameters, but the results achieved are satisfactory. 
 % Further studies may try ...
 When studying the regression problem for the Franke function with the FFNN implementation, we have used a fixed number of hidden layers and nodes. Therefore, we are limited by the layers and nodes we set based on the grid search where we search for the best combination of these two parameters. As the parameters are selected based on values for the number of batches, epochs, and learning parameter that might not be the most optimal for the model, this somewhat limits the accuracy of the analysis, and it is possible that even better paramaters could be found for the FFNN implementation. While the MSE values were satisfactory and the models can still be considered accurate, further studies could attempt to implement these in a manner that allows us to study the effect of every parameter in further detail. 
-
 % All in all ... 
-
 
 %^ acknowledgements (optional)
 %\begin{acknowledgments} 
@@ -755,7 +756,13 @@ Preventing overditting. Introduce a regularization term (lambda)
 
 
 
-\section{Other Figures}
+\section{Additional Figures}
+
+\begin{itemize}
+\color{white}
+\item First item
+\item Second item
+\end{itemize}
 
 \begin{figure}[h!]
     \centering %Centers the figure
@@ -763,32 +770,25 @@ Preventing overditting. Introduce a regularization term (lambda)
     \caption{How the MSE for Franke's function varies with the batch size and number of operations, for $\eta=0.1$. }
     \label{fig: a3}
 \end{figure}
+
+\begin{itemize}
+\color{white}
+\item First item
+\item Second item
+\end{itemize}
+
 \begin{figure}[h!]
     \centering %Centers the figure
     \includegraphics[width=1.0\linewidth]{Project 2/figures/reg/GD_MSE_learningrates_extra.pdf} 
     \caption{How the MSE for Franke's function varies with epochs for the GD method, for $\eta=0.01$.}
     \label{fig: extra1}
 \end{figure}
-\begin{table}[]
-\begin{tabular}{|l|ll|}
-\hline
-\multirow{2}{*}{Method} & \multicolumn{2}{l|}{Time {[}s{]}}                     \\ \cline{2-3} 
-                        & \multicolumn{1}{l|}{299 iterations} & 1025 iterations \\ \hline
-GD                      & \multicolumn{1}{l|}{0.0922}         & 0.0731          \\ \hline
-GD w/ momentum          & \multicolumn{1}{l|}{0.0841}         & 0.0717          \\ \hline
-Adagrad                 & \multicolumn{1}{l|}{0.0875}         & 0.0722          \\ \hline
-Adagrad w/momentum      & \multicolumn{1}{l|}{0.0796}         & 0.0705          \\ \hline
-RMSprop                 & \multicolumn{1}{l|}{0.0710}         & 0.0691          \\ \hline
-ADAM                    & \multicolumn{1}{l|}{0.0689}         & 0.0670          \\ \hline
-\end{tabular}
-\caption{
-        }
-\label{table: app1}
-\end{table}
 
-
-
-
+\begin{itemize}
+\color{white}
+\item First item
+\item Second item
+\end{itemize}
 
 \begin{figure}[h!]
     \centering %Centers the figure
@@ -798,6 +798,13 @@ ADAM                    & \multicolumn{1}{l|}{0.0689}         & 0.0670          
     }
     \label{fig: b_sigmoid_1}
 \end{figure}
+
+\begin{itemize}
+\color{white}
+\item First item
+\item Second item
+\end{itemize}
+
 \begin{figure}[h!]
     \centering %Centers the figure
     \includegraphics[width=1.0\linewidth]{Project 2/figures/reg/NN_reg_sigmoid_iterations_batches.pdf} 
@@ -807,7 +814,11 @@ ADAM                    & \multicolumn{1}{l|}{0.0689}         & 0.0670          
 \end{figure}
 
 
-
+\begin{itemize}
+\color{white}
+\item First item
+\item Second item
+\end{itemize}
 
 
 \begin{figure}[h!]
@@ -818,6 +829,13 @@ ADAM                    & \multicolumn{1}{l|}{0.0689}         & 0.0670          
     \label{fig: nn_neuron_layer}
 \end{figure}
 
+
+\begin{itemize}
+\color{white}
+\item First item
+\item Second item
+\end{itemize}
+
 \begin{figure}[h!]
     \centering %Centers the figure
     \includegraphics[width=1.0\linewidth]{Project 2/figures/class/NN_class_sigmoid_iterations_batches.pdf} 
@@ -827,7 +845,11 @@ ADAM                    & \multicolumn{1}{l|}{0.0689}         & 0.0670          
 \end{figure}
 
 
-
+\begin{itemize}
+\color{white}
+\item First item
+\item Second item
+\end{itemize}
 
 
 
