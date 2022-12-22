@@ -275,10 +275,80 @@ From the GDM algorithm we see that we have introduced a momentum parameter $\gam
 In SGD, both with and without momentum, we have to specify a schedule for tuning the learning rate $\eta_t$ as a function of time. 
 If the learning parameter is too small, the computations will be slow, and if it is too high we will never achieve acceptable loss. 
 The learning rate is limited by the steepest direction which might change. We therefore keep track of curvature, taking large steps in flat directions and small steps in steep directions. 
-The common method for achieving this, where we approximate the Hessian and normalize the learning rate by curvature, this can be computationally expensive for large models. Therefore, it is often preferable to use one of the several methods introduced that adaptively changes the step size to match the landscape without paying the steep computational price of calculating or approximating Hessians. Common methods used to do this for neural networks are the AdaGrad algoritm, Root Mean Squared Propagation (RMSprop), and Adam, summarized in the algorithms~\ref{algo: Adagrad},~\ref{algo: RMSprop}, and~\ref{algo: ADAM} in appendix~\ref{app: algos}, respectively. 
+The common method for achieving this, where we approximate the Hessian and normalize the learning rate by curvature, this can be computationally expensive for large models. Therefore, it is often preferable to use one of the several methods introduced that adaptively changes the step size to match the landscape without paying the steep computational price of calculating or approximating Hessians. Common methods used to do this for neural networks are the AdaGrad algoritm, Root Mean Squared Propagation (RMSprop), and Adam. 
+%summarized in the algorithms~\ref{algo: Adagrad},~\ref{algo: RMSprop}, and~\ref{algo: ADAM} in appendix~\ref{app: algos}, respectively. 
+
+\subsubsection*{Adagrad} %_______________________________________________________________
+The AdaGrad algorithm adaptively scales the learning rate for each dimension. We implement it by iterating over the epochs, and then for every epoch we iterate through the mini-batches, as explained in algorithm~\ref{algo: Adagrad}. %Batches are random intervals. 
+
+% Algorithm for Adagrad
+\begin{algorithm}[H]
+    \caption{Adagrad}\label{algo: Adagrad}
+    \begin{algorithmic}
+        \While{in epochs} \Comment{Iterate through epochs}
+        \While{in mini-batches} \Comment{Iterate through the}%\Comment{Batches are random intervals}
+        \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ mini-batches
+        \State $\mathbf{g}_t \leftarrow \nabla_\theta \mathcal{C}(\boldsymbol{\theta})$ 
+        \State $\theta_{t+1} \leftarrow \mathbf{g}_t \eta \frac{1}{\sqrt{\delta+ \sum^t(\mathbf{g}_t)^2}}$
+    \end{algorithmic}
+\end{algorithm}
+
+\subsubsection*{Root Mean Squared Propagation}
+RMSprop provides an exponentially decaying average rather than the sum of the gradients. The decaying average is realized by combining the momentum algorithm and the Adagrad algorithm with a new term. The RMSprop method is restricted to the sum of the past gradients, in addition to the gradients for the recent time steps, meaning that it changes the learning rate slowly while converging relatively fast~\cite{lecture_notes}. 
+
+% Algorithm for RMSprop
+\begin{algorithm}[H]
+    \caption{RMSprop}\label{algo: RMSprop}
+    \begin{algorithmic}
+        \While{in epochs} \Comment{Iterate through epochs}
+        \State $k \leftarrow 0$
+        \While{in mini-batches} \Comment{Iterate through the}%\Comment{Batches are random intervals}
+        \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ mini-batches
+        \State $\mathbf{g}_t \leftarrow \nabla_\theta \mathcal{C}(\boldsymbol{\theta})$
+        \State $k \leftarrow (\rho k + (1 - \rho)\mathbf{g}_t \mathbf{g}_t)$
+        \Comment{Scaling with $\rho$}
+        \State $\theta_{t+1} \leftarrow \mathbf{g}_t \eta \frac{1}{\sqrt{\delta + k}}$
+        \Comment{Inverting the diagonal}
+    \end{algorithmic}
+\end{algorithm}
+
+\subsubsection*{Adam} %_______________________________________________________________
+Another related algorithm is the Adam optimizer, which is efficient when working with large problems involving a lot of data and parameters. 
+The algorithm~\ref{algo: ADAM} keeps a running average of both the first and second moment of the gradient and uses this information to adaptively change the learning rate for different parameters. 
+
+% Algorithm for ADAM 
+\begin{algorithm}[H]
+    \caption{ADAM}\label{algo: ADAM}
+    \begin{algorithmic}
+        \State m_0 \leftarrow 0.0 \Comment{Initialize first moment}
+        \State s_0 \leftarrow 0.0 \Comment{Initialize second moment}
+        \While{in epochs} \Comment{Iterate through epochs}
+        \While{in mini-batches} \Comment{Iterate through the}%\Comment{Batches are random intervals}
+        \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ mini-batches
+        %\State $t \leftarrow t + 1$
+        \State $\mathbf{g}_t \leftarrow \nabla_\theta \mathcal{C}(\boldsymbol{\theta_})$
+        \Comment{Get gradients}
+        \State $\mathbf{m}_t \leftarrow \beta_1 \mathbf{m}_{t-1} + (1-\beta_1) \mathbf{g}_t$
+        \Comment{Update biased 1st}
+        \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ moment
+        \State $\boldsymbol{\mathbf{\hat{m}}}_t \leftarrow {\mathbf{m}_t \over 1-\beta_1^t}$
+        \Comment{Compute bias-corrected 1st}
+        \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ moment
+        \State $\mathbf{s}_t \leftarrow \beta_2 \mathbf{s}_{t-1} +(1-\beta_2)\mathbf{g}_t^2$ 
+        \Comment{Update biased 2nd}
+        \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ moment
+        \State $\boldsymbol{\mathbf{\hat{s}}}_t \leftarrow {\mathbf{s}_t \over1-\beta_2^t}$
+        \Comment{Compute bias-corrected 2nd}
+        \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ moment
+        \State $\boldsymbol{\theta}_{t+1} \leftarrow \boldsymbol{\theta}_t - \eta_t {         \boldsymbol{\mathbf{m}}_t \over \sqrt{\boldsymbol{\mathbf{s}}_t} +\epsilon}$
+        \Comment{Update parameters}
+    \end{algorithmic}
+\end{algorithm}
+The parameters $\beta_1$ and $\beta_2$ set the memory lifetime of the first and second moment and are typically taken to be $0.9$ and $0.99$ respectively, and $\eta$ is the learning rate typically chosen as $10^{-3}$, and $\epsilon$ is a small regularization constant to prevent divergences. 
 
 
-\subsection*{Neural Networks}%_____________________________________________________________________________
+
+\subsection*{Neural Networks}%______________________________________________________
 Artificial Neural Networks (ANN) are computational systems which learn to perform tasks based on examples, generally without being programmed with any task-specific rules~\cite{friedman}. 
 The aim is to mimic a biological system, wherein interconnected neurons send signals in the form of mathematical functions between layers, where each layer contains and arbitrary number of neurons and each connection is represented by a weight variable. An example of a simple neural network is the single perceptron model, which consists of one node with two inputs and one output, visualized in figure~\ref{fig: Single Perceptron Model}. 
 
@@ -630,18 +700,13 @@ When studying the regression problem for the Franke function with the FFNN imple
 %\end{acknowledgments}
 
 % _________________________________REFERENCES______________________________________
-\newpage 
 \section*{References}
 \printbibliography[heading=none]
-
+\newpage
 \appendix
-\section{Additional Figures}\label{app: figs}
 
-\begin{itemize}
-\color{white}
-\item First item
-\item Second item
-\end{itemize}
+%\section{Algorithms}\label{app: algos}
+\section{Additional Figures}\label{app: figs}
 
 \begin{figure}[h!]
     \centering %Centers the figure
@@ -650,24 +715,12 @@ When studying the regression problem for the Franke function with the FFNN imple
     \label{fig: a3}
 \end{figure}
 
-\begin{itemize}
-\color{white}
-\item First item
-\item Second item
-\end{itemize}
-
 \begin{figure}[h!]
     \centering %Centers the figure
     \includegraphics[width=1.0\linewidth]{Project 2/figures/reg/GD_MSE_learningrates_extra.pdf} 
     \caption{How the MSE for Franke's function varies with epochs for the GD method, for $\eta=0.01$.}
     \label{fig: extra1}
 \end{figure}
-
-\begin{itemize}
-\color{white}
-\item First item
-\item Second item
-\end{itemize}
 
 \begin{figure}[h!]
     \centering %Centers the figure
@@ -681,7 +734,6 @@ When studying the regression problem for the Franke function with the FFNN imple
 \begin{itemize}
 \color{white}
 \item First item
-\item Second item
 \end{itemize}
 
 \begin{figure}[h!]
@@ -692,13 +744,10 @@ When studying the regression problem for the Franke function with the FFNN imple
     \label{fig: b_sigmoid_2}
 \end{figure}
 
-
 \begin{itemize}
 \color{white}
 \item First item
-\item Second item
 \end{itemize}
-
 
 \begin{figure}[h!]
     \centering %Centers the figure
@@ -731,74 +780,6 @@ When studying the regression problem for the Franke function with the FFNN imple
 \end{itemize}
 
 
-\section{Algorithms}\label{app: algos}
-\subsubsection*{Adagrad} %_______________________________________________________________
-The AdaGrad algorithm adaptively scales the learning rate for each dimension. We implement it by iterating over the epochs, and then for every epoch we iterate through the mini-batches, as explained in algorithm~\ref{algo: Adagrad}. %Batches are random intervals. 
-
-% Algorithm for Adagrad
-\begin{algorithm}[H]
-    \caption{Adagrad}\label{algo: Adagrad}
-    \begin{algorithmic}
-        \While{in epochs} \Comment{Iterate through epochs}
-        \While{in mini-batches} \Comment{Iterate through the}%\Comment{Batches are random intervals}
-        \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ mini-batches
-        \State $\mathbf{g}_t \leftarrow \nabla_\theta \mathcal{C}(\boldsymbol{\theta})$ 
-        \State $\theta_{t+1} \leftarrow \mathbf{g}_t \eta \frac{1}{\sqrt{\delta+ \sum^t(\mathbf{g}_t)^2}}$
-    \end{algorithmic}
-\end{algorithm}
-
-\subsubsection*{Root Mean Squared Propagation}
-RMSprop provides an exponentially decaying average rather than the sum of the gradients. The decaying average is realized by combining the momentum algorithm and the Adagrad algorithm with a new term. The RMSprop method is restricted to the sum of the past gradients, in addition to the gradients for the recent time steps, meaning that it changes the learning rate slowly while converging relatively fast~\cite{lecture_notes}. 
-
-% Algorithm for RMSprop
-\begin{algorithm}[H]
-    \caption{RMSprop}\label{algo: RMSprop}
-    \begin{algorithmic}
-        \While{in epochs} \Comment{Iterate through epochs}
-        \State $k \leftarrow 0$
-        \While{in mini-batches} \Comment{Iterate through the}%\Comment{Batches are random intervals}
-        \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ mini-batches
-        \State $\mathbf{g}_t \leftarrow \nabla_\theta \mathcal{C}(\boldsymbol{\theta})$
-        \State $k \leftarrow (\rho k + (1 - \rho)\mathbf{g}_t \mathbf{g}_t)$
-        \Comment{Scaling with $\rho$}
-        \State $\theta_{t+1} \leftarrow \mathbf{g}_t \eta \frac{1}{\sqrt{\delta + k}}$
-        \Comment{Inverting the diagonal}
-    \end{algorithmic}
-\end{algorithm}
-
-\subsubsection*{Adam} %_______________________________________________________________
-Another related algorithm is the Adam optimizer, which is efficient when working with large problems involving a lot of data and parameters. 
-The algorithm~\ref{algo: ADAM} keeps a running average of both the first and second moment of the gradient and uses this information to adaptively change the learning rate for different parameters. 
-
-% Algorithm for ADAM 
-\begin{algorithm}[H]
-    \caption{ADAM}\label{algo: ADAM}
-    \begin{algorithmic}
-        \State m_0 \leftarrow 0.0 \Comment{Initialize first moment}
-        \State s_0 \leftarrow 0.0 \Comment{Initialize second moment}
-        \While{in epochs} \Comment{Iterate through epochs}
-        \While{in mini-batches} \Comment{Iterate through the}%\Comment{Batches are random intervals}
-        \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ mini-batches
-        %\State $t \leftarrow t + 1$
-        \State $\mathbf{g}_t \leftarrow \nabla_\theta \mathcal{C}(\boldsymbol{\theta_})$
-        \Comment{Get gradients}
-        \State $\mathbf{m}_t \leftarrow \beta_1 \mathbf{m}_{t-1} + (1-\beta_1) \mathbf{g}_t$
-        \Comment{Update biased 1st}
-        \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ moment
-        \State $\boldsymbol{\mathbf{\hat{m}}}_t \leftarrow {\mathbf{m}_t \over 1-\beta_1^t}$
-        \Comment{Compute bias-corrected 1st}
-        \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ moment
-        \State $\mathbf{s}_t \leftarrow \beta_2 \mathbf{s}_{t-1} +(1-\beta_2)\mathbf{g}_t^2$ 
-        \Comment{Update biased 2nd}
-        \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ moment
-        \State $\boldsymbol{\mathbf{\hat{s}}}_t \leftarrow {\mathbf{s}_t \over1-\beta_2^t}$
-        \Comment{Compute bias-corrected 2nd}
-        \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ moment
-        \State $\boldsymbol{\theta}_{t+1} \leftarrow \boldsymbol{\theta}_t - \eta_t {         \boldsymbol{\mathbf{m}}_t \over \sqrt{\boldsymbol{\mathbf{s}}_t} +\epsilon}$
-        \Comment{Update parameters}
-    \end{algorithmic}
-\end{algorithm}
-The parameters $\beta_1$ and $\beta_2$ set the memory lifetime of the first and second moment and are typically taken to be $0.9$ and $0.99$ respectively, and $\eta$ is the learning rate typically chosen as $10^{-3}$, and $\epsilon$ is a small regularization constant to prevent divergences. 
 
 
 
