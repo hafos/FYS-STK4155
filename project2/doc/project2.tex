@@ -137,12 +137,12 @@ Classification problems, on the other hand, are concerned with outcomes which ta
 Obtaining such a discrete output can be done by using the perceptron model, which is a "hard classification" model where each data point is deterministically assigned to a category. In many cases, however, it is favorable to use a "soft classifier" that outputs the probability of a given category rather than a single value, which is where we apply logistic regression. 
 \vspace{3mm}
 \\
-When we apply logistic regression the most common situation is having two possible outcomes, normally denoted as a binary outcome~\cite{lecture_notes}. 
+When we apply logistic regression the most common situation is having two possible outcomes, normally denoted as a binary outcome. 
 The probability that a data point $x_i$ belongs to a category $y_i = \{0,1\}$ is given by the logistic function, also known as the Sigmoid function, 
 \begin{align}\label{eq: logistic_function} % sigmoid function
     p(t) = \frac{1}{1+\exp -t} = \frac{\exp t}{1+\exp t}, 
 \end{align}
-which is meant to represent the likelihood of a given event~\cite{lecture_notes}. 
+which is meant to represent the likelihood of a given event~\cite{friedman}. 
 Assuming that we have two categories with $y_i\in\{0,1\}$ and that we only have two parameters $\beta$ in the fit of the Sigmoid function, we define the probabilities 
 \begin{align}
     p(y_i=1 | x_i,\boldsymbol{\beta}) &= 
@@ -151,7 +151,7 @@ Assuming that we have two categories with $y_i\in\{0,1\}$ and that we only have 
     p(y_i=0 | x_i,\boldsymbol{\beta}) &= 
     1 - p(y_i=1 | x_i,\boldsymbol{\beta}) , 
 \end{align}
-where $x$ is an input set and $\boldsymbol{\beta}$ are the weights we wish to extract from data, in this case $\beta_0$ and $\beta_1$ which are the coefficients we use to estimate the data. 
+where $x$ is an input set and $\boldsymbol{\beta}$ are the weights we wish to extract from data, in this case $\beta_0$ and $\beta_1$ which are the coefficients we use to estimate the data~\cite{friedman}. 
 \vspace{3mm}
 \\ 
 Our aim is now to maximize the probability of seeing the observed data. 
@@ -162,7 +162,7 @@ Using the Maximum Likelihood Estimation (MLE), we define the total likelihood fo
     [p(y_i=1|x_i,\boldsymbol{\beta})]^{y_i}
     [1 - p(y_i=1|x_i,\boldsymbol{\beta})]^{1-y_i}, 
 \end{align}
-which then is an approximation of the likelihood in terms of the individual probabilities of a specific outcome $y_i$~\cite{lecture_notes}. 
+which then is an approximation of the likelihood in terms of the individual probabilities of a specific outcome $y_i$~\cite{friedman}. 
 From this we obtain the log-likelihood
 \begin{align}
     \mathcal{C}(\boldsymbol{\beta}) 
@@ -176,7 +176,7 @@ The maximum likelihood estimator is defined as the set of parameters that maximi
 \begin{align}\label{eq: cost function logistic regression}
     C(\boldsymbol{\beta}) = -\sum\limits_{i=1}^n (y_i(\beta_0 + \beta_1 x_i) - \log(1+\exp(\beta_0 + \beta_1 x_i))).
 \end{align}
-This cost function, known as cross entropy, is what we use for logistic regression, and it is often supplemented with additional regularization terms. 
+This cost function, known as cross entropy, is what we use for logistic regression, and it is often supplemented with additional regularization terms~\cite{friedman}. 
 \vspace{3mm}
 \\ 
 We minimize the cross entropy cost function with respect to the two parameters $\beta_0$ and $\beta_1$, keeping in mind that this is a convex function of the weights $\boldsymbol{\beta}$, thereby making any local minimizer a global minimizer. By defining a vector $\boldsymbol{y}$ with $n$ elements $y_i$, an $n\times p$ matrix $\mathbf{X}$ which contains the $x_i$ values and a vector $\boldsymbol{p}$ of fitted probabilities $p(y_i | x_i, \boldsymbol{\beta})$, we find that the first derivative of the cost function becomes 
@@ -187,13 +187,6 @@ By defining a diagonal matrix $\mathbf{W}$ with elements $p(y_i | x_i, \boldsymb
 \begin{align}
     \frac{\partial^2 \mathcal{C}(\boldsymbol{\beta})}{\partial \boldsymbol{\beta}\partial \boldsymbol{\beta}^T} = \boldsymbol{X}^T\boldsymbol{W}\boldsymbol{X}.
 \end{align}
-\vspace{3mm}
-\\ 
-In order to measure the performance of the classification problem we will use the accuracy score, which is the number of correctly guessed targets $t_i$ divided by the total number of targets $n$, 
-\begin{align}
-    \text{Accuracy} = \frac{\sum_{i=1}^n I(t_i = y_i)}{n}, 
-\end{align}
-where $I$ is the indicator function, $1$ if $t_i = y_i$ and $0$ otherwise for a binary classification problem. 
 \vspace{3mm}
 \\ 
 When performing the linear regression analysis we solved for the best value for $\boldsymbol{\beta}$ by taking the inverse. However, this is not always possible, and in such cases we can apply a method which takes advantage of numerical optimization, called gradient descent. 
@@ -349,9 +342,21 @@ While the function is efficnent and does not saturate for positive values, it su
 where $\alpha=0.01$ is a parameter that increases the range of the function such that it becomes $[-\infty, \infty]$. 
 \vspace{3mm}
 \\ 
-The weights and biases in a network can be initialized randomly, however this makes them unlikely to produce an accurate prediction. We therefore adjust the weights and biases by training them, where we have to use gradient methods in order to find the minimum of the model's cost function. In order to compute the gradients of the cost function with respect to every weight and bias in the network, we use an algorithm called backpropagation, presented in appendix~\ref{app: backprop}. 
+The weights and biases in a network can be initialized randomly, however this makes them unlikely to produce an accurate prediction. We therefore adjust the weights and biases by training them, where we have to use gradient methods in order to find the minimum of the model's cost function. In order to compute the gradients of the cost function with respect to every weight and bias in the network we use an algorithm called backpropagation. 
+\vspace{3mm}
+\\ 
+Backpropagation computes the gradient with respect to the weights of the network, allowing us to use gradient methods for training a network with multiple layers. We compute the gradient one layer at a time, iterating backwards in order to avoid redundant calculations. 
+We update the weights and biases using gradient descent for each epoch by 
+\begin{align}
+    w_{jk}^l = w_{jk}^l - \eta\frac{\partial\mathcal{C}}{\partial w^l_{jk}}
+\end{align}
+\begin{align}
+    b^l_j = b^l_j - \eta\frac{\partial\mathcal{C}}{\partial b^l_j}, 
+\end{align}
+where the parameter $\eta$ is the learning parameter discussed in connection with the gradient descent methods~\cite{lecture_notes}. 
 
 
+ 
 
 
 
@@ -406,7 +411,6 @@ To measure the performance of the classification problem we use the accuracy sco
     \text{Accuracy} = \frac{\sum^n_{i=1} I(t_i=y_i)}{n}, 
 \end{align*}
 where $I$ is the indicator function, $1$ if $t_i=y_i$ and $0$ otherwise for a binary classification problem. Here, $t_i$ represents the target and $y_i$ the output of the FFNN code, while $n$ is simply the number of targets $t_i$. 
-
 
 
 
@@ -631,132 +635,7 @@ When studying the regression problem for the Franke function with the FFNN imple
 \printbibliography[heading=none]
 
 \appendix
-\section{Algorithms}\label{app: algos}
-\subsubsection*{Adagrad} %_______________________________________________________________
-The AdaGrad algorithm adaptively scales the learning rate for each dimension. We implement it by iterating over the epochs, and then for every epoch we iterate through the mini-batches, as explained in algorithm~\ref{algo: Adagrad}. %Batches are random intervals. 
-
-% Algorithm for Adagrad
-\begin{algorithm}[H]
-    \caption{Adagrad}\label{algo: Adagrad}
-    \begin{algorithmic}
-        \While{in epochs} \Comment{Iterate through epochs}
-        \While{in mini-batches} \Comment{Iterate through the}%\Comment{Batches are random intervals}
-        \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ mini-batches
-        \State $\mathbf{g}_t \leftarrow \nabla_\theta \mathcal{C}(\boldsymbol{\theta})$ 
-        \State $\theta_{t+1} \leftarrow \mathbf{g}_t \eta \frac{1}{\sqrt{\delta+ \sum^t(\mathbf{g}_t)^2}}$
-    \end{algorithmic}
-\end{algorithm}
-
-\subsubsection*{Root Mean Squared Propagation}
-RMSprop provides an exponentially decaying average rather than the sum of the gradients. The decaying average is realized by combining the momentum algorithm and the Adagrad algorithm with a new term. The RMSprop method is restricted to the sum of the past gradients, in addition to the gradients for the recent time steps, meaning that it changes the learning rate slowly while converging relatively fast~\cite{lecture_notes}. 
-
-% Algorithm for RMSprop
-\begin{algorithm}[H]
-    \caption{RMSprop}\label{algo: RMSprop}
-    \begin{algorithmic}
-        \While{in epochs} \Comment{Iterate through epochs}
-        \State $k \leftarrow 0$
-        \While{in mini-batches} \Comment{Iterate through the}%\Comment{Batches are random intervals}
-        \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ mini-batches
-        \State $\mathbf{g}_t \leftarrow \nabla_\theta \mathcal{C}(\boldsymbol{\theta})$
-        \State $k \leftarrow (\rho k + (1 - \rho)\mathbf{g}_t \mathbf{g}_t)$
-        \Comment{Scaling with $\rho$}
-        \State $\theta_{t+1} \leftarrow \mathbf{g}_t \eta \frac{1}{\sqrt{\delta + k}}$
-        \Comment{Inverting the diagonal}
-    \end{algorithmic}
-\end{algorithm}
-
-\subsubsection*{Adam} %_______________________________________________________________
-Another related algorithm is the Adam optimizer, which is efficient when working with large problems involving a lot of data and parameters. 
-The algorithm~\ref{algo: ADAM} keeps a running average of both the first and second moment of the gradient and uses this information to adaptively change the learning rate for different parameters. 
-
-% Algorithm for ADAM 
-\begin{algorithm}[H]
-    \caption{ADAM}\label{algo: ADAM}
-    \begin{algorithmic}
-        \State m_0 \leftarrow 0.0 \Comment{Initialize first moment}
-        \State s_0 \leftarrow 0.0 \Comment{Initialize second moment}
-        \While{in epochs} \Comment{Iterate through epochs}
-        \While{in mini-batches} \Comment{Iterate through the}%\Comment{Batches are random intervals}
-        \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ mini-batches
-        %\State $t \leftarrow t + 1$
-        \State $\mathbf{g}_t \leftarrow \nabla_\theta \mathcal{C}(\boldsymbol{\theta_})$
-        \Comment{Get gradients}
-        \State $\mathbf{m}_t \leftarrow \beta_1 \mathbf{m}_{t-1} + (1-\beta_1) \mathbf{g}_t$
-        \Comment{Update biased 1st}
-        \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ moment
-        \State $\boldsymbol{\mathbf{\hat{m}}}_t \leftarrow {\mathbf{m}_t \over 1-\beta_1^t}$
-        \Comment{Compute bias-corrected 1st}
-        \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ moment
-        \State $\mathbf{s}_t \leftarrow \beta_2 \mathbf{s}_{t-1} +(1-\beta_2)\mathbf{g}_t^2$ 
-        \Comment{Update biased 2nd}
-        \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ moment
-        \State $\boldsymbol{\mathbf{\hat{s}}}_t \leftarrow {\mathbf{s}_t \over1-\beta_2^t}$
-        \Comment{Compute bias-corrected 2nd}
-        \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ moment
-        \State $\boldsymbol{\theta}_{t+1} \leftarrow \boldsymbol{\theta}_t - \eta_t {         \boldsymbol{\mathbf{m}}_t \over \sqrt{\boldsymbol{\mathbf{s}}_t} +\epsilon}$
-        \Comment{Update parameters}
-    \end{algorithmic}
-\end{algorithm}
-The parameters $\beta_1$ and $\beta_2$ set the memory lifetime of the first and second moment and are typically taken to be $0.9$ and $0.99$ respectively, and $\eta$ is the learning rate typically chosen as $10^{-3}$, and $\epsilon$ is a small regularization constant to prevent divergences. 
-
-
-
-
-\section{Back Propagation} %_________________________________________________
-
-Train data based on the cost function (compare network output with training data) 
-minimize the cost output (method of adjusting weights and biases by estimating the gradient of the cost function, back propagation) 
-
-f is the activation function 
-f'(zj) is the derivative for activation z 
-j is node 
-k is class or entry 
-L is layer 
-w and b are the weights and biases 
-
-weight and biase in teh network are typically initialized randomly -> highly unlikely to find good predictions 
-Need to iteratively adjust the weights and biases until the predictions are satisfactory 
-Called training: We use gradient methods to find the minimum of the models cost functions. Now need to compute the gradients of the cost function with respect to all the weights and biases in the network, which has potentially many weights and biases all dependent on one another, and can become coputationaly heavy 
-We therefore make use of the algorithm backpropagation 
-
-Initializing the weights and biases. to get fat covergence or non convergence of the gradient method. Initialize the biases to some small value eprioon (can experiment to find it) and the weights with iniform distribution between -1 and 1 . 
-
-The four equations provide us with a way of computing the gradient of the cost function, for which the method we use is presented in the algorithm~\ref{algo:FFNN_BP} for back propagation, where the parameter $\eta$ is the learning parameter discussed in connection with the gradient descent methods. 
-XXX: Here it is convenient to use stochastic gradient descent (see the examples below) with mini-batches with an outer loop that steps through multiple epochs of training. 
-
-% Algorithm for Back propagation
-\begin{algorithm}[H]
-    \caption{Back Propagation}\label{algo:FFNN_BP}
-    \begin{algorithmic}
-        \State XXX 
-        \Comment{Set up the input data $\hat{x}$ and the activations $\hat{z}_1$ of the input layer and compute the activation function and the pertinent outputs $\hat{a}^1$} 
-        \State XXX
-        \Comment{Perform the feed forward until we reach the output layer. Compute all $\hat{z}_l$ of the input layer and the activation function and the pertinent outputs $\hat{a}^l$ for $l=1,2,3,...,L$.}
-        \State $\eta = XXX$ \Comment{Initialize the learning rate}
-        \State $\delta_j^L \leftarrow f'(z_j^L) \frac{\partial\mathcal{C}}{\partial(a_j^L)}$
-        \Comment{Compute the output error $\delta^L$}
-        \State $\delta_j^l \leftarrow \sum_k \delta_k^{l+1} w_{kj}^{l+1} f'(z_j^l)$
-        \Comment{Compute the back propagate error for each $l = L-1, L-1, ..., 2$}
-        \State $w^l_{jk} \leftarrow w^l_{jk} - \eta\delta^l_j a^{l-1}_k$, 
-        \Comment{Update the weights and the biases using gradient descent}
-        \State $b^l_{j} \leftarrow b^l_{j} - \eta\frac{\partial\mathcal{C}}{\partial b^l_j = b^l_j - \eta\delta^l_j}$
-        
-    \end{algorithmic}
-\end{algorithm}
-\vspace{3mm}
-\\
-When all weights and biases throughout the network have been updated a number epoch times, the cost function preferably decreases. 
-
-The lambda is to prevent overfitting. 
-Preventing overditting. Introduce a regularization term (lambda) 
-
-
-
-
-
-
-\section{Additional Figures}
+\section{Additional Figures}\label{app: figs}
 
 \begin{itemize}
 \color{white}
@@ -850,6 +729,85 @@ Preventing overditting. Introduce a regularization term (lambda)
 \item First item
 \item Second item
 \end{itemize}
+
+
+\section{Algorithms}\label{app: algos}
+\subsubsection*{Adagrad} %_______________________________________________________________
+The AdaGrad algorithm adaptively scales the learning rate for each dimension. We implement it by iterating over the epochs, and then for every epoch we iterate through the mini-batches, as explained in algorithm~\ref{algo: Adagrad}. %Batches are random intervals. 
+
+% Algorithm for Adagrad
+\begin{algorithm}[H]
+    \caption{Adagrad}\label{algo: Adagrad}
+    \begin{algorithmic}
+        \While{in epochs} \Comment{Iterate through epochs}
+        \While{in mini-batches} \Comment{Iterate through the}%\Comment{Batches are random intervals}
+        \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ mini-batches
+        \State $\mathbf{g}_t \leftarrow \nabla_\theta \mathcal{C}(\boldsymbol{\theta})$ 
+        \State $\theta_{t+1} \leftarrow \mathbf{g}_t \eta \frac{1}{\sqrt{\delta+ \sum^t(\mathbf{g}_t)^2}}$
+    \end{algorithmic}
+\end{algorithm}
+
+\subsubsection*{Root Mean Squared Propagation}
+RMSprop provides an exponentially decaying average rather than the sum of the gradients. The decaying average is realized by combining the momentum algorithm and the Adagrad algorithm with a new term. The RMSprop method is restricted to the sum of the past gradients, in addition to the gradients for the recent time steps, meaning that it changes the learning rate slowly while converging relatively fast~\cite{lecture_notes}. 
+
+% Algorithm for RMSprop
+\begin{algorithm}[H]
+    \caption{RMSprop}\label{algo: RMSprop}
+    \begin{algorithmic}
+        \While{in epochs} \Comment{Iterate through epochs}
+        \State $k \leftarrow 0$
+        \While{in mini-batches} \Comment{Iterate through the}%\Comment{Batches are random intervals}
+        \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ mini-batches
+        \State $\mathbf{g}_t \leftarrow \nabla_\theta \mathcal{C}(\boldsymbol{\theta})$
+        \State $k \leftarrow (\rho k + (1 - \rho)\mathbf{g}_t \mathbf{g}_t)$
+        \Comment{Scaling with $\rho$}
+        \State $\theta_{t+1} \leftarrow \mathbf{g}_t \eta \frac{1}{\sqrt{\delta + k}}$
+        \Comment{Inverting the diagonal}
+    \end{algorithmic}
+\end{algorithm}
+
+\subsubsection*{Adam} %_______________________________________________________________
+Another related algorithm is the Adam optimizer, which is efficient when working with large problems involving a lot of data and parameters. 
+The algorithm~\ref{algo: ADAM} keeps a running average of both the first and second moment of the gradient and uses this information to adaptively change the learning rate for different parameters. 
+
+% Algorithm for ADAM 
+\begin{algorithm}[H]
+    \caption{ADAM}\label{algo: ADAM}
+    \begin{algorithmic}
+        \State m_0 \leftarrow 0.0 \Comment{Initialize first moment}
+        \State s_0 \leftarrow 0.0 \Comment{Initialize second moment}
+        \While{in epochs} \Comment{Iterate through epochs}
+        \While{in mini-batches} \Comment{Iterate through the}%\Comment{Batches are random intervals}
+        \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ mini-batches
+        %\State $t \leftarrow t + 1$
+        \State $\mathbf{g}_t \leftarrow \nabla_\theta \mathcal{C}(\boldsymbol{\theta_})$
+        \Comment{Get gradients}
+        \State $\mathbf{m}_t \leftarrow \beta_1 \mathbf{m}_{t-1} + (1-\beta_1) \mathbf{g}_t$
+        \Comment{Update biased 1st}
+        \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ moment
+        \State $\boldsymbol{\mathbf{\hat{m}}}_t \leftarrow {\mathbf{m}_t \over 1-\beta_1^t}$
+        \Comment{Compute bias-corrected 1st}
+        \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ moment
+        \State $\mathbf{s}_t \leftarrow \beta_2 \mathbf{s}_{t-1} +(1-\beta_2)\mathbf{g}_t^2$ 
+        \Comment{Update biased 2nd}
+        \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ moment
+        \State $\boldsymbol{\mathbf{\hat{s}}}_t \leftarrow {\mathbf{s}_t \over1-\beta_2^t}$
+        \Comment{Compute bias-corrected 2nd}
+        \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ moment
+        \State $\boldsymbol{\theta}_{t+1} \leftarrow \boldsymbol{\theta}_t - \eta_t {         \boldsymbol{\mathbf{m}}_t \over \sqrt{\boldsymbol{\mathbf{s}}_t} +\epsilon}$
+        \Comment{Update parameters}
+    \end{algorithmic}
+\end{algorithm}
+The parameters $\beta_1$ and $\beta_2$ set the memory lifetime of the first and second moment and are typically taken to be $0.9$ and $0.99$ respectively, and $\eta$ is the learning rate typically chosen as $10^{-3}$, and $\epsilon$ is a small regularization constant to prevent divergences. 
+
+
+
+
+
+
+
+
+
 
 
 
