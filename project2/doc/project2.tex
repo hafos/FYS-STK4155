@@ -77,7 +77,7 @@ FYS-STK4155\\
 \\
 In this project, our aim is to investigate classification and regression problems using a Feed-Forward Neural Network (FFNN). We will compare this method this to linear and logistic regression whilst studying two data sets: The Franke function and the Wisconsin Breast Cancer data set. 
 The goal is to study which methods are best with regards to computational time and accuracy. 
-Our results show that the neural networks code is better suited to the classification problem, achieving a higher accuracy than our logistic regression code and scikit learn's logistic regression function. Meanwhile, for the regression problem the logistic regression code performed slightly better. Various activation functions point towards the Sigmoid function producing the best results in this case, but the logistic regression code still performed better. 
+Our results show that the neural networks code is better suited to the classification problem, achieving a higher accuracy than our logistic regression code and scikit learn's logistic regression function. Meanwhile, for the regression problem the logistic regression code performed slightly better. Various activation functions point towards the Sigmoid function producing the best results, however the Rectified Linear Unit (ReLU) was more efficient. 
 
 The implementation and material relevant to this project can be found at the Github repo referenced above. 
 \end{abstract}
@@ -87,7 +87,7 @@ The implementation and material relevant to this project can be found at the Git
 % The main purpose of the introduction section is to provide context and motivation for the work. It is also common --- and quite useful --- to use the last paragraph of the introduction to outline the rest of the report, to tell the reader what they should expect in the different sections.
 
 % Motivate what we do 
-The field of artificial neural networks has a long history of development, starting with McCulloch and Pitts developing a model of artificial neurons in in 1943 in order to study signal processing in the brain. As computer science and computers themselves become more advanced, the field of artificial neural networks has been refined and will continue to advance~\cite{lecture_notes}. Today, it is used in many technological fields, from medicine where trained models can assist in diagnostic and treatment decisions, to providing entertainment companies with models for what products a costumer is more likely to consume. 
+The field of artificial neural networks has a long history, starting with McCulloch and Pitts developing a model of artificial neurons in in 1943 in order to study signal processing in the brain. As computer science and computers themselves have become more advanced, the field of artificial neural networks has been refined, and it will continue to evolve in the future~\cite{lecture_notes}. Today, it is used in many technological fields, from medicine where trained models can assist in diagnostic and treatment decisions, to providing entertainment companies with models for what products a costumer is more likely to consume, as well as other fields. 
 \vspace{3mm}
 \\
 The neural nets are neural-inspired nonlinear models for supervised learning, which attempt to mimic the neural networks of an animal brain, composed of billions of neurons that communicate by sending electrical signals. The signals must exceed a threshold in order to yield output, or else the neuron remains inactive. 
@@ -99,9 +99,8 @@ The aim of this project is to study classification and regression problems by de
 In order to analyze the efficiency and accuracy of each method, we compute the Mean-Squared Error (MSE) and accuracy score. 
 \vspace{3mm}
 \\
-Previously, we analyzed and developed algorithms for two linear regression methods which we will make use of in this project: The Ordinary Least Square (OLS) method and Ridge regression. We will also include logistic regression for classification problems and write an algorithm for the FFNN for studying both regression and classification problems. 
-\vspace{3mm}
-\\
+Previously, we analyzed and developed algorithms for two linear regression methods which we will make use of in this project: The Ordinary Least Square (OLS) method and Ridge regression~\cite{proj1}. We will also include logistic regression for classification problems and write an algorithm for the FFNN for studying both regression and classification problems. 
+
 In section \ref{sec:methods} we provide a short summary of the linear regression methods we use, OLS and Ridge regression, as well as an overview of logistic regression and gradient descent. Additionally, we explain relevant theory behind the FFNN and present the datasets we will be working with. 
 A selection of results relevant to our understanding are presented together with a discussion of the results in section~\ref{sec:results}, 
 %A selection of results relevant to our understanding are presented in section \ref{sec:results}. In section \ref{sec:discussion} we discuss how our results correspond to our expectations, 
@@ -117,7 +116,7 @@ When using linear regression we approximate a function $f(\boldsymbol{x})$ by $\
 The model is fitted by finding the values of $\boldsymbol{\beta}$ which minimize the cost function $C(\mathbf{X}, \boldsymbol{\beta}$) where the cost function is a function which allows us to judge how well the model $\boldsymbol{\beta}$ fits the matrix $\mathbf{X}$. The minimum is usually found using numerical methods, as analytical methods are generally not possible. 
 \vspace{3mm}
 \\
-A common linear regression model is the ordinary least squared (OLS), where we assume a cost function 
+A common linear regression model is the OLS, where we assume a cost function 
 % defined from the mean squared error
 \begin{align}\label{eq: costfunc_OLS}
     \mathcal{C}_\text{OLS}(\boldsymbol{\beta}) = \frac{1}{n}\left\{(\boldsymbol{y} - \mathbf{X}\boldsymbol{\beta})^T (\boldsymbol{y} - \mathbf{X}\boldsymbol{\beta})\right\},
@@ -130,11 +129,11 @@ Another common model is Ridge regression, where we include a regularization para
 \end{align}
 For the linear regression analysis our main interest was around leading the coefficients of a functional fit in order to be able to predict the response of a continuous variable on some unseen data. 
 % The fit to the continuous variable y_i is based on some independent variables x_i. 
-Linear regression resulted in analytical expressions for standard OLS or Ridge regression for several quantities, ranging from the variance and thereby the confidence intervals of the parameters $\beta$ to the mean squared error (MSE)~\cite{lecture_notes}. By inverting the product of the design matrices we could fit our data. 
+Linear regression resulted in analytical expressions for standard OLS or Ridge regression for several quantities, ranging from the variance and thereby the confidence intervals of the parameters $\beta$ to the MSE~\cite{lecture_notes}. By inverting the product of the design matrices we could fit our data. 
 \vspace{3mm}
 \\
 Classification problems, on the other hand, are concerned with outcomes which take the form of discrete variables. 
-Obtaining such a discrete output can be done by using the perceptron model, which is a "hard classification" model where each data point is deterministically assigned to a category. In many cases, however, it is favorable to use a "soft classifier" that outputs the probability of a given category rather than a single value, which is where we apply logistic regression. 
+Obtaining such a discrete output can be done by using the perceptron model, which is a so-called hard classification model where each data point is deterministically assigned to a category. In many cases, however, it is favorable to use a soft classifier that outputs the probability of a given category rather than a single value, which is where we apply logistic regression. 
 \vspace{3mm}
 \\
 When we apply logistic regression the most common situation is having two possible outcomes, normally denoted as a binary outcome. 
@@ -194,19 +193,19 @@ When performing the linear regression analysis we solved for the best value for 
 \subsection*{Gradient Methods}
 % a) We replace the matrix inversion algorithm in the OLS and Ridge regression with a gradient descent (GD) and SGD codes. 
 Previously, we have solved OLS and Ridge regression using an algorithm for matrix inversion. 
-We now study another method for minimizing a function $\boldsymbol{f}(\boldsymbol{x})$. 
+We now study another method for minimizing a function $f(\boldsymbol{x})$. 
 \vspace{3mm}
 \\ 
-Gradient descent, also known as Steepest Descent, is an optimization algorithm we use in order to find the minima of $\boldsymbol{f}(\boldsymbol{x})$, where $\boldsymbol{x} = (x_1, ..., x_n$). A function such as this is expected to decrease fastest while going from $x$ towards the direction of the negative gradient $-\Delta\boldsymbol{f}(\boldsymbol{x})$. 
+Gradient descent, also known as Steepest Descent, is an optimization algorithm we use in order to find the minima of $f(\boldsymbol{x})$, where $\boldsymbol{x} = (x_1, ..., x_n$). A function such as this is expected to decrease fastest while going from $x$ towards the direction of the negative gradient $-\Delta f(\boldsymbol{x})$. 
 
 The method can be used in the training of a machine learning model, where it is applied to the convex cost function in order to minimize this to its local minimum. 
 For a certain amount of iterative steps towards the direction of the minima, we will eventually reach a point where the cost function is at its smallest if 
 \begin{align}
-    \boldsymbol{x}_{k+1} = \boldsymbol{x}_k - \gamma_k \Delta\boldsymbol{f}(\boldsymbol{x}_k), \nonumber 
+    \boldsymbol{x}_{k+1} = \boldsymbol{x}_k - \gamma_k \Delta f(\boldsymbol{x}_k), \nonumber 
 \end{align}
-where the step length/learning rate $\gamma_k > 0$. If $\gamma_k$ is sufficiently small we are always moving towards smaller function values, $\boldsymbol{f}(\boldsymbol{x}_{k+1} \leq \boldsymbol{f}(\boldsymbol{x}_k))$. 
+where the step length/learning rate $\gamma_k > 0$. If $\gamma_k$ is sufficiently small we are always moving towards smaller function values, $f(\boldsymbol{x}_{k+1} \leq f(\boldsymbol{x}_k))$~\cite{lecture_notes}. 
 
-Ideally the sequence $\{\boldsymbol{x}_k\}_{k=0}$ converges towards a global minimum of the function $\boldsymbol{f}$, and this is always the case when $\boldsymbol{f}$ is a convex function, as all local minima are also global minima. While this scheme is simple and straightforward to implement, it has several limitations such as being sensitive to the chosen initial condition and being expensive to compute numerically.
+Ideally the sequence $\{\boldsymbol{x}_k\}_{k=0}$ converges towards a global minimum of the function $f$, and this is always the case when $f$ is a convex function, as all local minima are also global minima. While this scheme is simple and straightforward to implement, it has several limitations such as being sensitive to the chosen initial condition and being expensive to compute numerically.
 
 The gradient descent method is sensitive to the choice of learning rate $\gamma_k$, due to the fact that we require a sufficiently small $\gamma_k$ to reach the minima. Choosing a learning rate that is too small leads to the method taking a long time to converge, while choosing a too large learning rate can lead to erratic behaviour. 
 
@@ -230,7 +229,7 @@ Stochasticity is then introduced by taking the gradient on a subset of the data 
 %    \mathbf{\beta}) \rightarrow \sum_{i \in B_k}^n \nabla_\beta c_i(\mathbf{x}_i, 
 %    \mathbf{\beta}), 
 %\end{align}
-where the minibatches are chosen at random in each gradient descent step. For a number of batches $M<1$ we have SGD with mini batches, while for $M=1$ we simply have SGD. 
+where the minibatches are chosen at random in each gradient descent step. For a number of batches $M<1$ we have SGD with mini batches, while for $M=1$ we have the plain SGD. 
 The gradient step then becomes 
 \begin{align}
     \beta_{j+1} 
@@ -263,9 +262,9 @@ The SGD is usually used with a momentum term that served as a memory of the dire
         \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ mini-batches
         % COMPUTE on the current mini-batch 
         % the gradient is to be taken over a different mini-batch at each step. 
-        \State $\Delta \boldsymbol{\theta}_{t+1} \leftarrow 
-                \gamma \Delta \boldsymbol{\theta}_t -\ \eta_{t}\nabla_\theta E(\boldsymbol{\theta}_t)$ 
-                \Comment{$\Delta\theta_t = \theta_t - \theta_{t-1}$.}
+        \State $\Delta \boldsymbol{\beta}_{t+1} \leftarrow 
+                \gamma \Delta \boldsymbol{\beta}_t -\ \eta_{t}\nabla_\beta E(\boldsymbol{\beta}_t)$ 
+                \Comment{$\Delta\beta_t = \beta_t - \beta_{t-1}$.}
         \EndWhile
     \end{algorithmic}
 \end{algorithm}
@@ -288,8 +287,8 @@ The AdaGrad algorithm adaptively scales the learning rate for each dimension. We
         \While{in epochs} \Comment{Iterate through epochs}
         \While{in mini-batches} \Comment{Iterate through the}%\Comment{Batches are random intervals}
         \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ mini-batches
-        \State $\mathbf{g}_t \leftarrow \nabla_\theta \mathcal{C}(\boldsymbol{\theta})$ 
-        \State $\theta_{t+1} \leftarrow \mathbf{g}_t \eta \frac{1}{\sqrt{\delta+ \sum^t(\mathbf{g}_t)^2}}$
+        \State $\mathbf{g}_t \leftarrow \nabla_\beta \mathcal{C}(\boldsymbol{\beta})$ 
+        \State $\beta_{t+1} \leftarrow \mathbf{g}_t \eta \frac{1}{\sqrt{\delta+ \sum^t(\mathbf{g}_t)^2}}$
     \end{algorithmic}
 \end{algorithm}
 
@@ -304,10 +303,10 @@ RMSprop provides an exponentially decaying average rather than the sum of the gr
         \State $k \leftarrow 0$
         \While{in mini-batches} \Comment{Iterate through the}%\Comment{Batches are random intervals}
         \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ mini-batches
-        \State $\mathbf{g}_t \leftarrow \nabla_\theta \mathcal{C}(\boldsymbol{\theta})$
+        \State $\mathbf{g}_t \leftarrow \nabla_\beta \mathcal{C}(\boldsymbol{\beta})$
         \State $k \leftarrow (\rho k + (1 - \rho)\mathbf{g}_t \mathbf{g}_t)$
         \Comment{Scaling with $\rho$}
-        \State $\theta_{t+1} \leftarrow \mathbf{g}_t \eta \frac{1}{\sqrt{\delta + k}}$
+        \State $\beta_{t+1} \leftarrow \mathbf{g}_t \eta \frac{1}{\sqrt{\delta + k}}$
         \Comment{Inverting the diagonal}
     \end{algorithmic}
 \end{algorithm}
@@ -326,7 +325,7 @@ The algorithm~\ref{algo: ADAM} keeps a running average of both the first and sec
         \While{in mini-batches} \Comment{Iterate through the}%\Comment{Batches are random intervals}
         \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ mini-batches
         %\State $t \leftarrow t + 1$
-        \State $\mathbf{g}_t \leftarrow \nabla_\theta \mathcal{C}(\boldsymbol{\theta_})$
+        \State $\mathbf{g}_t \leftarrow \nabla_\beta \mathcal{C}(\boldsymbol{\beta_})$
         \Comment{Get gradients}
         \State $\mathbf{m}_t \leftarrow \beta_1 \mathbf{m}_{t-1} + (1-\beta_1) \mathbf{g}_t$
         \Comment{Update biased 1st}
@@ -340,7 +339,7 @@ The algorithm~\ref{algo: ADAM} keeps a running average of both the first and sec
         \State $\boldsymbol{\mathbf{\hat{s}}}_t \leftarrow {\mathbf{s}_t \over1-\beta_2^t}$
         \Comment{Compute bias-corrected 2nd}
         \State $\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:$ moment
-        \State $\boldsymbol{\theta}_{t+1} \leftarrow \boldsymbol{\theta}_t - \eta_t {         \boldsymbol{\mathbf{m}}_t \over \sqrt{\boldsymbol{\mathbf{s}}_t} +\epsilon}$
+        \State $\boldsymbol{\beta}_{t+1} \leftarrow \boldsymbol{\beta}_t - \eta_t {         \boldsymbol{\mathbf{m}}_t \over \sqrt{\boldsymbol{\mathbf{s}}_t} +\epsilon}$
         \Comment{Update parameters}
     \end{algorithmic}
 \end{algorithm}
@@ -364,13 +363,14 @@ The output of the node is determined by the activation function, which takes a w
 \begin{align}
     y = f\left(\sum\limits_{i=1}^n w_i x_i\right) = f(u), 
 \end{align}
-where the output $y$ of the neuron is the value of its activation function, which will be discussed in further detail later~\cite{lecture_notes}. % input for activation function is a weighted sum of signals x_i, ..., x_n revieved by $n$ other neurons 
+where the output $y$ of the neuron is the value of its activation function~\cite{lecture_notes}, which will be discussed in further detail later in this paper. % input for activation function is a weighted sum of signals x_i, ..., x_n revieved by $n$ other neurons 
 
 We allow one node to take $n$ inputs, enabling us to solve a linear regression problem of degree $n$, by viewing each input $i$ as $x_i$, and each weight as a coefficient in the linear expression. By scaling the output and interpreting this as a probability, we may solve binary classification problems. 
 
 
 \subsubsection*{Feed-Forward Neural Network}
 If we add an additional layer between the input and output layer, we build a multi-layer perceptron model, visualized in figure~\ref{fig: Multi Layer Perceptron Model}. This method, FFNN, is a simple type of ANN which enables us to solve more complex models. In this case, the information only moves forward through the layers. % 1 direction 
+Note that if we had no hidden layer, this would be equivalent to multinomial logistic regression~\cite{friedman}. 
 
 \begin{figure}[h!]
     \centering %Centers the figure
@@ -385,7 +385,7 @@ Each node, defined by a model function, passes information to the nodes ahead if
 
 \subsubsection*{Activation Functions}%_______________________________________________
 The output of the neural networks will be a linear function of the inputs, and we therefore introduce the activation function to add some kind of non-linearity to the the neural network in order to fit non-linear functions. 
-There are several typical choices for activation functions, of which we will use the sigmoid function, the Rectified Linear Unit (ReLU), and the Leaky ReLU. 
+There are several typical choices for activation functions, of which we will use the sigmoid function, the ReLU, and the Leaky ReLU. 
 \vspace{3mm}
 \\ 
 The sigmoid function, 
@@ -495,22 +495,22 @@ The models were first tested on the Franke function.
 As we previously found that the linear regression codes with matrix inversion worked well for an order 6, we continue to use this throughout this report. 
 \vspace{3mm}
 \\ 
-In figure~\ref{fig: a1} we study how the MSE of the GD method varies with epochs, for three fixed learning rates; $\eta=0.1$, $\eta=0.01$ and $\eta=0.001$. The MSE decreases earlier and more rapidly for a higher learningrate. If the learningrate is made too high, the method would be unable to converge due to overflow, while for lower learningrates the model becomes less accurate. 
+In figure~\ref{fig: a1} we study 12 in the appendix, where we note that the SGD ap-how the MSE of the GD method varies with epochs, for three fixed learning rates; $\eta=0.1$, $\eta=0.01$ and $\eta=0.001$. The MSE decreases earlier and more rapidly for a higher learningrate. If the learningrate is made too high, the method would be unable to converge due to overflow, while for lower learningrates the model becomes less accurate. 
 \begin{figure}[h!]
     \centering %Centers the figure
     \includegraphics[width=1.0\linewidth]{Project 2/figures/reg/GD_epochs.pdf} 
     \caption{How the MSE for Franke's function varies with epochs for the GD method, for fixed learning rates $\eta=0.1$, $0.01$ and $0.001$. }
     \label{fig: a1}
 \end{figure}
-This is further supported by figure~\ref{fig: a2}, where we visualize the MSE as a function of both the l2 parameter and the learningrate. The number of epochs is set to 300, and the number of batches is set to 64. The batches and number of operations have been plotted as a colormap where we see the MSE in figure 12
+This is further supported by figure~\ref{fig: a2}, where we visualize the MSE as a function of both the L2 parameter and the learningrate. The number of epochs is set to 300, and the number of batches is set to 64. The batches and number of operations have been plotted as a colormap where we see the MSE in figure 12
 %~\ref{fig: a3}
 in the appendix, where we note that the SGD approaches GD when we only have 1 batch. 
 %A greater number of batches mean that the convergence rate increases, and we spend less time on each operation. 
-From figure~\ref{fig: a2}, we see that we obtain an MSE of 0.06854 for $\eta=0.1$ and the lowest l2 parameter. This is an improvement compared to the MSE obtained for the OLS method and the Ridge method with bootstraps, which we implemented in project 1~\cite{proj1}. 
+From figure~\ref{fig: a2}, we see that we obtain an MSE of 0.06854 for $\eta=0.1$ and the lowest L2 parameter. This is an improvement compared to the MSE obtained for the OLS method and the Ridge method with bootstraps, which we implemented in project 1~\cite{proj1}. 
 \begin{figure}[h!]
     \centering %Centers the figure
     \includegraphics[width=1.0\linewidth]{Project 2/figures/reg/GD_MSE_lambda_eta.pdf} 
-    \caption{The MSE for Franke's function for the SGD method as a function of $\eta$ and the l2 parameter, where the number of epochs is 500 and the number of batches is 64.}
+    \caption{The MSE for Franke's function for the SGD method as a function of $\eta$ and the L2 parameter, where the number of epochs is 500 and the number of batches is 64.}
     \label{fig: a2}
 \end{figure}
 \vspace{3mm}
@@ -580,27 +580,27 @@ in the appendix. Based on this analysis, we see how we need fewer iterations if 
 Now we may perform the grid search for the learning rate $\eta$ and optimization parameter $\lambda$, presented in figure~\ref{fig: b_sigmoid_3}. We see how, for higher values for the learning parameter, the accuracy increases. However, for too high values of $\eta$ we see that no convergence happens, represented by the gray areas. Similar to what we saw for the logistic regression analysis, the optimization parameter has the lowest MSE for $\lambda = 0.00001$, and the lowest MSE overall is where $\eta=0.1$. 
 \begin{figure}[h!]
     \centering %Centers the figure
-    \includegraphics[width=1.0\linewidth]{Project 2/figures/reg/NN_reg_sigmoid_l2_eta.pdf} 
+    \includegraphics[width=1.0\linewidth]{Project 2/figures/reg/NN_reg_sigmoid_L2_eta.pdf} 
     \caption{How the MSE for Franke's function varies with $\eta$ and $\lambda$, using the Sigmoid function as an activation function. 
     Hidden layers = 3, Neurons = 30, number of batches = 32, epochs = 300.}
     \label{fig: b_sigmoid_3}
 \end{figure}
 \begin{figure}[h!]
     \centering %Centers the figure
-    \includegraphics[width=1.0\linewidth]{Project 2/figures/reg/NN_reg_relu_l2_eta.pdf} 
-    \caption{How the MSE for Franke's function varies with $\eta$ and $\lambda$, using the ReLu as an activation function. 
+    \includegraphics[width=1.0\linewidth]{Project 2/figures/reg/NN_reg_relu_L2_eta.pdf} 
+    \caption{How the MSE for Franke's function varies with $\eta$ and $\lambda$, using the ReLU as an activation function. 
     Hidden layers = 3, Neurons = 30, number of batches = 32, epochs = 300.}
     \label{fig: b_relu}
 \end{figure}
 \begin{figure}[h!]
     \centering %Centers the figure
-    \includegraphics[width=1.0\linewidth]{Project 2/figures/reg/NN_reg_leaky_relu_l2_eta.pdf} 
-    \caption{How the MSE for Franke's function varies with $\eta$ and $\lambda$, using the Leaky ReLu as an activation function. 
+    \includegraphics[width=1.0\linewidth]{Project 2/figures/reg/NN_reg_leaky_relu_L2_eta.pdf} 
+    \caption{How the MSE for Franke's function varies with $\eta$ and $\lambda$, using the Leaky ReLU as an activation function. 
     Hidden layers = 3, Neurons = 30, number of batches = 32, epochs = 300.}
     \label{fig: b_lrelu}
 \end{figure}
 Next, we test how different activation functions affect these results, for the same parameters. 
-We do not see any improvement for the MSE when using the ReLu as an activation function, seen in figure~\ref{fig: b_relu}, and the Leaky ReLu activation function is significantly worse in this case, seen in figure~\ref{fig: b_lrelu}. 
+We do not see any improvement for the MSE when using the ReLU as an activation function, seen in figure~\ref{fig: b_relu}, and the Leaky ReLU activation function is significantly worse in this case, seen in figure~\ref{fig: b_lrelu}. However, the ReLU is somewhat more computationally efficient than Sigmoid. 
 The lowest MSE=0.0675 is obtained when using Sigmoid. This is quite an improvement compared to the Ridge regression code from the previous project where we had an MSE around 0.1200 when using bootstrapping as the resampling tehnique. However, when we used cross-validation as the resampling technique, we got a lower MSE for Ridge, around 0.0112. 
 Generally, both the SGD and NN presented here give a lower MSE than the OLS and Ridge regression codes when not using cross validation~\cite{proj1}. 
 %\vspace{3mm}
@@ -627,14 +627,14 @@ We begin by finding suitable parameters for the number of hidden layers and neur
 , and then the number of batches and epochs, presented in figure 17
 %~\ref{fig: nn_iter_batch}
 , both in the appendix. 
-The resulting lowest MSE for the neural network code is 0.9825, for $\eta$ = 0.1 and an l2 parameter of 0.00001. 
+The resulting lowest MSE for the neural network code is 0.9825, for $\eta$ = 0.1 and an L2 parameter of 0.00001. 
 
 \begin{figure}[h!]
     \centering %Centers the figure
-    \includegraphics[width=1.0\linewidth]{Project 2/figures/class/NN_class_sigmoid_l2_eta.pdf} 
+    \includegraphics[width=1.0\linewidth]{Project 2/figures/class/NN_class_sigmoid_L2_eta.pdf} 
     \caption{How the MSE for the Wisconsin Breast Cancer data varies with $\eta$ and $\lambda$, using the Sigmoid function as an activation function. Hidden layers = 1, neurons = 25, number of batches = 64, epochs = 768
     }
-    \label{fig: nn_l2_eta}
+    \label{fig: nn_L2_eta}
 \end{figure}
 
 
@@ -643,17 +643,17 @@ The resulting lowest MSE for the neural network code is 0.9825, for $\eta$ = 0.1
 Finally, we want to compare the neural network classification results with the results we are able to obtain using another method, in this case the results we obtain from the logistic regression code using the SGD algorithm. 
 \vspace{3mm}
 \\ 
-We begin by looking at the accuracy for SGD for different l2 parameters and different learningrates, comparing the GD algorithm, seen in figure~\ref{fig: gd_lambda_eta} with ADAM seen in figure~\ref{fig: adam_lambda_eta}. The accuracy when using ADAM are somewhat higher than the results with SGD, with a difference of around 0.01 between the highest accuracy scores for both. The best scores with SGD are for a low learningparameter, while the best scores with ADAM are for a slightly higher learningparameter, at $0.0001$. 
+We begin by looking at the accuracy for SGD for different L2 parameters and different learningrates, comparing the GD algorithm, seen in figure~\ref{fig: gd_lambda_eta} with ADAM seen in figure~\ref{fig: adam_lambda_eta}. The accuracy when using ADAM are somewhat higher than the results with SGD, with a difference of around 0.01 between the highest accuracy scores for both. The best scores with SGD are for a low learningparameter, while the best scores with ADAM are for a slightly higher learningparameter, at $0.0001$. 
 \begin{figure}[h!]
     \centering %Centers the figure
     \includegraphics[width=1.0\linewidth]{Project 2/figures/class/GD_acc_lambda_eta.pdf} 
-    \caption{Accuracy score for SGD as a function of the learningparameter $\eta$ and the l2 parameter $\lambda$, for epochs = 1024 and batches = 1.}
+    \caption{Accuracy score for SGD as a function of the learningparameter $\eta$ and the L2 parameter $\lambda$, for epochs = 1024 and batches = 1.}
     \label{fig: gd_lambda_eta}
 \end{figure}
 \begin{figure}[h!]
     \centering %Centers the figure
     \includegraphics[width=1.0\linewidth]{Project 2/figures/class/adam_acc_lambda_eta.pdf} 
-    \caption{Accuracy score for ADAM as a function of the learningparameter $\eta$ and the l2 parameter $\lambda$, for epochs = 1024 and batches = 1.}
+    \caption{Accuracy score for ADAM as a function of the learningparameter $\eta$ and the L2 parameter $\lambda$, for epochs = 1024 and batches = 1.}
     \label{fig: adam_lambda_eta}
 \end{figure}
 \vspace{3mm}
@@ -662,7 +662,7 @@ Next, we study the accuracy for SGD with ADAM for a different number of batches 
 \begin{figure}[h!]
     \centering %Centers the figure
     \includegraphics[width=1.0\linewidth]{Project 2/figures/class/SGD_operations_batches_0.1.pdf} 
-    \caption{Accuracy score using logistic regression as a function of the number of batches and the number of operations, for epochs = 1024, batches = 1, eta=0.001, and l2=0.0}
+    \caption{Accuracy score using logistic regression as a function of the number of batches and the number of operations, for epochs = 1024, batches = 1, eta=0.001, and L2=0.0}
     \label{fig: op_batch}
 \end{figure}
 \vspace{3mm}
@@ -685,7 +685,7 @@ Finally, we can compare our results with the accuracy we obtain when using sciki
 \section{Conclusion}\label{sec:conclusion}
 % Present results and error margin 
 In this report we have studied various methods while investigating classification and regression problems. 
-We found that while all methods provide us with a descent accuracy, the neural network is better suited for classification problems, where we achieved a higher accuracy score than both our own logistic regression code and the accuracy score obtained from scikit learn's algorithm. Meanwhile, for the regression analysis we saw that surprisingly the Sigmoid function achieved the best results, although by a very small margin compared to the ReLu. The neural network code did not achieve a better accuracy score in this case, however the difference in accuracies between the logistic regression code and the neural network code were lower for the regression problem than it was for the classification problem. 
+We found that while all methods provide us with a descent accuracy, the neural network is better suited for classification problems, where we achieved a higher accuracy score than both our own logistic regression code and the accuracy score obtained from scikit learn's algorithm. Meanwhile, for the regression analysis we saw that surprisingly the Sigmoid function achieved the best results, although by a very small margin compared to the ReLU. The neural network code did not achieve a better accuracy score in this case, however the difference in accuracies between the logistic regression code and the neural network code were lower for the regression problem than it was for the classification problem. 
 \vspace{3mm}
 \\ 
 % We could have obtained even more precise results if we had ...
@@ -740,7 +740,7 @@ When studying the regression problem for the Franke function with the FFNN imple
     \centering %Centers the figure
     \includegraphics[width=1.0\linewidth]{Project 2/figures/reg/NN_reg_sigmoid_iterations_batches.pdf} 
     \caption{How the MSE for Franke's function varies with the batches and epochs, using the Sigmoid function as an activation function. 
-    Hidden layers = 3, Neurons = 30, $\eta=0.1$, and l2 = 0.00001}
+    Hidden layers = 3, Neurons = 30, $\eta=0.1$, and L2 = 0.00001}
     \label{fig: b_sigmoid_2}
 \end{figure}
 
@@ -752,7 +752,7 @@ When studying the regression problem for the Franke function with the FFNN imple
 \begin{figure}[h!]
     \centering %Centers the figure
     \includegraphics[width=1.0\linewidth]{Project 2/figures/class/NN_class_sigmoid_neurons_layers.pdf} 
-    \caption{How the MSE for the MSE for the Wisconsin Breast Cancer data varies with the batches and epochs, using the Sigmoid function as an activation function. Batches = 1, epochs = 640, $\eta$ = 0.1, l2=0.0
+    \caption{How the MSE for the MSE for the Wisconsin Breast Cancer data varies with the batches and epochs, using the Sigmoid function as an activation function. Batches = 1, epochs = 640, $\eta$ = 0.1, L2=0.0
     }
     \label{fig: nn_neuron_layer}
 \end{figure}
@@ -767,7 +767,7 @@ When studying the regression problem for the Franke function with the FFNN imple
 \begin{figure}[h!]
     \centering %Centers the figure
     \includegraphics[width=1.0\linewidth]{Project 2/figures/class/NN_class_sigmoid_iterations_batches.pdf} 
-    \caption{How the MSE for the MSE for the Wisconsin Breast Cancer data varies with the batches and epochs, using the Sigmoid function as an activation function. Hidden layers = 1, neurons = 25, $\eta$ = 0.1, l2=0.0. 
+    \caption{How the MSE for the MSE for the Wisconsin Breast Cancer data varies with the batches and epochs, using the Sigmoid function as an activation function. Hidden layers = 1, neurons = 25, $\eta$ = 0.1, L2=0.0. 
     }
     \label{fig: nn_iter_batch}
 \end{figure}
