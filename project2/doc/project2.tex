@@ -31,7 +31,7 @@
 %\usepackage[noend]{algpseudocode}
 \usepackage[style=numeric, backend=bibtex, sorting=none]{biblatex}
 \addbibresource{sources.bib}
-\usepackage{authblk}
+%\usepackage{authblk}
 % defines the color of hyperref objects
 % Blending two colors:  blue!80!black  =  80% blue and 20% black
 \hypersetup{ % this is just my personal choice, feel free to change things
@@ -57,29 +57,31 @@
 % British English
 
     
+
 \begin{document}
-% Deadline October 7 
 
 \title{\vspace*{-2cm}\bf Classification using a Feed-Forward Neural Network \hspace*{5cm}\makebox[-5cm]{\includegraphics[width=0.13\linewidth]{UiO_Segl_300dpi.png}}\\
 FYS-STK4155\\
 \rule{\textwidth}{0.05cm}}
-\author[1]{Oskar Hafstad}
-\author[3]{Simon H. Hille}
-\author[1, 2]{Semya A. Tønnessen}
-% self-explanatory
-\affil[1]{Institute for Theoretical Astrophysics, University of Oslo}
-\affil[2]{Center for Computing in Science Education, University of Oslo}
-\affil[3]{Department of Physics, University of Cologne}
+
+%\author[1]{Oskar Hafstad}
+%\author[3]{Simon H. Hille}
+%\author[1, 2]{Semya A. Tønnessen}
+%\affil[1]{Institute for Theoretical Astrophysics, University of Oslo}
+%\affil[2]{Center for Computing in Science Education, University of Oslo}
+%\affil[3]{Department of Physics, University of Cologne}
+
+\author{Oskar Hafstad, Simon H. Hille & Semya A. Tønnessen}
 \date{\today}
 %\noaffiliation
-\begin{abstract} \centering Link to Github repo: \url{https://github.com/hafos/FYS-STK4155/project2}% Remember to use short and direct formulations!
+
+\begin{abstract} 
+\centering Link to Github repo: \url{https://github.com/hafos/FYS-STK4155/project2}
 \vspace{3mm}
 \\
 In this project, our aim is to investigate classification and regression problems using a Feed-Forward Neural Network (FFNN). We will compare this method this to linear and logistic regression whilst studying two data sets: The Franke function and the Wisconsin Breast Cancer data set. 
 The goal is to study which methods are best with regards to computational time and accuracy. 
 Our results show that the neural networks code is better suited to the classification problem, achieving a higher accuracy than our logistic regression code and scikit learn's logistic regression function. Meanwhile, for the regression problem the logistic regression code performed slightly better. Various activation functions point towards the Sigmoid function producing the best results, however the Rectified Linear Unit (ReLU) was more efficient. 
-
-The implementation and material relevant to this project can be found at the Github repo referenced above. 
 \end{abstract}
 \maketitle
 
@@ -196,7 +198,7 @@ Previously, we have solved OLS and Ridge regression using an algorithm for matri
 We now study another method for minimizing a function $f(\boldsymbol{x})$. 
 \vspace{3mm}
 \\ 
-Gradient descent, also known as Steepest Descent, is an optimization algorithm we use in order to find the minima of $f(\boldsymbol{x})$, where $\boldsymbol{x} = (x_1, ..., x_n$). A function such as this is expected to decrease fastest while going from $x$ towards the direction of the negative gradient $-\Delta f(\boldsymbol{x})$. 
+Gradient descent, or Steepest Descent, is an optimization algorithm that is used in order to find the minima of $f(\boldsymbol{x})$, where $\boldsymbol{x} = (x_1, ..., x_n$). This type of function is expected to decrease the most rapidly while going from $x$ towards the direction of the negative gradient $-\Delta f(\boldsymbol{x})$. 
 
 The method can be used in the training of a machine learning model, where it is applied to the convex cost function in order to minimize this to its local minimum. 
 For a certain amount of iterative steps towards the direction of the minima, we will eventually reach a point where the cost function is at its smallest if 
@@ -401,7 +403,7 @@ Another common activation function is the ReLU,
     f(x)_\text{ReLU} = \text{max}(0, x), 
 \end{align}
 which has output in $[0,\infty]$. 
-While the function is efficnent and does not saturate for positive values, it suffers from a problem known as the dying ReLUs, where some neurons effectively die during training. In such cases, the neurons stop outputting anything other than 0~\cite{lecture_notes}. There have been several attempts to solve this issue, one of which is known as the Leaky ReLU, 
+While the function is efficient and does not saturate for positive values, it suffers from a problem known as the dying ReLUs, where some neurons effectively die during training. In such cases, the neurons stop outputting anything other than 0~\cite{lecture_notes}. There have been several attempts to solve this issue, one of which is known as the Leaky ReLU, 
 \begin{align}
     f(x)_\text{Leaky ReLU} = \bigg\{ 
     \begin{matrix}
@@ -409,7 +411,7 @@ While the function is efficnent and does not saturate for positive values, it su
         x\alpha, & \text{ if } x \leq 0 
     \end{matrix}, 
 \end{align}
-where $\alpha=0.01$ is a parameter that increases the range of the function such that it becomes $[-\infty, \infty]$. 
+where $\alpha=0.01$ is a parameter that increases the range of the function, ensuring that this becomes $[-\infty, \infty]$. 
 \vspace{3mm}
 \\ 
 The weights and biases in a network can be initialized randomly, however this makes them unlikely to produce an accurate prediction. We therefore adjust the weights and biases by training them, where we have to use gradient methods in order to find the minimum of the model's cost function. In order to compute the gradients of the cost function with respect to every weight and bias in the network we use an algorithm called backpropagation. 
